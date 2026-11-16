@@ -87,32 +87,34 @@ async function startWorld(introEl) {
       onOpen: (section, index) => {
         world.setPaused(true);
         modal.show(section, index);
+        hud?.opened(section, index);
       },
+      onJump: (kind) => hud?.jump(kind),
+      onRace: (r) => hud?.race(r),
       onNear: (it) => hud?.near(it),
       onZone: (z) => z.id !== 'plaza' && hud?.zone(z),
       onShard: (n, t, secret) => hud?.shard(n, t, secret),
       onView: (v) => hud?.setView(v),
       onLock: (on) => hud?.lock(on),
       onRespawn: () => hud?.toast('Whoops, you fell off the island! Back to the plaza.'),
-      onAllShards: () => {
-        hud?.allShards();
-        setTimeout(() => {
-          world.setPaused(true);
-          modal.show('about', 0);
-        }, 2200);
-      },
     });
     hud = createHud(world, {
       onClassic: goClassic,
       onAbout: () => {
         world.setPaused(true);
         modal.show('about', 0);
+        hud.opened('about', 0);
       },
+      onAllQuests: () =>
+        setTimeout(() => {
+          world.setPaused(true);
+          modal.show('about', 0);
+        }, 2600),
     });
     introEl.classList.add('hide');
     setTimeout(() => introEl.remove(), 900);
     setTimeout(() => hud.startTour(), 1200);
-    setTimeout(() => hud.toast(`Follow the arrow for the highlights tour. Bonus: ${world.shardTotal} data shards are hidden around the island.`), 2400);
+    setTimeout(() => hud.say(`Hi, I'm Byte, your guide! Follow the arrow for the highlights. Your quests are in the top right.`, 8), 2600);
   } catch (err) {
     console.error(err);
     container.remove();

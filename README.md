@@ -12,12 +12,22 @@ Visitors walk around the island in third person (or first person with **V**). Ev
 | **Hackathon Arena** | Trophy boards for hackathons, events and awards (the biggest ones in the front row) |
 | **The Beacon** | About me, skills (the orbiting crystals) and contact links |
 
-There are also 9 hidden **data shards** to collect (one sits on the Sky Lookout at the top of a floating
-parkour route), a jump pad, a minimap, and fast travel. Fall off the island and you respawn at the plaza.
+### Things to do on the island
+
+- **Highlights tour**: an arrow and a light pillar lead visitors through the five areas in order.
+- **Byte, the guide drone**: follows the player and explains each area the first time they arrive, plus a few tips.
+- **Explorer quests** (top right): seven goals such as visiting every area, opening exhibits and reading the news board. Each one raises the visitor's rank, from Visitor up to Island Legend. Finishing all seven opens the contact card.
+- **Island Dash**: start at the yellow flag in the plaza and run through 8 glowing rings against the clock. The best time is saved in the browser.
+- **Data shards**: 9 hidden collectibles. One sits on the Sky Lookout at the top of a floating parkour route.
+- **News board** in the plaza: shows the newest post and opens the full news list.
+- **Sound effects**: made in the browser with no audio files. The speaker button mutes them.
+- Also a jump pad, a minimap you can click to travel, and fast travel. Fall off the island and you respawn at the plaza.
+
 Phones get a touch joystick. Browsers without WebGL 2 (and anyone who clicks
 "Classic view") get a recruiter-friendly scrolling portfolio built from the same data:
-career highlights, experience, filterable projects, hackathons, certifications,
-education, skills and contact.
+latest news, career highlights, experience, a project spotlight, a hackathon photo wall,
+certifications, education, skills and contact. It has a moving 3D backdrop and an
+announcement banner for the newest post.
 
 ## Edit your content
 
@@ -35,6 +45,38 @@ It is filled in from Mark's LinkedIn profile, LinkedIn posts and GitHub (Nov 202
 
 Set `featured: true` on an item to highlight it: featured projects get the big cards, and featured
 hackathons and certificates go in the front row in 3D and in the classic view. Keep it to the biggest few.
+
+### News & announcements
+
+LinkedIn and Instagram do not let a personal site pull posts automatically, so news is a short list
+you add to when you post. Add a block to the top of the `news` list in `src/data/portfolio.js`:
+
+```js
+{
+  date: '2026-11-15',            // or '2026-11' if you only know the month
+  source: 'linkedin',            // linkedin | github | instagram | facebook
+  title: 'We built AstroMed at NASA Space Apps Challenge Yangon',
+  text: 'One or two sentences about the post.',
+  link: 'https://www.linkedin.com/...', // the post URL
+  image: 'media/nasa.jpg',       // optional
+},
+```
+
+The newest item becomes the banner at the top of the classic view and the news board in the 3D plaza.
+Posts newer than 45 days get a "New" badge.
+
+### Photos
+
+Photos and screenshots live in [`public/media/`](public/media). Point an item at one with
+`image: 'media/your-file.jpg'` (projects, hackathons and news), or `photo` for the profile picture.
+Aim for at least 1200 px wide so they stay sharp. If a file is missing, the site hides the picture
+instead of showing a broken image.
+
+### Contact
+
+The contact email, LinkedIn, GitHub, Facebook and Instagram links are in `profile.links`.
+The email shows on the "Email me" buttons and in the contact section for business inquiries.
+The "I can help with" list comes from `profile.services`.
 
 The only optional thing still missing is a résumé PDF (search the file for `TODO`).
 
@@ -63,6 +105,7 @@ a preview for every pull request). Any static host works.
 - **Click** the world to capture the mouse for free look (**Esc** releases it); in that mode the crosshair picks what **E** or a click opens
 - **V** switches between third-person and first-person view, **scroll** zooms the third-person camera
 - **E** opens whatever you are aiming at or standing next to; you can also click glowing things directly
+- **E** at the yellow flag starts the Island Dash; fast travel during a dash cancels it
 - **Touch**: joystick bottom-left (push it all the way to run), drag anywhere to look, JUMP and camera buttons bottom-right, tap things to open them
 
 ## Tech

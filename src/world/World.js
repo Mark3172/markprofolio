@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
 import { canvasTexture, rrect, wrap, fonts, makeLabel, chipRow, coverImage, withImage } from './textures.js';
-import { TYPE_LABEL, TYPE_COLOR, mediaUrl } from '../ui/cards.js';
+import { TYPE_LABEL, TYPE_COLOR, mediaUrl, sortedNews, newsDate } from '../ui/cards.js';
 
 const R = 34; // island radius
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -47,6 +47,11 @@ const PLATFORMS = [
 ];
 const SECRET_SHARD = V(-29, 7.6 + 1.2, -35.5);
 const JUMP_PADS = [{ x: 7, z: -7, power: 16 }];
+// Island Dash: a timed lap through glowing rings around the plaza
+const DASH_START = V(3.6, 0, 3.6);
+const DASH_RINGS = [[20, 11], [338, 12], [300, 12.5], [257, 13.5], [191, 14], [165, 12.5], [113, 14], [68, 11]].map(([deg, r]) =>
+  V(Math.cos((deg * Math.PI) / 180) * r, 0, Math.sin((deg * Math.PI) / 180) * r),
+);
 
 export function createWorld(container, hooks = {}) {
   const isTouch = matchMedia('(pointer: coarse)').matches;
@@ -143,8 +148,8 @@ export function createWorld(container, hooks = {}) {
   const clickTargets = []; // meshes for raycasting -> interactable
   const fadeLabels = []; // sprites that fade out when the camera gets close
 
-  function addInteractable(root, { section, index = 0, label, radius = 3.2, pos }) {
-    const it = { root, section, index, label, radius, pos: pos || root.position.clone(), hover: 0 };
+  function addInteractable(root, { section, index = 0, label, radius = 3.2, pos, action, verb }) {
+    const it = { root, section, index, label, radius, pos: pos || root.position.clone(), hover: 0, action, verb };
     interactables.push(it);
     root.traverse((o) => {
       if (o.isMesh) {
@@ -728,10 +733,10 @@ export function createWorld(container, hooks = {}) {
   /* ---------------- "SEE EVERYTHING" KIOSKS ---------------- */
   // The world only shows the highlights. Each zone has one small terminal that
   // opens a list of everything else in that section.
-  function addKiosk(x, z, color, title, count, moreIndex) {
+  function addKiosk(x, z, color, title, count, moreIndex, opt = {}) {
     const g = new THREE.Group();
     g.position.set(x, 0, z);
-    g.lookAt(0, 0, 0);
+    g.lookAt(opt.face || V(0, 0, 0));
     const post = shadowy(new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.4), mat('#2e2952')));
     post.position.y = 0.55;
     const tex = canvasTexture(400, 260, (g2, w, h) => {
@@ -743,13 +748,13 @@ export function createWorld(container, hooks = {}) {
       g2.stroke();
       g2.fillStyle = color;
       g2.font = `700 26px ${fonts.BODY}`;
-      g2.fillText('SEE EVERYTHING', 30, 58);
+      g2.fillText(opt.kicker || 'SEE EVERYTHING', 30, 58);
       g2.fillStyle = '#fff';
       g2.font = `700 44px ${fonts.DISPLAY}`;
       wrap(g2, title, 30, 118, w - 60, 48, 2);
       g2.fillStyle = '#aeb4e0';
       g2.font = `500 26px ${fonts.BODY}`;
-      g2.fillText(`+${count} more · press E`, 30, h - 34);
+      g2.fillText(opt.footer || `+${count} more · press E`, 30, h - 34);
     });
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.975), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, toneMapped: false }));
     screen.position.set(0, 1.55, 0.05);
@@ -757,7 +762,7 @@ export function createWorld(container, hooks = {}) {
     g.add(post, screen);
     scene.add(g);
     colliders.push({ x, z, r: 0.5, h: 99 });
-    const it = addInteractable(g, { section: 'more', index: moreIndex, label: `all ${title.toLowerCase()}`, radius: 2.4 });
+    const it = addInteractable(g, { section: opt.section || 'more', index: moreIndex, label: opt.label || `all ${title.toLowerCase()}`, verb: opt.verb, radius: 2.4 });
     animators.push(() => screen.scale.setScalar(1 + it.hover * 0.12));
   }
   {
@@ -774,6 +779,17 @@ export function createWorld(container, hooks = {}) {
     const tz = ZONES[3].c;
     const firstEdu = experience.findIndex((e) => e.type === 'education');
     addKiosk(tz.x + 5, tz.z - 6, '#7cf5ff', 'Full experience & education', experience.filter((e, i) => e.type === 'education' && i !== firstEdu).length, 3);
+    // news board in the plaza: the newest post, opens the full list
+    const latest = sortedNews()[0];
+    if (latest)
+      addKiosk(-3.6, 3.6, '#4aa3ff', latest.title, 0, 0, {
+        section: 'news',
+        kicker: 'LATEST NEWS',
+        footer: `${newsDate(latest.date)} · press E`,
+        label: 'the latest news',
+        verb: 'Read',
+        face: V(-1.5, 0, 12),
+      });
   }
 
   /* ---------------- GUIDE (highlights tour) ---------------- */
@@ -1093,6 +1109,96 @@ export function createWorld(container, hooks = {}) {
   heroLight.position.y = 1.2;
   player.add(heroLight);
 
+  /* ---------------- companion drone ---------------- */
+  const buddy = new THREE.Group();
+  {
+    const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(0.24, 1), mat('#f2f0ff', { roughness: 0.3, metalness: 0.2 }));
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), glow('#7cf5ff', 3.5));
+    eye.position.z = 0.19;
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.03, 6, 28), glow('#b18cff', 2.5));
+    halo.rotation.x = Math.PI / 2;
+    buddy.add(shell, eye, halo);
+    buddy.userData = { halo, eye, talk: 0 };
+    buddy.position.set(SPAWN.x + 1, 2.2, SPAWN.z);
+    scene.add(buddy);
+  }
+
+  /* ---------------- Island Dash (timed ring race) ---------------- */
+  let race = null; // { i, time }
+  let dashBest = 0;
+  try {
+    dashBest = Number(localStorage.getItem('dash-best')) || 0;
+  } catch {
+    /* storage blocked */
+  }
+  const ringMeshes = DASH_RINGS.map((p, i) => {
+    const m = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.09, 8, 40), new THREE.MeshBasicMaterial({ color: '#ffd166', transparent: true, opacity: 0.9, toneMapped: false }));
+    const next = DASH_RINGS[(i + 1) % DASH_RINGS.length];
+    m.position.set(p.x, 1.7, p.z);
+    m.lookAt(next.x, 1.7, next.z);
+    m.visible = false;
+    scene.add(m);
+    return m;
+  });
+  {
+    const g = new THREE.Group();
+    g.position.copy(DASH_START);
+    const pole = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 2.6, 6), mat('#2a2440')));
+    pole.position.y = 1.3;
+    const flagTex = canvasTexture(256, 160, (g2, w, h) => {
+      g2.fillStyle = '#ffd166';
+      g2.fillRect(0, 0, w, h);
+      g2.fillStyle = '#1a1433';
+      for (let y = 0; y < 2; y++) for (let x = 0; x < 8; x++) if ((x + y) % 2) g2.fillRect(x * 32, h - 48 + y * 24, 32, 24);
+      g2.font = `700 44px ${fonts.DISPLAY}`;
+      g2.fillText('DASH', 22, 54);
+      g2.font = `600 24px ${fonts.BODY}`;
+      g2.fillText('8 rings · beat the clock', 22, 92);
+    });
+    const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.94), new THREE.MeshBasicMaterial({ map: flagTex, side: THREE.DoubleSide, toneMapped: false }));
+    flag.position.set(0.78, 2.1, 0);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.8, 0.14, 20), glow('#ffd166', 1.6));
+    base.position.y = 0.08;
+    g.add(pole, flag, base);
+    g.rotation.y = -0.5;
+    scene.add(g);
+    colliders.push({ x: DASH_START.x, z: DASH_START.z, r: 0.25, h: 99 });
+    const it = addInteractable(g, { label: 'the Island Dash', verb: 'Start', radius: 2.2, action: () => startRace() });
+    animators.push((t) => {
+      flag.rotation.y = Math.sin(t * 2.2) * 0.12;
+      base.scale.setScalar(1 + it.hover * 0.15 + Math.sin(t * 3) * 0.03);
+    });
+  }
+  function showRings() {
+    ringMeshes.forEach((m, i) => {
+      m.visible = !!race && (i === race.i || i === race.i + 1);
+      m.material.opacity = race && i === race.i ? 0.95 : 0.28;
+    });
+  }
+  function startRace() {
+    race = { i: 0, time: 0 };
+    showRings();
+    hooks.onRace?.({ state: 'start', i: 0, total: DASH_RINGS.length, time: 0, best: dashBest });
+  }
+  function endRace(state) {
+    if (!race) return;
+    const time = race.time;
+    let record = false;
+    if (state === 'finish' && (!dashBest || time < dashBest)) {
+      record = true;
+      dashBest = time;
+      try {
+        localStorage.setItem('dash-best', String(time));
+      } catch {
+        /* storage blocked */
+      }
+    }
+    race = null;
+    showRings();
+    arrow.visible = false;
+    hooks.onRace?.({ state, i: 0, total: DASH_RINGS.length, time, best: dashBest, record });
+  }
+
   const target = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: '#7cf5ff', transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
   target.rotation.x = -Math.PI / 2;
   target.visible = false;
@@ -1246,6 +1352,7 @@ export function createWorld(container, hooks = {}) {
 
   function open(it) {
     if (!it) return;
+    if (it.action) return it.action();
     if (locked()) document.exitPointerLock?.();
     hooks.onOpen?.(it.section, it.index);
   }
@@ -1393,7 +1500,7 @@ export function createWorld(container, hooks = {}) {
             vy = p.power;
             grounded = false;
             burst.fire(V(p.x, 0.5, p.z), new THREE.Color('#3ddc84'), 30);
-            hooks.onJump?.();
+            hooks.onJump?.('pad');
           }
         }
       }
@@ -1453,17 +1560,54 @@ export function createWorld(container, hooks = {}) {
       currentZone = zone;
       if (zone) hooks.onZone?.(zone);
     }
-    if (guide.zone) {
+    const ringGoal = race ? DASH_RINGS[race.i] : null;
+    if (ringGoal || guide.zone) {
       const gz = guide.zone;
-      const dx = gz.c.x - player.position.x;
-      const dz = gz.c.z - player.position.z;
-      const far = Math.hypot(dx, dz) > gz.r * 0.8;
+      const gp = ringGoal || gz.c;
+      const dx = gp.x - player.position.x;
+      const dz = gp.z - player.position.z;
+      const far = Math.hypot(dx, dz) > (ringGoal ? 2.5 : gz.r * 0.8);
+      arrow.material.color.set(ringGoal ? '#ffd166' : gz.color);
       arrow.visible = far && view === 'tpp' && !flight;
       if (arrow.visible) {
         arrow.position.set(player.position.x + (dx / Math.hypot(dx, dz)) * 1.1, player.position.y + 2.6 + Math.sin(t * 4) * 0.08, player.position.z + (dz / Math.hypot(dx, dz)) * 1.1);
         arrow.rotation.set(0, Math.atan2(dx, dz), 0);
       }
       pillar.material.opacity = 0.08 + Math.sin(t * 2) * 0.03;
+    }
+
+    // ---- Island Dash
+    if (race) {
+      if (!paused) race.time += dt;
+      const rp = DASH_RINGS[race.i];
+      const rm = ringMeshes[race.i];
+      rm.scale.setScalar(1 + Math.sin(t * 6) * 0.06);
+      if (Math.hypot(player.position.x - rp.x, player.position.z - rp.z) < 1.9 && player.position.y < 4) {
+        burst.fire(V(rp.x, 1.7, rp.z), new THREE.Color('#ffd166'), 40);
+        race.i++;
+        if (race.i >= DASH_RINGS.length) {
+          burst.fire(player.position.clone().setY(player.position.y + 2.5), new THREE.Color('#ffd166'), 140);
+          endRace('finish');
+        } else {
+          showRings();
+          hooks.onRace?.({ state: 'ring', i: race.i, total: DASH_RINGS.length, time: race.time, best: dashBest });
+        }
+      } else if (race.time > 120) endRace('cancel');
+    }
+
+    // ---- companion drone hovers by the player's shoulder
+    {
+      const u = buddy.userData;
+      const side = view === 'fpp' ? 0.9 : -1.15;
+      const ahead = view === 'fpp' ? 1.6 : -0.3;
+      tmp.set(player.position.x + right.x * side + fwd.x * ahead, player.position.y + (view === 'fpp' ? 1.5 : 2.25) + Math.sin(t * 2.2) * 0.12, player.position.z + right.z * side + fwd.z * ahead);
+      buddy.position.lerp(tmp, 1 - Math.exp(-dt * 3.2));
+      buddy.rotation.y = lerpAngle(buddy.rotation.y, Math.atan2(player.position.x - buddy.position.x, player.position.z - buddy.position.z) + (view === 'fpp' ? 0 : Math.PI * 0.75), 1 - Math.exp(-dt * 5));
+      u.halo.rotation.z = t * 1.6;
+      u.talk = Math.max(0, u.talk - dt);
+      const pulse = u.talk > 0 ? 1 + Math.abs(Math.sin(t * 14)) * 0.5 : 1;
+      u.eye.scale.setScalar(pulse);
+      u.halo.scale.setScalar(u.talk > 0 ? 1.15 : 1);
     }
 
     // ---- shards
@@ -1546,7 +1690,7 @@ export function createWorld(container, hooks = {}) {
   }
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
-  if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; }, setYaw: (v) => (yaw = v) };
+  if (import.meta.env.DEV) window.__w = { player, camera, colliders, DASH_RINGS, startRace, get flight() { return flight; }, setYaw: (v) => (yaw = v) };
   renderer.compile(scene, camera);
   resize();
   start();
@@ -1593,6 +1737,7 @@ export function createWorld(container, hooks = {}) {
       const dir = z.c.clone().setY(0);
       const toward = dir.length() ? dir.clone().normalize() : V(0, 0, 1);
       const to = z.id === 'plaza' ? V(0, 0, 8) : z.c.clone().sub(toward.multiplyScalar(z.id === 'timeline' ? 7 : 5.5)).setY(0);
+      if (race) endRace('cancel'); // no shortcuts
       flight = { from: player.position.clone(), to, t: 0, dur: 1.4 };
       moveTo = null;
       target.visible = false;
@@ -1605,9 +1750,24 @@ export function createWorld(container, hooks = {}) {
       target.visible = true;
     },
     minimap() {
-      return { px: player.position.x, pz: player.position.z, heading: player.rotation.y, yaw, guide: guide.zone, shards: shards.filter((s) => !s.got).map((s) => s.m.position) };
+      return { px: player.position.x, pz: player.position.z, heading: player.rotation.y, yaw, guide: guide.zone, ring: race ? DASH_RINGS[race.i] : null, shards: shards.filter((s) => !s.got).map((s) => s.m.position) };
     },
     setGuide,
+    get dashBest() {
+      return dashBest;
+    },
+    get racing() {
+      return !!race;
+    },
+    raceTime: () => (race ? race.time : 0),
+    cancelRace: () => endRace('cancel'),
+    buddyTalk(sec = 3) {
+      buddy.userData.talk = sec;
+    },
+    celebrate() {
+      burst.fire(player.position.clone().setY(player.position.y + 3), new THREE.Color('#ffb547'), 160);
+      burst.fire(player.position.clone().setY(player.position.y + 2), new THREE.Color('#7cf5ff'), 120);
+    },
   };
   return api;
 }

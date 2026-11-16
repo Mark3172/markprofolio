@@ -68,9 +68,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .icon-btn { height: 44px; min-width: 44px; padding: 0 14px; border-radius: 999px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(10px); font-size: 14px; font-weight: 500; }
 .icon-btn:hover { border-color: rgba(124, 245, 255, 0.45); }
 .icon-btn svg { width: 18px; height: 18px; }
-.shards { position: absolute; top: 72px; right: 16px; padding: 8px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
-.shards b { color: var(--accent); font-family: var(--font-display); }
-.shards .gem { width: 10px; height: 10px; transform: rotate(45deg); background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 0 10px var(--accent); }
 
 .minimap { position: absolute; left: 16px; bottom: 16px; width: 156px; height: 156px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(10px); overflow: hidden; cursor: pointer; }
 .minimap canvas { width: 100%; height: 100%; display: block; }
@@ -245,3 +242,55 @@ ul.hl { margin: 0 0 12px; padding-left: 18px; line-height: 1.55; color: #d6d9f5;
 .modal .news-new { font-style: normal; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-left: 6px; padding: 2px 7px; border-radius: 999px; color: #0b0d1f; background: var(--c, var(--accent)); }
 .modal .news-text { font-size: 13px; color: var(--muted); }
 .modal .news-go { color: var(--muted); }
+
+/* ---- explorer quests ---- */
+.quests { position: absolute; top: 72px; right: 16px; width: 250px; display: grid; justify-items: end; gap: 6px; pointer-events: none; }
+.quests > * { pointer-events: auto; }
+.quest-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(10px); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.quest-pill:hover { border-color: rgba(124, 245, 255, 0.45); }
+.quest-pill .gem { width: 10px; height: 10px; transform: rotate(45deg); background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 0 10px var(--accent); }
+.quest-pill b { color: var(--accent); font-family: var(--font-display); }
+.quest-pill .qbar { width: 44px; height: 5px; border-radius: 5px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.quest-pill .qbar i { display: block; height: 100%; width: 0; border-radius: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.5s ease; }
+.quest-pill.pop { animation: qpop 0.7s ease; }
+@keyframes qpop { 30% { transform: scale(1.14); box-shadow: 0 0 30px -4px var(--accent); } }
+.quest-list { display: none; width: 100%; padding: 10px; border-radius: 16px; background: var(--panel-solid); border: 1px solid var(--line); gap: 2px; }
+.quests.open .quest-list { display: grid; }
+.quest { display: flex; align-items: center; gap: 10px; padding: 7px 6px; font-size: 13px; }
+.quest i { flex: none; width: 18px; height: 18px; border-radius: 6px; border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; font-size: 12px; color: #0b0d1f; }
+.quest span { flex: 1; }
+.quest small { color: var(--muted); font-family: var(--font-display); }
+.quest.done i { background: #3ddc84; border-color: #3ddc84; }
+.quest.done span { color: var(--muted); text-decoration: line-through; }
+.quest-best { margin-top: 4px; padding: 8px 6px 2px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.quest-best b { color: #ffd166; }
+.travel { z-index: 3; }
+
+/* ---- Island Dash timer ---- */
+.race { position: absolute; top: 72px; left: 50%; transform: translate(-50%, -12px); display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border-radius: 999px; background: var(--panel-solid); border: 1px solid #ffd166; box-shadow: 0 0 30px -8px #ffd166; opacity: 0; pointer-events: none; transition: 0.25s ease; white-space: nowrap; }
+.race.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.race small { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #ffd166; }
+.race b { font-family: var(--font-display); font-size: 20px; min-width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
+.race span { font-size: 13px; color: var(--muted); }
+.race button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; }
+.hud:has(.race.on) .toast-wrap { top: 128px; }
+
+/* ---- companion drone speech ---- */
+.buddy { position: absolute; left: 188px; bottom: 22px; max-width: min(340px, calc(100vw - 420px)); display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px 10px 10px; border-radius: 16px 16px 16px 4px; background: var(--panel-solid); border: 1px solid rgba(177, 140, 255, 0.45); opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.3s ease; }
+.buddy.on { opacity: 1; transform: none; }
+.buddy p { margin: 0; font-size: 13px; line-height: 1.45; }
+.buddy-face { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #f2f0ff; display: grid; place-items: center; box-shadow: 0 0 0 2px #b18cff, 0 0 14px rgba(177, 140, 255, 0.7); }
+.buddy-face i { width: 11px; height: 11px; border-radius: 50%; background: #1fb6c9; box-shadow: 0 0 8px #7cf5ff; }
+.buddy.on .buddy-face i { animation: blink 3s infinite; }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+.touch .buddy { left: 16px; bottom: 176px; max-width: min(300px, calc(100vw - 150px)); }
+.icon-btn.muted .waves { display: none; }
+.icon-btn.muted { color: var(--muted); }
+
+@media (max-width: 640px) {
+  .quests { top: 66px; right: 10px; width: 230px; }
+  .quest-pill [data-rank] { display: none; }
+  .race { top: 112px; gap: 8px; }
+  .race small { display: none; }
+}
+.hud:has(.race.on) .lock-hint { display: none; }
