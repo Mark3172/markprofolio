@@ -99,6 +99,7 @@ export const projects = [
     ],
     tech: ['React 19', 'TypeScript', 'Gemini 2.5 Flash', 'Firebase', 'Three.js'],
     links: { code: 'https://github.com/vibecode-ting/hr_chronicle_ai', demo: 'https://myanmardev.web.app' },
+    image: 'media/hrchronicle.webp',
     color: '#ffb547',
     year: '2026',
   },
@@ -477,6 +478,7 @@ export const certificates = [
  *  HACKATHONS, EVENTS & ACHIEVEMENTS — trophies in the Hackathon Arena.
  *  kind: 'hackathon' | 'event' | 'award' | 'leadership'
  *  `featured: true` makes it a big trophy and a career highlight.
+ *  `image` (optional): a photo or screenshot in /public, e.g. 'media/nasa.jpg'.
  * ------------------------------------------------------------------- */
 export const achievements = [
   {
@@ -515,6 +517,7 @@ export const achievements = [
     description:
       'Built and submitted HRChronicle AI with a 3-person team: a Gemini-powered HR copilot for employee milestones and recognition across Asia-Pacific, with OCR roster import, AI celebration cards, 7 languages and a 3D globe.',
     link: 'https://myanmardev.web.app',
+    image: 'media/hrchronicle.webp',
     color: '#ffb547',
     featured: true,
   },
