@@ -1,5 +1,5 @@
 import { profile } from '../data/portfolio.js';
-import { esc } from './cards.js';
+import { esc, avatarHtml } from './cards.js';
 
 const ICON = {
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>',
@@ -15,7 +15,7 @@ export function createHud(world, { onClassic, onAbout }) {
   hud.className = 'hud' + (isTouch ? ' touch' : '');
   hud.innerHTML = `
     <button class="hud-id" data-about style="border:1px solid var(--line);color:inherit;text-align:left">
-      <span class="hud-avatar">${esc(initials)}</span>
+      <span class="hud-avatar">${avatarHtml(initials)}</span>
       <span><b>${esc(profile.name)}</b><small>${esc(profile.title)}</small></span>
     </button>
     <div class="hud-top-right">

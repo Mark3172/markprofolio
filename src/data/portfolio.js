@@ -22,6 +22,7 @@ export const profile = {
     'Outside work I spent two years leading teams at AIESEC in Myanmar, served as Vice President of my foundation class student council, and was active in the Curtin Innovation and Technology Club. I love hackathons and meeting people who want to build things that make a positive impact.',
   ],
   status: 'Open to work in Singapore · on-site, hybrid or remote',
+  photo: 'media/profile.jpg', // LinkedIn profile photo (initials show if missing)
   links: {
     github: 'https://github.com/Mark3172',
     linkedin: 'https://www.linkedin.com/in/mark3172/',
@@ -81,6 +82,7 @@ export const projects = [
     ],
     tech: ['TypeScript', 'Three.js', 'AI co-pilot', 'RBAC'],
     links: { code: 'https://github.com/Planet-Coders/AstroMed', demo: 'https://astro-med-ashy.vercel.app' },
+    image: 'media/astromed.jpg',
     color: '#4cc9f0',
     year: '2026',
   },
@@ -99,6 +101,7 @@ export const projects = [
     ],
     tech: ['React 19', 'TypeScript', 'Gemini 2.5 Flash', 'Firebase', 'Three.js'],
     links: { code: 'https://github.com/vibecode-ting/hr_chronicle_ai', demo: 'https://myanmardev.web.app' },
+    image: 'media/hrchronicle.webp',
     color: '#ffb547',
     year: '2026',
   },
@@ -117,6 +120,7 @@ export const projects = [
     ],
     tech: ['TypeScript', 'Next.js', 'LLM agents', 'Vision models'],
     links: { code: 'https://github.com/Mark3172/greenlens-ai', demo: 'https://greentechai.netlify.app/scan' },
+    image: 'media/greenlens.jpg',
     color: '#3ddc84',
     year: '2026',
   },
@@ -477,6 +481,7 @@ export const certificates = [
  *  HACKATHONS, EVENTS & ACHIEVEMENTS — trophies in the Hackathon Arena.
  *  kind: 'hackathon' | 'event' | 'award' | 'leadership'
  *  `featured: true` makes it a big trophy and a career highlight.
+ *  `image` (optional): a photo or screenshot in /public, e.g. 'media/nasa.jpg'.
  * ------------------------------------------------------------------- */
 export const achievements = [
   {
@@ -489,6 +494,7 @@ export const achievements = [
     description:
       'Built AstroMed with team Planet Coders at the University of Information Technology (14–15 Nov): a health-monitoring console for a Mars transit crew, with a 3D body map, delayed “hotline to Earth” and an offline AI co-pilot. The best hackathon team I could have asked for: no ego, no conflict, positive and collaborative right to the final minutes.',
     link: 'https://github.com/Planet-Coders/AstroMed',
+    image: 'media/nasa.jpg',
     color: '#4cc9f0',
     featured: true,
   },
@@ -502,6 +508,7 @@ export const achievements = [
     description:
       'Selected to compete in an intense AI-assisted build sprint, where I went from zero to GreenLens AI, a working AI-vision sustainability inspector, in record time. Key takeaways: architecture matters more than ever, context is king (constraints, system prompts and specs), and AI redefines development velocity.',
     link: 'https://greentechai.netlify.app/scan',
+    image: 'media/cursor.jpg',
     color: '#b18cff',
     featured: true,
   },
@@ -515,19 +522,21 @@ export const achievements = [
     description:
       'Built and submitted HRChronicle AI with a 3-person team: a Gemini-powered HR copilot for employee milestones and recognition across Asia-Pacific, with OCR roster import, AI celebration cards, 7 languages and a 3D globe.',
     link: 'https://myanmardev.web.app',
+    image: 'media/hrchronicle.webp',
     color: '#ffb547',
     featured: true,
   },
   {
     title: 'IBM Hackathon',
-    event: 'IBM global hackathon · online',
+    event: 'IBM Dev Day: Bob Edition · virtual event & hackathon',
     kind: 'hackathon',
-    date: 'Jun 2026',
+    date: 'May 2026',
     role: 'Participant',
     result: '',
     description:
       'Attended every session with IBM mentors and international participants. Participation restrictions for Myanmar prevented the final project submission, but the learning stayed.',
     link: '',
+    image: 'media/ibm.jpg',
     color: '#3d7bff',
   },
   {
@@ -539,6 +548,7 @@ export const achievements = [
     result: '',
     description: 'Represented Global Connect Asia at the Myanmar-China Expo, consulting visitors on ERP solutions and supporting live Odoo demos.',
     link: '',
+    image: 'media/expo.jpg',
     color: '#ff8fab',
   },
   {
@@ -561,17 +571,19 @@ export const achievements = [
     result: '',
     description: 'Three days at one of Asia’s largest tech shows with Curtin classmates, including the Cybersecurity Stage sessions.',
     link: '',
+    image: 'media/gitex.jpg',
     color: '#ff6b9d',
   },
   {
     title: 'Cursor × Grok Bot Meetup',
-    event: 'Cursor community meetup · Yangon',
+    event: 'Grok Bot Workshop · American Center Yangon',
     kind: 'event',
-    date: 'Oct 2026',
+    date: 'Sep 2026',
     role: 'Attendee',
     result: '',
     description: 'Hands-on introduction to building with Grok bots alongside Yangon’s AI developer community.',
     link: '',
+    image: 'media/grok.jpg',
     color: '#c9a6ff',
   },
   {

@@ -8,6 +8,19 @@ export const sampleTag = (item) => (item.placeholder ? '<span class="sample" tit
 const ext = (href, label, primary = false) =>
   href ? `<a class="btn${primary ? ' btn-primary' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>` : '';
 
+/** Resolve an image path from portfolio.js ('media/x.jpg' -> served from /public). */
+export const mediaUrl = (src) => (!src ? '' : /^(https?:|data:|\/)/.test(src) ? src : import.meta.env.BASE_URL + src);
+
+/** An <img> that quietly removes its wrapper if the file is missing. */
+export const shot = (src, alt, cls = 'card-shot') =>
+  src ? `<div class="${cls}"><img src="${esc(mediaUrl(src))}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></div>` : '';
+
+/** Round avatar: photo if set, initials otherwise (and if the photo fails to load). */
+export const avatarHtml = (initials) =>
+  profile.photo
+    ? `<img src="${esc(mediaUrl(profile.photo))}" alt="${esc(profile.name)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(initials)}'}))">`
+    : `<span>${esc(initials)}</span>`;
+
 export const KIND_LABEL = { certificate: 'Certificate', license: 'License', award: 'Award' };
 export const ACH_LABEL = { hackathon: 'Hackathon', event: 'Event', award: 'Award', leadership: 'Leadership' };
 export const TYPE_LABEL = { work: 'Experience', education: 'Education', volunteer: 'Volunteering' };
@@ -20,6 +33,7 @@ export const sections = {
     render: (p) => ({
       color: p.color,
       html: `
+        ${shot(p.image, p.title)}
         <div class="eyebrow">Project${p.year ? ' · ' + esc(p.year) : ''}</div>
         <h2>${esc(p.title)}${sampleTag(p)}</h2>
         <p class="sub">${esc(p.tagline)}</p>
@@ -58,6 +72,7 @@ export const sections = {
     render: (a) => ({
       color: a.color,
       html: `
+        ${shot(a.image, a.title)}
         <div class="eyebrow">${esc(ACH_LABEL[a.kind] || 'Achievement')}${a.date ? ' · ' + esc(a.date) : ''}</div>
         <h2>${esc(a.title)}${sampleTag(a)}</h2>
         <p class="sub">${esc(a.event)}${a.role ? ' · ' + esc(a.role) : ''}</p>
@@ -72,6 +87,7 @@ export const sections = {
     render: () => ({
       color: '#7cf5ff',
       html: `
+        ${profile.photo ? `<div class="about-photo">${avatarHtml('')}</div>` : ''}
         <div class="eyebrow">About · ${esc(profile.location)}</div>
         <h2>${esc(profile.name)} <span style="color:var(--muted);font-weight:400">(${esc(profile.nickname)})</span></h2>
         <p class="sub">${esc(profile.title)}</p>

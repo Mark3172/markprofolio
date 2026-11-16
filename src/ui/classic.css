@@ -203,3 +203,10 @@ body.classic-mode { background: #080a18; }
 
 .contact .mailline { margin: 18px auto 0; font-size: 14px; }
 .contact .mailline a { color: var(--accent); }
+
+/* ---- photos & screenshots ---- */
+.avatar img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #11143a; animation: spin 8s linear infinite reverse; }
+.pshot, .ashot { margin: -22px -22px 16px; aspect-ratio: 16 / 9; overflow: hidden; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0; background: #0d1030; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.pshot img, .ashot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transition: transform 0.6s ease; }
+.pcard:hover .pshot img, .acard:hover .ashot img { transform: scale(1.04); }
+.pcard:not(.feat) .pshot { aspect-ratio: 2 / 1; }

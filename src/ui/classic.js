@@ -1,6 +1,6 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, ACH_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, ACH_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
@@ -99,7 +99,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
       </div>
       <aside class="idcard reveal">
-        <div class="avatar"><span>${esc(initials)}</span></div>
+        <div class="avatar">${avatarHtml(initials)}</div>
         <div class="id-name">${esc(profile.nickname)}</div>
         <div class="id-title">${esc(profile.title.split(' · ')[0])}</div>
         <ul class="id-list">
@@ -139,6 +139,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       <div class="filters" role="tablist">${cats.map((c, i) => `<button role="tab" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}</button>`).join('')}</div>
       <div class="pgrid">${projects.map((p) => `
         <article class="pcard glass${p.featured ? ' feat' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
+          ${shot(p.image, p.title, 'pshot')}
           <div class="pcard-top"><span class="tag">${esc(CAT_LABEL[p.category] || 'Project')}</span>${p.featured ? `<span class="tag tag-star">${ICONS.star}Featured</span>` : ''}<span class="yr">${esc(p.year || '')}</span></div>
           <h3>${esc(p.title)}${sampleTag(p)}</h3>
           <p class="tl">${esc(p.tagline)}</p>
@@ -152,6 +153,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
     ${achievements?.length ? sec('hackathons', '04', 'Hackathons & achievements', 'Competitions, events and recognition.', `
       <div class="agrid">${achievements.map((a) => `
         <article class="acard glass${a.featured ? ' feat' : ''}" style="--c:${esc(a.color)}">
+          ${shot(a.image, a.title, 'ashot')}
           <div class="a-top"><span class="a-kind">${ICONS[a.kind === 'hackathon' || a.kind === 'award' ? 'trophy' : 'star']}${esc(ACH_LABEL[a.kind] || '')}</span><span class="yr">${esc(a.date)}</span></div>
           <h3>${esc(a.title)}${sampleTag(a)}</h3>
           <div class="a-ev">${esc(a.event)}</div>
