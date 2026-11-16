@@ -4,8 +4,8 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { canvasTexture, rrect, wrap, fonts, makeLabel, chipRow } from './textures.js';
-import { TYPE_LABEL, TYPE_COLOR } from '../ui/cards.js';
+import { canvasTexture, rrect, wrap, fonts, makeLabel, chipRow, coverImage, withImage } from './textures.js';
+import { TYPE_LABEL, TYPE_COLOR, mediaUrl } from '../ui/cards.js';
 
 const R = 34; // island radius
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -360,7 +360,34 @@ export function createWorld(container, hooks = {}) {
       );
       beam.position.y = 2;
 
-      const tex = canvasTexture(640, 400, (g2, w, h) => {
+      const drawScreen = (g2, w, h, img) => {
+        if (img) {
+          // screenshot fills the screen, title sits on a dark fade at the bottom
+          g2.save();
+          rrect(g2, 6, 6, w - 12, h - 12, 28);
+          g2.clip();
+          coverImage(g2, img, 6, 6, w - 12, h - 12, 0);
+          const fade = g2.createLinearGradient(0, h * 0.35, 0, h);
+          fade.addColorStop(0, 'rgba(10,12,32,0)');
+          fade.addColorStop(1, 'rgba(10,12,32,0.95)');
+          g2.fillStyle = fade;
+          g2.fillRect(0, 0, w, h);
+          g2.restore();
+          rrect(g2, 6, 6, w - 12, h - 12, 28);
+          g2.lineWidth = 6;
+          g2.strokeStyle = p.color;
+          g2.stroke();
+          g2.fillStyle = p.color;
+          g2.font = `700 24px ${fonts.BODY}`;
+          g2.fillText(`★ FEATURED${p.year ? ' · ' + p.year : ''}`, 40, h - 118);
+          g2.fillStyle = '#ffffff';
+          g2.font = `700 54px ${fonts.DISPLAY}`;
+          g2.fillText(p.title, 40, h - 66, w - 80);
+          g2.fillStyle = '#d4d8ff';
+          g2.font = `500 26px ${fonts.BODY}`;
+          g2.fillText(p.tagline, 40, h - 30, w - 80);
+          return;
+        }
         const grd = g2.createLinearGradient(0, 0, w, h);
         grd.addColorStop(0, '#141836');
         grd.addColorStop(1, '#1e1446');
@@ -380,7 +407,9 @@ export function createWorld(container, hooks = {}) {
         g2.font = `400 28px ${fonts.BODY}`;
         wrap(g2, p.tagline, 40, y + 6, w - 80, 36, 2);
         chipRow(g2, (p.tech || []).slice(0, 4), 40, h - 100, w - 80, p.color);
-      });
+      };
+      const tex = canvasTexture(640, 400, (g2, w, h) => drawScreen(g2, w, h, null));
+      withImage(tex, mediaUrl(p.image), drawScreen);
       const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.125), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, toneMapped: false }));
       screen.position.y = 3.2;
       const gem = new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 0), glow(p.color, 3));
@@ -550,10 +579,34 @@ export function createWorld(container, hooks = {}) {
         g.lookAt(0, 0, 0);
         const featuredRow = !!a.featured;
         const H = row.w * 0.66;
-        const tex = canvasTexture(512, 338, (g2, w, h) => {
+        const drawBoard = (g2, w, h, img) => {
           g2.fillStyle = '#121633';
           rrect(g2, 0, 0, w, h, 26);
           g2.fill();
+          if (img) {
+            // event photo on the board, text on a dark fade
+            g2.save();
+            rrect(g2, 0, 0, w, h, 26);
+            g2.clip();
+            coverImage(g2, img, 0, 0, w, h, 0.3);
+            const fade = g2.createLinearGradient(0, h * 0.3, 0, h);
+            fade.addColorStop(0, 'rgba(10,12,32,0)');
+            fade.addColorStop(1, 'rgba(10,12,32,0.94)');
+            g2.fillStyle = fade;
+            g2.fillRect(0, 0, w, h);
+            g2.restore();
+            g2.fillStyle = a.color;
+            g2.fillRect(0, 0, w, 12);
+            g2.font = `700 22px ${fonts.BODY}`;
+            g2.fillText(`${KIND[a.kind] || 'EVENT'}  ·  ${a.date}`, 28, h - 92);
+            g2.fillStyle = '#fff';
+            g2.font = `700 40px ${fonts.DISPLAY}`;
+            g2.fillText(a.title, 28, h - 48, w - 56);
+            g2.fillStyle = '#d4d8ff';
+            g2.font = `500 22px ${fonts.BODY}`;
+            g2.fillText(a.result || a.role || '', 28, h - 18, w - 56);
+            return;
+          }
           g2.fillStyle = a.color;
           g2.fillRect(0, 0, w, 12);
           g2.font = `700 24px ${fonts.BODY}`;
@@ -564,7 +617,9 @@ export function createWorld(container, hooks = {}) {
           g2.fillStyle = '#aeb4e0';
           g2.font = `500 28px ${fonts.BODY}`;
           wrap(g2, a.result || a.role, 32, y + 8, w - 64, 34, 1);
-        });
+        };
+        const tex = canvasTexture(512, 338, (g2, w, h) => drawBoard(g2, w, h, null));
+        withImage(tex, mediaUrl(a.image), drawBoard);
         const board = new THREE.Mesh(new THREE.PlaneGeometry(row.w, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, toneMapped: false }));
         board.position.y = row.h;
         const poleM = mat('#2a2440');

@@ -222,3 +222,13 @@ ul.hl { margin: 0 0 12px; padding-left: 18px; line-height: 1.55; color: #d6d9f5;
 .tour-go { width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--tc, #fff); background: transparent; color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .tour-go:hover { background: rgba(255, 255, 255, 0.08); }
 @media (max-width: 640px) { .tour { top: 64px; left: 10px; width: calc(100vw - 120px); padding: 10px 12px; } .tour p { display: none; } }
+
+/* controls card fades back after the first seconds; hover brings it back */
+.controls-hint { transition: opacity 0.6s, transform 0.6s; }
+.controls-hint.dim { opacity: 0.35; transform: scale(0.92); transform-origin: bottom right; }
+.controls-hint.dim:hover { opacity: 1; transform: none; }
+:focus-visible { outline: 2px solid #7cf5ff; outline-offset: 2px; }
+.tour.mini { width: 220px; padding: 9px 12px; }
+.tour.mini p, .tour.mini .tour-dots { display: none; }
+.tour.mini h4 { font-size: 14px; margin: 4px 0 8px; }
+.tour.mini .tour-go { padding: 6px 8px; font-size: 12px; }

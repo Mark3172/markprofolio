@@ -321,3 +321,15 @@ body.classic-mode { background: #080a18; }
 .cmore summary::after { content: '+'; color: var(--accent-2); font-size: 16px; }
 .cmore[open] summary::after { content: '−'; }
 .cmore[open] .clist { margin-top: 12px; animation: pop 0.35s ease both; }
+
+/* hackathon tiles: text on its own frosted strip so it never fights the photo */
+.htile-shade { background: linear-gradient(180deg, rgba(7, 8, 26, 0) 35%, rgba(7, 8, 26, 0.55) 62%, rgba(7, 8, 26, 0.96)); }
+.htile-body { left: 10px; right: 10px; bottom: 10px; padding: 12px 14px; border-radius: 14px; background: rgba(10, 12, 32, 0.72); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+.htile img { object-position: center 30%; }
+
+/* accessibility: keyboard focus and reduced motion */
+.spot-btn:focus-visible, .hrow:focus-visible, .htile:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .pop, .spot-view.swap > *, .spot-card, .cmore[open] .clist { animation: none !important; }
+  .tab-ind, .nav-ind, .htile img { transition: none !important; }
+}
