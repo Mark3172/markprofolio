@@ -1,4 +1,4 @@
-import { profile, projects, experience, certificates } from '../data/portfolio.js';
+import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
 
 export const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -9,6 +9,7 @@ const ext = (href, label, primary = false) =>
   href ? `<a class="btn${primary ? ' btn-primary' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>` : '';
 
 export const KIND_LABEL = { certificate: 'Certificate', license: 'License', award: 'Award' };
+export const ACH_LABEL = { hackathon: 'Hackathon', event: 'Event', award: 'Award', leadership: 'Leadership' };
 export const TYPE_LABEL = { work: 'Experience', education: 'Education', volunteer: 'Volunteering' };
 export const TYPE_COLOR = { work: '#ffb547', education: '#7cf5ff', volunteer: '#3ddc84' };
 
@@ -52,6 +53,20 @@ export const sections = {
         <div class="card-actions">${ext(c.url, 'Show credential ↗', true)}</div>`,
     }),
   },
+  achievement: {
+    list: achievements,
+    render: (a) => ({
+      color: a.color,
+      html: `
+        <div class="eyebrow">${esc(ACH_LABEL[a.kind] || 'Achievement')}${a.date ? ' · ' + esc(a.date) : ''}</div>
+        <h2>${esc(a.title)}${sampleTag(a)}</h2>
+        <p class="sub">${esc(a.event)}${a.role ? ' · ' + esc(a.role) : ''}</p>
+        ${a.result ? `<div class="chips"><span class="chip" style="border-color:${esc(a.color)}">🏅 ${esc(a.result)}</span></div>` : ''}
+        ${a.description ? `<p>${esc(a.description)}</p>` : ''}
+        ${a.points?.length ? `<ul>${a.points.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>` : ''}
+        <div class="card-actions">${ext(a.link, 'See more ↗', true)}</div>`,
+    }),
+  },
   about: {
     list: [profile],
     render: () => ({
@@ -64,10 +79,23 @@ export const sections = {
         <div class="skills-grid">${profile.skills
           .map((g) => `<div><h4>${esc(g.group)}</h4><div class="chips" style="margin:0">${g.items.map((i) => `<span class="chip">${esc(i)}</span>`).join('')}</div></div>`)
           .join('')}</div>
+        ${highlightsHtml()}
+        ${testimonialHtml()}
         <div class="card-actions">${contactButtons()}</div>`,
     }),
   },
 };
+
+export function highlightsHtml() {
+  if (!profile.highlights?.length) return '';
+  return `<h4 class="mini-h">Highlights</h4><ul class="hl">${profile.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>`;
+}
+
+export function testimonialHtml() {
+  const t = profile.testimonial;
+  if (!t?.quote) return '';
+  return `<blockquote class="quote"><p>“${esc(t.quote)}”</p><footer>${esc(t.author)}${t.role ? ' · ' + esc(t.role) : ''}${t.date ? ' · ' + esc(t.date) : ''}</footer></blockquote>`;
+}
 
 export function contactButtons() {
   const l = profile.links;

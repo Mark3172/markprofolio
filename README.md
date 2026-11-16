@@ -19,16 +19,12 @@ Phones get a touch joystick. Browsers without WebGL 2 (and anyone who clicks
 ## Edit your content
 
 Everything lives in **one file: [`src/data/portfolio.js`](src/data/portfolio.js)**.
-Search it for `TODO`. Items with `placeholder: true` show a dashed "sample" tag
-on the site until you replace them and delete that line.
+It is filled in from Mark's LinkedIn profile and GitHub (Nov 2026): experience,
+education, all 9 licenses & certifications, LinkedIn projects, skills, highlights
+and a recommendation.
 
-Still to fill in (LinkedIn blocks automated reading, so these are samples):
-
-- Experience: your role, dates and achievements at Global Connect Asia, plus any earlier roles
-- Education: exact degree name, campus and years at Curtin
-- Certificates & licenses: names, issuers, dates and credential links
-- Profile: email, résumé link, your own "about" text, skills, and the status line
-- Projects: confirm the years, add live demo links, and add any of your other repos
+Optional things still missing (search the file for `TODO`): an email address,
+a résumé PDF, and live demo links for projects.
 
 To add a project, certificate or job, copy an existing block in the same list.
 The 3D world lays them out automatically.

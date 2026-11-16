@@ -3,9 +3,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { profile, projects, experience, certificates } from '../data/portfolio.js';
+import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
 import { canvasTexture, rrect, wrap, fonts, makeLabel, chipRow } from './textures.js';
-import { KIND_LABEL, TYPE_LABEL, TYPE_COLOR } from '../ui/cards.js';
+import { TYPE_LABEL, TYPE_COLOR } from '../ui/cards.js';
 
 const R = 34; // island radius
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -27,6 +27,7 @@ export const ZONES = [
   { id: 'certs', name: 'Hall of Badges', sub: 'Certificates & licenses', color: '#ffb547', c: V(21, 0, 1), r: 9, section: 'certificate' },
   { id: 'timeline', name: 'Timeline Trail', sub: 'Experience & education', color: '#7cf5ff', c: V(0, 0, 21), r: 11, section: 'experience' },
   { id: 'about', name: 'The Beacon', sub: 'About me & contact', color: '#b18cff', c: V(-21, 0, 1), r: 9, section: 'about' },
+  { id: 'arena', name: 'Hackathon Arena', sub: 'Hackathons & achievements', color: '#3ddc84', c: V(17, 0, 17), r: 6.5, section: 'achievement' },
 ];
 
 const SHARD_SPOTS = [
@@ -336,8 +337,8 @@ export function createWorld(container, hooks = {}) {
   {
     const zc = ZONES[1].c;
     const n = projects.length;
-    const r = 7 + Math.max(0, n - 5) * 0.9;
-    const spread = Math.min(1.35, 0.34 * (n - 1));
+    const r = Math.min(11, 7 + Math.max(0, n - 5) * 0.9);
+    const spread = Math.min(1.6, 0.34 * (n - 1));
     projects.forEach((p, i) => {
       const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
       const pos = V(zc.x + Math.sin(a) * r, 0, zc.z + 3 - Math.cos(a) * r);
@@ -400,102 +401,232 @@ export function createWorld(container, hooks = {}) {
   }
 
   /* ---------------- HALL OF BADGES ---------------- */
+  // Two tidy arcs that face the plaza: featured medals big in front, the rest smaller behind.
+  // Each medal shows only issuer + a short name; details live in the card.
   {
     const zc = ZONES[2].c;
-    const podium = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.8, 1.2, 8), mat('#3a3462')));
-    podium.position.set(zc.x, 0.6, zc.z);
-    const trophy = new THREE.Mesh(new THREE.TorusKnotGeometry(0.55, 0.18, 64, 8), new THREE.MeshStandardMaterial({ color: '#ffcf6b', metalness: 0.9, roughness: 0.25, emissive: '#ff9a1f', emissiveIntensity: 0.5 }));
-    trophy.position.set(zc.x, 2.4, zc.z);
+    const podium = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.4, 1, 8), mat('#3a3462')));
+    podium.position.set(zc.x - 3, 0.5, zc.z);
+    const trophy = new THREE.Mesh(new THREE.TorusKnotGeometry(0.45, 0.15, 64, 8), new THREE.MeshStandardMaterial({ color: '#ffcf6b', metalness: 0.9, roughness: 0.25, emissive: '#ff9a1f', emissiveIntensity: 0.5 }));
+    trophy.position.set(zc.x - 3, 2, zc.z);
     scene.add(podium, trophy);
-    colliders.push({ x: zc.x, z: zc.z, r: 1.8, h: 1.2 });
+    colliders.push({ x: zc.x - 3, z: zc.z, r: 1.4, h: 1 });
     animators.push((t) => {
       trophy.rotation.y = t * 0.8;
-      trophy.position.y = 2.4 + Math.sin(t * 1.5) * 0.15;
+      trophy.position.y = 2 + Math.sin(t * 1.5) * 0.15;
     });
 
-    const n = certificates.length;
-    const r = Math.max(5, n * 1.1);
-    certificates.forEach((c, i) => {
-      const a = (i / n) * Math.PI * 2 + Math.PI; // start facing the plaza
-      const pos = V(zc.x + Math.cos(a) * r, 0, zc.z + Math.sin(a) * r);
-      const g = new THREE.Group();
-      g.position.copy(pos);
-      const col = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.4, 1.4, 6), mat('#3a3462')));
-      col.position.y = 0.7;
-      const tex = canvasTexture(512, 512, (g2, w) => {
-        g2.fillStyle = '#151a3a';
-        g2.beginPath();
-        g2.arc(w / 2, w / 2, w / 2, 0, Math.PI * 2);
-        g2.fill();
-        g2.lineWidth = 18;
-        g2.strokeStyle = c.color;
-        g2.beginPath();
-        g2.arc(w / 2, w / 2, w / 2 - 26, 0, Math.PI * 2);
-        g2.stroke();
-        g2.textAlign = 'center';
-        g2.fillStyle = c.color;
-        g2.font = `600 30px ${fonts.BODY}`;
-        g2.fillText((KIND_LABEL[c.kind] || 'Certificate').toUpperCase(), w / 2, 130);
-        g2.fillStyle = '#fff';
-        g2.font = `700 50px ${fonts.DISPLAY}`;
-        const y = wrap(g2, c.name, w / 2, 220, 360, 56, 3);
-        g2.fillStyle = '#b9bfe6';
-        g2.font = `400 30px ${fonts.BODY}`;
-        wrap(g2, c.issuer, w / 2, Math.max(y + 10, 330), 330, 36, 2);
-        if (c.date) {
+    const front = certificates.map((c, i) => ({ c, i })).filter((x) => x.c.featured);
+    const back = certificates.map((c, i) => ({ c, i })).filter((x) => !x.c.featured);
+    const rows = [
+      { list: front, r: 5, size: 1.25, h: 2.7, spread: 0.32 },
+      { list: back, r: 8, size: 0.9, h: 3.4, spread: 0.24 },
+    ];
+    const lookTarget = V(zc.x - 14, 0, zc.z);
+    for (const row of rows) {
+      const n = row.list.length;
+      const sp = Math.min(1.25, row.spread * (n - 1));
+      row.list.forEach(({ c, i }, k) => {
+        const a = n === 1 ? 0 : -sp + (2 * sp * k) / (n - 1);
+        const pos = V(zc.x - 3 + Math.cos(a) * row.r, 0, zc.z + Math.sin(a) * row.r);
+        const g = new THREE.Group();
+        g.position.copy(pos);
+        g.lookAt(lookTarget.x, 0, lookTarget.z);
+        const col = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.32, row.h - row.size, 6), mat('#3a3462')));
+        col.position.y = (row.h - row.size) / 2;
+        const tex = canvasTexture(512, 512, (g2, w) => {
+          const cx = w / 2;
+          const grd = g2.createRadialGradient(cx, cx * 0.8, 40, cx, cx, cx);
+          grd.addColorStop(0, '#1d2350');
+          grd.addColorStop(1, '#10132e');
+          g2.fillStyle = grd;
+          g2.beginPath();
+          g2.arc(cx, cx, cx, 0, Math.PI * 2);
+          g2.fill();
+          g2.lineWidth = 16;
+          g2.strokeStyle = c.color;
+          g2.beginPath();
+          g2.arc(cx, cx, cx - 24, 0, Math.PI * 2);
+          g2.stroke();
+          g2.textAlign = 'center';
           g2.fillStyle = c.color;
-          g2.fillText(c.date, w / 2, 420);
+          g2.font = `700 40px ${fonts.BODY}`;
+          g2.fillText((c.issuerShort || c.issuer).toUpperCase(), cx, 150, 340);
+          g2.fillStyle = '#ffffff';
+          g2.font = `700 62px ${fonts.DISPLAY}`;
+          const label = c.short || c.name;
+          // vertically centre 1–2 lines
+          const words = label.split(' ');
+          let lines = [label];
+          if (g2.measureText(label).width > 360 && words.length > 1) {
+            let best = 1;
+            let bestW = Infinity;
+            for (let s = 1; s < words.length; s++) {
+              const wmax = Math.max(g2.measureText(words.slice(0, s).join(' ')).width, g2.measureText(words.slice(s).join(' ')).width);
+              if (wmax < bestW) {
+                bestW = wmax;
+                best = s;
+              }
+            }
+            lines = [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+          }
+          const y0 = lines.length === 1 ? 285 : 255;
+          lines.forEach((ln, li) => g2.fillText(ln, cx, y0 + li * 68, 380));
+          if (c.date) {
+            g2.fillStyle = '#9aa1d6';
+            g2.font = `500 32px ${fonts.BODY}`;
+            g2.fillText(c.date.split(' – ')[0], cx, 410);
+          }
+        });
+        const medal = new THREE.Group();
+        const R0 = row.size;
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(R0, R0, 0.16, 40, 1, true), new THREE.MeshStandardMaterial({ color: c.color, metalness: 0.8, roughness: 0.3, emissive: c.color, emissiveIntensity: 0.35 }));
+        rim.rotation.x = Math.PI / 2;
+        const faceMat = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
+        const f1 = new THREE.Mesh(new THREE.CircleGeometry(R0, 40), faceMat);
+        f1.position.z = 0.08;
+        const f2 = new THREE.Mesh(new THREE.CircleGeometry(R0, 40), new THREE.MeshStandardMaterial({ color: '#1a1f45', metalness: 0.6, roughness: 0.4 }));
+        f2.position.z = -0.08;
+        f2.rotation.y = Math.PI;
+        medal.add(rim, f1, f2);
+        medal.position.y = row.h;
+        g.add(col, medal);
+        if (c.featured) {
+          const ribbon = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.6, 3), glow(c.color, 1.8));
+          ribbon.position.set(0, row.h - R0 - 0.1, 0.05);
+          ribbon.rotation.z = Math.PI;
+          g.add(ribbon);
         }
+        scene.add(g);
+        colliders.push({ x: pos.x, z: pos.z, r: 0.5, h: 99 });
+        const it = addInteractable(g, { section: 'certificate', index: i, label: c.name, radius: 2.6 });
+        const ph = i * 1.3;
+        animators.push((t) => {
+          medal.position.y = row.h + Math.sin(t * 1.2 + ph) * 0.1;
+          medal.rotation.y = Math.sin(t * 0.5 + ph) * 0.08 + it.hover * Math.sin(t * 3) * 0.1;
+          medal.scale.setScalar(1 + it.hover * 0.1);
+        });
       });
-      const medal = new THREE.Group();
-      const rim = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.18, 40, 1, true), new THREE.MeshStandardMaterial({ color: c.color, metalness: 0.8, roughness: 0.3, emissive: c.color, emissiveIntensity: 0.35 }));
-      rim.rotation.x = Math.PI / 2;
-      const faceMat = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
-      const front = new THREE.Mesh(new THREE.CircleGeometry(1.15, 40), faceMat);
-      front.position.z = 0.09;
-      const back = new THREE.Mesh(new THREE.CircleGeometry(1.15, 40), faceMat);
-      back.position.z = -0.09;
-      back.rotation.y = Math.PI;
-      medal.add(rim, front, back);
-      medal.position.y = 2.7;
-      g.add(col, medal);
-      scene.add(g);
-      colliders.push({ x: pos.x, z: pos.z, r: 0.6, h: 99 });
-      const it = addInteractable(g, { section: 'certificate', index: i, label: c.name, radius: 3 });
-      const ph = i * 1.3;
-      const face = Math.atan2(-Math.cos(a), -Math.sin(a)); // outward-ish start
+    }
+  }
+
+  /* ---------------- HACKATHON ARENA ---------------- */
+  {
+    const zc = ZONES.find((z) => z.id === 'arena').c;
+    const floor = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(6.2, 6.4, 0.14, 40), mat('#3b3470')), false, true);
+    floor.position.set(zc.x, 0.05, zc.z);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(6, 0.07, 6, 64), glow('#3ddc84', 2));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(zc.x, 0.14, zc.z);
+    scene.add(floor, ring);
+    // spotlights (cheap: additive cones)
+    for (let k = 0; k < 3; k++) {
+      const cone = new THREE.Mesh(
+        new THREE.ConeGeometry(1.6, 9, 20, 1, true),
+        new THREE.MeshBasicMaterial({ color: ['#3ddc84', '#7cf5ff', '#b18cff'][k], transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+      );
+      cone.position.set(zc.x, 4.5, zc.z);
+      scene.add(cone);
       animators.push((t) => {
-        medal.rotation.y = face + Math.sin(t * 0.6 + ph) * 0.9 + (it.hover ? 0 : 0);
-        medal.position.y = 2.7 + Math.sin(t * 1.3 + ph) * 0.15;
-        medal.scale.setScalar(1 + it.hover * 0.12);
+        cone.rotation.z = Math.sin(t * 0.6 + k * 2) * 0.35;
+        cone.rotation.x = Math.cos(t * 0.5 + k * 2) * 0.35;
       });
-    });
+    }
+
+    const away = Math.atan2(zc.z, zc.x); // pointing away from the plaza
+    const featured = achievements.map((a, i) => ({ a, i })).filter((x) => x.a.featured);
+    const others = achievements.map((a, i) => ({ a, i })).filter((x) => !x.a.featured);
+    const rows = [
+      { list: featured, r: 3.2, w: 2.5, h: 2.3, spread: 0.6 },
+      { list: others, r: 5.6, w: 2.1, h: 3.4, spread: 0.42 },
+    ];
+    const KIND = { hackathon: 'HACKATHON', event: 'EVENT', award: 'AWARD', leadership: 'LEADERSHIP' };
+    for (const row of rows) {
+      const n = row.list.length;
+      const sp = Math.min(1.3, row.spread * (n - 1));
+      row.list.forEach(({ a, i }, k) => {
+        const ang = away + (n === 1 ? 0 : -sp + (2 * sp * k) / (n - 1));
+        const pos = V(zc.x + Math.cos(ang) * row.r, 0, zc.z + Math.sin(ang) * row.r);
+        const g = new THREE.Group();
+        g.position.copy(pos);
+        g.lookAt(0, 0, 0);
+        const featuredRow = !!a.featured;
+        const H = row.w * 0.66;
+        const tex = canvasTexture(512, 338, (g2, w, h) => {
+          g2.fillStyle = '#121633';
+          rrect(g2, 0, 0, w, h, 26);
+          g2.fill();
+          g2.fillStyle = a.color;
+          g2.fillRect(0, 0, w, 12);
+          g2.font = `700 24px ${fonts.BODY}`;
+          g2.fillText(`${KIND[a.kind] || 'EVENT'}  ·  ${a.date}`, 32, 62);
+          g2.fillStyle = '#fff';
+          g2.font = `700 50px ${fonts.DISPLAY}`;
+          const y = wrap(g2, a.title, 32, 130, w - 64, 54, 2);
+          g2.fillStyle = '#aeb4e0';
+          g2.font = `500 28px ${fonts.BODY}`;
+          wrap(g2, a.result || a.role, 32, y + 8, w - 64, 34, 1);
+        });
+        const board = new THREE.Mesh(new THREE.PlaneGeometry(row.w, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, toneMapped: false }));
+        board.position.y = row.h;
+        const poleM = mat('#2a2440');
+        const p1 = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, row.h - H / 2, 6), poleM));
+        p1.position.set(-row.w / 2 + 0.15, (row.h - H / 2) / 2, -0.02);
+        const p2 = p1.clone();
+        p2.position.x = row.w / 2 - 0.15;
+        g.add(board, p1, p2);
+        // emblem on top
+        let emblem;
+        if (a.kind === 'hackathon' || a.kind === 'award') {
+          const pts = [
+            [0, 0], [0.22, 0], [0.22, 0.05], [0.07, 0.1], [0.06, 0.28], [0.2, 0.36], [0.28, 0.62], [0.26, 0.64], [0, 0.64],
+          ].map(([x, y]) => new THREE.Vector2(x, y));
+          emblem = new THREE.Mesh(new THREE.LatheGeometry(pts, 16), new THREE.MeshStandardMaterial({ color: a.kind === 'award' ? '#ffd166' : '#ffcf6b', metalness: 0.9, roughness: 0.25, emissive: '#ff9a1f', emissiveIntensity: 0.35 }));
+          emblem.scale.setScalar(featuredRow ? 1.4 : 1);
+        } else {
+          emblem = new THREE.Mesh(new THREE.OctahedronGeometry(featuredRow ? 0.3 : 0.22, 0), glow(a.color, 2.6));
+        }
+        emblem.position.y = row.h + H / 2 + 0.25;
+        g.add(emblem);
+        scene.add(g);
+        colliders.push({ x: pos.x, z: pos.z, r: 0.5, h: 99 });
+        const it = addInteractable(g, { section: 'achievement', index: i, label: a.title, radius: 2.8 });
+        const ph = i;
+        const ey = emblem.position.y;
+        animators.push((t) => {
+          emblem.rotation.y = t * 1.2 + ph;
+          emblem.position.y = ey + Math.sin(t * 2 + ph) * 0.08;
+          board.scale.setScalar(1 + it.hover * 0.08);
+        });
+      });
+    }
   }
 
   /* ---------------- TIMELINE TRAIL ---------------- */
   {
     const zc = ZONES[3].c;
     const n = experience.length;
-    const width = Math.max(16, (n - 1) * 7);
-    // stepping stones
-    const stones = 18;
+    // monoliths stand on an arc that opens toward the plaza
+    const r = Math.min(11, Math.max(8, n * 1.3));
+    const spread = n === 1 ? 0 : Math.min(1.45, 0.3 * (n - 1));
+    const arc = (a, rr) => [zc.x + Math.sin(a) * rr, zc.z - 3 + Math.cos(a) * rr * 0.7];
+    const stones = 22;
     for (let s = 0; s <= stones; s++) {
-      const t = s / stones;
-      const x = zc.x + width / 2 + 2 - (width + 4) * t;
-      const z = zc.z - 4 + Math.sin(t * Math.PI) * -1.5;
+      const a = -spread - 0.2 + ((2 * spread + 0.4) * s) / stones;
+      const [x, z] = arc(a, r - 3.2);
       const st = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.55 + rand() * 0.2, 0.65, 0.16, 7), mat('#9a93c4')), false, true);
       st.position.set(x, 0.06, z);
       st.rotation.y = rand() * 3;
       scene.add(st);
     }
     experience.forEach((e, i) => {
-      const t = n === 1 ? 0.5 : i / (n - 1);
-      const x = zc.x - width / 2 + width * t; // oldest on the left, newest on the right, seen from the plaza
-      const z = zc.z + 1 + Math.sin(t * Math.PI) * 1.5;
+      // newest (index 0) ends up on the right when seen from the plaza
+      const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
+      const [x, z] = arc(a, r);
       const color = TYPE_COLOR[e.type] || '#7cf5ff';
       const g = new THREE.Group();
       g.position.set(x, 0, z);
-      g.lookAt(x * 0.6, 0, zc.z - 12);
+      g.lookAt(zc.x + Math.sin(a) * 2, 0, zc.z - 10);
       const stone = shadowy(new THREE.Mesh(new THREE.BoxGeometry(3.3, 4.4, 0.5), mat('#2e2952')));
       stone.position.y = 2.2;
       const tex = canvasTexture(512, 680, (g2, w, h) => {
@@ -1270,7 +1401,7 @@ export function createWorld(container, hooks = {}) {
   }
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
-  if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; } };
+  if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; }, setYaw: (v) => (yaw = v) };
   renderer.compile(scene, camera);
   resize();
   start();

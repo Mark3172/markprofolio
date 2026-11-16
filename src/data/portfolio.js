@@ -2,48 +2,74 @@
  *  YOUR PORTFOLIO CONTENT — edit this one file to update the whole site.
  *
  *  Both the 3D world and the classic (2D / mobile) view read from here.
+ *  Content comes from your LinkedIn profile and GitHub (Nov 2026).
  *
- *  Anything with `placeholder: true` is SAMPLE content I could not find
- *  publicly (LinkedIn blocks automated reading). It shows a small dashed
- *  "sample" tag on the site until you replace it and delete that line.
- *  Search this file for "TODO" to find every spot to fill in.
+ *  Add an item by copying a block in the same list; the 3D world lays
+ *  everything out automatically. Search for "TODO" for the few optional
+ *  things still missing (email, résumé, demo links).
+ *  Setting `placeholder: true` on any item shows a dashed "sample" tag.
  * ===================================================================== */
 
 export const profile = {
   name: 'Myo Set Paing',
   nickname: 'Mark',
-  title: 'IT Student @ Curtin · Builder of web apps, AI tools & games',
-  tagline: 'I build playful, useful things for the web — from AI agents to pixel-art games.',
-  location: 'Singapore',
-  // TODO: rewrite in your own voice (2–3 short paragraphs read best).
+  title: 'Junior ERP Support Specialist @ Global Connect Asia · IT graduate',
+  tagline: 'I solve problems where IT systems, people and good design meet: ERP, networks, UI/UX and AI.',
+  location: 'Yangon, Myanmar',
   about: [
-    "Hi, I'm Mark. I study Information Technology at Curtin University and spend most of my free time shipping side projects: AI-powered tools, fintech-style utilities, dashboards and small games.",
-    'I like products that feel good to use, so I care about the details: motion, layout, and making the "boring" parts like data and error states feel polished.',
+    "Hi, I'm Mark, a passionate IT professional and Curtin Singapore graduate (Class of 2026). I currently work as a Junior ERP Support Specialist / Customer Success Engineer at Global Connect Asia, where I lead the ExpoTrans helpdesk team and help clients go live on Odoo ERP.",
+    'My foundation is in systems and networking (system & network administration, CCNA routing, switching and wireless), and I keep growing in UI/UX, marketing and problem solving. I have designed accessible products in agile teams, built an AI student-support chatbot, and ship side projects like GreenLens AI.',
+    'Outside work I spent two years leading teams at AIESEC in Myanmar, served as Vice President of my foundation class student council, and was active in the Curtin Innovation and Technology Club. I love hackathons and meeting people who want to build things that make a positive impact.',
   ],
-  status: 'Open to internships & graduate roles', // TODO: change or set to '' to hide
+  status: 'Open to work in Singapore · on-site, hybrid or remote',
   links: {
     github: 'https://github.com/Mark3172',
     linkedin: 'https://www.linkedin.com/in/mark3172/',
-    email: '', // TODO: add e.g. 'you@example.com' (leave '' to hide the button)
-    resume: '', // TODO: link to a PDF, e.g. '/resume.pdf' (put the file in /public)
+    facebook: 'https://www.facebook.com/mark.myo/',
+    instagram: 'https://www.instagram.com/mark_hhh3172/',
+    email: 'markmyo6@gmail.com', // business inquiries
+    resume: '', // TODO (optional): link to a PDF, e.g. '/resume.pdf' (put the file in /public)
   },
-  // TODO: adjust to your real strengths. Groups become orbiting crystals in 3D.
+  // Each group becomes an orbiting crystal around the Beacon.
   skills: [
-    { group: 'Languages', items: ['TypeScript', 'JavaScript', 'HTML', 'CSS', 'Python'] },
-    { group: 'Frameworks', items: ['React', 'React Native / Expo', 'Next.js', 'Node.js', 'Phaser', 'Vite'] },
-    { group: 'AI & Data', items: ['LLM agents', 'OpenAI / Gemini / OpenRouter APIs', 'Prompt design', 'REST APIs'] },
-    { group: 'Tools', items: ['Git & GitHub', 'Netlify', 'Figma', 'VS Code'] },
+    { group: 'ERP & Support', items: ['Odoo ERP', 'User Acceptance Testing', 'Go-Live Support', 'Help Desk Support', 'Troubleshooting', 'Mobile Testing'] },
+    { group: 'Networks & Cloud', items: ['CCNA: Switching & Routing', 'Cisco Wireless', 'Routing Protocols', 'Virtualization', 'IT Infrastructure Ops', 'AWS Cloud'] },
+    { group: 'Design', items: ['UI/UX', 'Figma', 'Prototyping', 'UX Research', 'Accessibility', 'Graphic & Logo Design'] },
+    { group: 'Programming & AI', items: ['Python', 'C', 'MySQL', 'TypeScript', 'Prompt Engineering', 'Chatbots & NLP'] },
+    { group: 'Leadership', items: ['Project Management', 'Team Leadership', 'Event Planning', 'HR Management', 'Marketing', 'Time Management'] },
   ],
+  // Big numbers at the top of the classic view.
+  keyFacts: [
+    { value: '9', label: 'Licenses & certifications' },
+    { value: '4+', label: 'Hackathons & tech events' },
+    { value: '2 yrs', label: 'Team leadership at AIESEC' },
+    { value: 'Odoo', label: 'ERP go-lives supported' },
+  ],
+  // Only the biggest wins: shown in the About card and as "Career highlights".
+  highlights: [
+    'Leading the ExpoTrans helpdesk team through an Odoo ERP go-live at Global Connect Asia',
+    'NASA Space Apps Challenge Yangon 2026 hackathon team',
+    'Graduated from Curtin Singapore (Class of 2026) after all high distinctions at foundation level',
+    'Built and launched GreenLens AI, an AI-vision sustainability inspector',
+  ],
+  testimonial: {
+    quote:
+      "I had the pleasure of working with Myo on a group project, where his patience and creativity truly stood out. His ability to translate complex ideas into visually engaging content was instrumental in our project's success. Myo's collaborative spirit, attention to detail, and commitment to quality make him an invaluable asset to any team.",
+    author: 'Maung Maung Aye Chan',
+    role: 'Konstrukteur Werkstudent at Schaeffler',
+    date: 'Aug 2024',
+  },
 };
 
 /* ---------------------------------------------------------------------
  *  PROJECTS — each one becomes a glowing pedestal in the Project Workshop.
- *  The first four are your real pinned GitHub repos. Add more by copying
- *  a block. `color` is the hologram colour (any CSS hex).
+ *  `color` is the hologram colour (any CSS hex).
  * ------------------------------------------------------------------- */
 export const projects = [
   {
     id: 'greenlens',
+    category: 'personal',
+    featured: true,
     title: 'GreenLens AI',
     tagline: 'AI-powered environmental inspector',
     description:
@@ -51,15 +77,83 @@ export const projects = [
     highlights: [
       'Provider-agnostic agent core with an allow-listed tool registry',
       'Multimodal photo inspection via OpenRouter, Gemini or OpenAI, with a mock provider for offline demos',
-      'CLI, REST API and a first inspection UI',
+      'Next.js web app, CLI and REST API',
     ],
-    tech: ['TypeScript', 'Node.js', 'LLM agents', 'Vision models'],
-    links: { code: 'https://github.com/Mark3172/greenlens-ai', demo: '' },
+    tech: ['TypeScript', 'Next.js', 'LLM agents', 'Vision models'],
+    links: { code: 'https://github.com/Mark3172/greenlens-ai', demo: '' }, // TODO (optional): live demo URL
     color: '#3ddc84',
-    year: '2026', // TODO: confirm year
+    year: '2026',
+  },
+  {
+    id: 'expotrans',
+    category: 'professional',
+    featured: true,
+    title: 'ExpoTrans Helpdesk',
+    tagline: 'Team lead · Odoo ERP rollout at Global Connect Asia',
+    description:
+      'I lead the ExpoTrans helpdesk team at Global Connect Asia, supporting the client through user acceptance testing, go-live and post-implementation, and feeding what we learn into future software enhancements.',
+    highlights: [
+      'Lead the helpdesk team and coordinate with stakeholders and cross-functional teams',
+      'Support UAT, go-live and post-implementation activities',
+      'Troubleshoot issues and assist with project management and communication',
+    ],
+    tech: ['Odoo ERP', 'UAT', 'Go-Live Support', 'Team Lead'],
+    links: { code: '', demo: '' },
+    color: '#ffb547',
+    year: '2026 – now',
+  },
+  {
+    id: 'alt',
+    category: 'professional',
+    title: 'ALT App Pilot Launch',
+    tagline: 'Help desk support & pilot testing for GERES',
+    description:
+      'A three-month project supporting the pilot launch of the ALT mobile app for the GERES organization. I gave help desk support to users, tested the app to find functional and UX issues, and passed real-world feedback to the project and development teams.',
+    highlights: [
+      'Handled user-reported issues during the pilot',
+      'Assisted with UAT and pilot testing',
+      'Improved the user experience based on real-world feedback',
+    ],
+    tech: ['Help Desk', 'Mobile Testing', 'UAT', 'UX'],
+    links: { code: '', demo: '' },
+    color: '#4cc9f0',
+    year: '2026',
+  },
+  {
+    id: 'ai-student-assistant',
+    category: 'university',
+    featured: true,
+    title: 'AI Student Assistant',
+    tagline: 'AI-powered student support chatbot · Curtin',
+    description:
+      'An AI chatbot that answers students’ academic and university questions (courses, resources and student services) with natural-language understanding and an interactive chat UI. It cuts repetitive inquiries and explores how generative AI can make student support instant, personalised and accessible.',
+    highlights: ['Natural-language understanding with prompt engineering', 'Interactive chat interface for students', 'Built in a 5-person team at Curtin University'],
+    tech: ['AI', 'Chatbots', 'NLP', 'Prompt Engineering'],
+    links: { code: '', demo: '' },
+    color: '#b18cff',
+    year: '2024 – 25',
+  },
+  {
+    id: 'readly',
+    category: 'university',
+    featured: true,
+    title: 'Readly',
+    tagline: 'Accessible learning platform for dyslexic learners',
+    description:
+      'Designed and prototyped an accessible educational platform for users with dyslexia and other neurodivergent needs, for Curtin’s Human Computer Interfaces unit. As the Graphic Designer in a 3-person agile team I owned the visual direction, UI and high-fidelity prototypes, and took part in user research and usability evaluation.',
+    highlights: [
+      'Customisable fonts, colour themes, text-to-speech, simplified reading layouts and large controls',
+      'User research: interviews, surveys, personas and journey maps',
+      'Iterative Design Thinking: empathise, define, ideate, prototype, test',
+    ],
+    tech: ['Figma', 'UI/UX', 'Accessibility', 'Prototyping'],
+    links: { code: '', demo: '' },
+    color: '#ff6b9d',
+    year: '2024',
   },
   {
     id: 'midnight-express',
+    category: 'personal',
     title: 'Midnight Express',
     tagline: 'A 2D pixel-art detective game',
     description:
@@ -71,11 +165,12 @@ export const projects = [
     ],
     tech: ['TypeScript', 'Phaser', 'Vite', 'Pixel art'],
     links: { code: 'https://github.com/Mark3172/little-detective-mystery', demo: '' },
-    color: '#b18cff',
-    year: '2026', // TODO: confirm year
+    color: '#9d7bff',
+    year: '2026',
   },
   {
     id: 'bill-splitter',
+    category: 'personal',
     title: 'Bill Splitter',
     tagline: 'Split the bill in one touch',
     description:
@@ -87,11 +182,12 @@ export const projects = [
     ],
     tech: ['TypeScript', 'React', 'React Native / Expo'],
     links: { code: 'https://github.com/Mark3172/Bill-Splitter', demo: '' },
-    color: '#ffb547',
-    year: '2026', // TODO: confirm year
+    color: '#ffd166',
+    year: '2026',
   },
   {
     id: 'weather',
+    category: 'personal',
     title: 'WeatherAI Dashboard',
     tagline: 'Glassmorphism weather + "Ask AI" assistant',
     description:
@@ -103,11 +199,12 @@ export const projects = [
     ],
     tech: ['JavaScript', 'HTML/CSS', 'Canvas', 'OpenWeatherMap API'],
     links: { code: 'https://github.com/Mark3172/weather-dashboard', demo: '' },
-    color: '#4cc9f0',
-    year: '2025', // TODO: confirm year
+    color: '#7cf5ff',
+    year: '2025',
   },
   {
     id: 'this-site',
+    category: 'personal',
     title: 'This 3D Portfolio',
     tagline: 'The island you are exploring right now',
     description:
@@ -115,94 +212,315 @@ export const projects = [
     highlights: ['Third-person and first-person cameras with mouse look (pointer lock)', 'Lightweight physics: jumping, platforms, jump pads, respawn', 'Single data file drives both the 3D world and the classic view'],
     tech: ['JavaScript', 'Three.js', 'Vite'],
     links: { code: 'https://github.com/Mark3172/markprofolio', demo: '' },
-    color: '#ff6b9d',
+    color: '#ff8fb8',
     year: '2026',
   },
 ];
 
 /* ---------------------------------------------------------------------
- *  EXPERIENCE & EDUCATION — stones along the Timeline Trail, newest first.
+ *  EXPERIENCE & EDUCATION — monoliths along the Timeline Trail, newest first.
  *  type: 'work' | 'education' | 'volunteer'
  * ------------------------------------------------------------------- */
 export const experience = [
   {
     type: 'work',
-    role: 'Your role here', // TODO: your job title at Global Connect Asia
+    role: 'Junior ERP Support Specialist / Customer Success Engineer',
     org: 'Global Connect Asia',
-    start: '2025', // TODO
-    end: 'Present', // TODO
-    location: 'Singapore',
-    summary: 'TODO: one sentence on what you do there.',
-    points: ['TODO: an achievement with a number if possible', 'TODO: a tool or skill you use daily'],
-    placeholder: true,
+    start: 'Mar 2026',
+    end: 'Present',
+    location: 'Yangon, Myanmar · On-site',
+    summary:
+      'Supporting clients in implementing and maintaining IT solutions: troubleshooting technical issues, assisting with system configuration and making customer onboarding smooth, together with cross-functional teams.',
+    points: [
+      'Lead the ExpoTrans helpdesk team through UAT, go-live and post-implementation',
+      'Supported the ALT mobile app pilot launch for GERES',
+      'Odoo ERP consultant & support at the Myanmar-China Expo; delivered client pilot training',
+      'Skills: Odoo, User Acceptance Testing, Go-Live Support, Project Management, UX',
+    ],
   },
   {
     type: 'education',
-    role: 'Bachelor of Information Technology', // TODO: exact degree / major
-    org: 'Curtin University',
-    start: '2024', // TODO
-    end: '2027', // TODO: expected graduation
-    location: 'Singapore', // TODO: campus
-    summary: 'TODO: major, notable units, GPA or awards if you want to show them.',
-    points: [],
-    placeholder: true,
+    role: 'Diploma of IT → Bachelor of Information Technology',
+    org: 'Curtin Singapore · Curtin University',
+    start: 'Oct 2023',
+    end: '2026',
+    location: 'Singapore',
+    summary: 'Diploma of IT (from Oct 2023) and Bachelor’s degree in Information Technology (Jul 2024 – Oct 2025). Graduated with the Class of 2026.',
+    points: [
+      'Units across UI/UX, IT infrastructure operations, MySQL, technical design, C programming and social & international marketing',
+      'Projects: Readly (accessible learning platform) and the AI Student Assistant chatbot',
+      'Member of the Curtin Innovation and Technology Club',
+    ],
   },
   {
-    type: 'work',
-    role: 'Earlier role or internship', // TODO or delete this block
-    org: 'Company name',
-    start: '2023',
-    end: '2024',
-    location: '',
-    summary: 'TODO: delete this block if you do not need it.',
+    type: 'volunteer',
+    role: 'Talent Intelligence & Experience Manager',
+    org: 'AIESEC in Myanmar',
+    start: 'Feb 2022',
+    end: 'Feb 2024',
+    location: 'Yangon, Myanmar',
+    summary:
+      'Two years with AIESEC contributing to youth leadership development and cross-cultural exchange programs: organising events, supporting project execution and engaging stakeholders.',
+    points: [
+      'Talent Intelligence & Experience Manager (Feb 2022 – Feb 2024): HR management',
+      'Logistics & Delegate Servicing Manager (Jul 2022 – Jan 2023): project management and leadership',
+      'Logistics & Delegate Servicing Member (Feb – Jul 2022): graphic design, logo design and online content',
+    ],
+  },
+  {
+    type: 'education',
+    role: 'Network & System Administration Certificates',
+    org: 'Youth International University (YIU)',
+    start: 'Aug 2022',
+    end: 'May 2023',
+    location: 'Yangon, Myanmar',
+    summary: 'Two certificate programs, both completed with Grade A.',
+    points: [
+      'Network & System Administration (Nov 2022 – May 2023): web, FTP, DHCP and DNS servers, RAID, virtualization, indoor/outdoor wireless, Linux',
+      'System, Networking & LAN/WAN Management (Aug – Dec 2022): computer systems, CCTV, wireless networks, troubleshooting',
+    ],
+  },
+  {
+    type: 'education',
+    role: 'Foundation Degree, Information Technology',
+    org: 'Yangon Institute of University Studies (YIUS)',
+    start: 'Sep 2022',
+    end: 'Mar 2023',
+    location: 'Yangon, Myanmar',
+    summary: 'All high distinctions in every subject, earning an academic excellence award.',
+    points: ['Vice President of the student council'],
+  },
+  {
+    type: 'education',
+    role: 'Level 7 English (Upper Intermediate)',
+    org: 'American Center',
+    start: 'Jul 2020',
+    end: 'Oct 2020',
+    location: 'Yangon, Myanmar',
+    summary: 'Certificate of completion: academic vocabulary, essays and advanced English in challenging learning environments.',
     points: [],
-    placeholder: true,
+  },
+  {
+    type: 'education',
+    role: 'Bachelor of Science, Chemistry (first year)',
+    org: 'University of Yangon',
+    start: '2019',
+    end: '2019',
+    location: 'Yangon, Myanmar',
+    summary: 'Completed the first year before studies paused due to COVID and the political situation.',
+    points: ['Class monitor; led special class events'],
   },
 ];
 
 /* ---------------------------------------------------------------------
  *  CERTIFICATES & LICENSES — floating medallions in the Hall of Badges.
  *  kind: 'certificate' | 'license' | 'award'
- *  Copy these from LinkedIn → "Licenses & certifications".
+ *  `short` / `issuerShort` are the few words printed on the 3D medal;
+ *  `featured: true` puts it in the big front row.
  * ------------------------------------------------------------------- */
 export const certificates = [
   {
-    name: 'Certificate name', // TODO
-    issuer: 'Issuer (e.g. Google, AWS, Coursera)',
+    name: 'Build a Free Website with WordPress',
+    short: 'WordPress Website',
+    issuerShort: 'Coursera',
+    issuer: 'Coursera',
     kind: 'certificate',
-    date: '2025',
-    credentialId: '',
-    url: '', // TODO: "Show credential" link
+    date: 'Nov 2026',
+    credentialId: 'Credential ID L33PA1IMV7EH',
+    url: 'https://www.coursera.org/account/accomplishments/records/L33PA1IMV7EH',
     color: '#4cc9f0',
-    placeholder: true,
   },
   {
-    name: 'Another certificate', // TODO
-    issuer: 'Issuer',
+    name: 'AI for Brainstorming and Planning',
+    short: 'AI for Planning',
+    issuerShort: 'Google',
+    issuer: 'Google',
     kind: 'certificate',
-    date: '2025',
-    credentialId: '',
-    url: '',
-    color: '#ffb547',
-    placeholder: true,
-  },
-  {
-    name: 'License name', // TODO
-    issuer: 'Issuing body',
-    kind: 'license',
-    date: '2024',
-    credentialId: '',
-    url: '',
+    date: 'Oct 2026',
+    credentialId: 'Credential ID WZ9V254STTDJ',
+    url: 'https://www.coursera.org/account/accomplishments/records/WZ9V254STTDJ',
     color: '#3ddc84',
-    placeholder: true,
   },
   {
-    name: 'GitHub Achievements', // real: from your GitHub profile
+    name: 'AI Fundamentals',
+    short: 'AI Fundamentals',
+    issuerShort: 'Google',
+    issuer: 'Google',
+    kind: 'certificate',
+    date: 'Oct 2026',
+    credentialId: 'Credential ID 9R1NPCOLNZX5',
+    url: 'https://www.coursera.org/account/accomplishments/records/9R1NPCOLNZX5',
+    color: '#ffd166',
+  },
+  {
+    name: 'Technical Support Fundamentals',
+    short: 'Tech Support Fundamentals',
+    issuerShort: 'Google',
+    featured: true,
+    issuer: 'Google',
+    kind: 'certificate',
+    date: 'Oct 2026',
+    credentialId: 'Credential ID QX2W4CAS2KGC',
+    url: 'https://www.coursera.org/account/accomplishments/verify/QX2W4CAS2KGC',
+    color: '#ff6b9d',
+  },
+  {
+    name: 'UX Design Advanced Job Simulation',
+    short: 'UX Design Simulation',
+    issuerShort: 'Lloyds · Forage',
+    featured: true,
+    issuer: 'Lloyds Banking Group · Forage',
+    kind: 'certificate',
+    date: 'Jan 2026',
+    credentialId: 'Credential ID sMu34p2XdhZhyxK82',
+    url: 'https://www.theforage.com/completion-certificates/Zbnc2o4ok6kD2NEXx/bBWnMDoKTJCzwyu5f_Zbnc2o4ok6kD2NEXx_695a4ff2f76d215bcfd2e789_1767793543479_completion_certificate.pdf',
+    color: '#b18cff',
+  },
+  {
+    name: 'AWS Academy Cloud Foundations',
+    short: 'Cloud Foundations',
+    issuerShort: 'AWS',
+    featured: true,
+    issuer: 'Amazon Web Services (AWS)',
+    kind: 'certificate',
+    date: 'Jul 2025',
+    credentialId: 'Cloud computing fundamentals',
+    url: '',
+    color: '#ff9f43',
+  },
+  {
+    name: 'UI/UX Essentials Certificate',
+    short: 'UI/UX Essentials',
+    issuerShort: 'MM Project',
+    issuer: 'MM PROJECT',
+    kind: 'certificate',
+    date: 'May 2025',
+    credentialId:
+      'Foundations of user-centred design: wireframing, prototyping and usability testing, creating intuitive and visually appealing digital experiences.',
+    url: '',
+    color: '#7cf5ff',
+  },
+  {
+    name: 'CCNA: Switching, Routing & Wireless Essentials',
+    short: 'CCNA SRWE',
+    issuerShort: 'Cisco',
+    featured: true,
+    issuer: 'Cisco Networking Academy · Curtin University',
+    kind: 'certificate',
+    date: 'May 2024',
+    credentialId:
+      'Hands-on VLANs, inter-VLAN routing, static and dynamic routing protocols, wireless setup, troubleshooting and network security fundamentals.',
+    url: '',
+    color: '#049fd9',
+  },
+  {
+    name: 'Volunteer Certificate',
+    short: 'Volunteer Leader',
+    issuerShort: 'AIESEC',
+    issuer: 'AIESEC in Myanmar',
+    kind: 'award',
+    date: 'Feb 2022 – Feb 2024',
+    credentialId: 'Project Team Member and Project Team Leader: youth leadership development and cross-cultural exchange programs.',
+    url: '',
+    color: '#037ef3',
+  },
+  {
+    name: 'GitHub Achievements',
+    short: 'GitHub Achievements',
+    issuerShort: 'GitHub',
     issuer: 'GitHub',
     kind: 'award',
     date: '',
     credentialId: 'Pull Shark ×2 · Pair Extraordinaire · YOLO · Developer Program Member',
     url: 'https://github.com/Mark3172?tab=achievements',
+    color: '#c9a6ff',
+  },
+];
+
+/* ---------------------------------------------------------------------
+ *  HACKATHONS, EVENTS & ACHIEVEMENTS — trophies in the Hackathon Arena.
+ *  kind: 'hackathon' | 'event' | 'award' | 'leadership'
+ *  `featured: true` makes it a big trophy and a career highlight.
+ * ------------------------------------------------------------------- */
+export const achievements = [
+  {
+    title: 'NASA Space Apps Challenge',
+    event: 'NASA Space Apps Challenge Yangon · at UIT',
+    kind: 'hackathon',
+    date: 'Nov 2026',
+    role: 'Hackathon team member',
+    result: '',
+    description: 'Joined a team at the Yangon edition of NASA’s global hackathon, building a solution to one of the Space Apps challenges.',
+    link: '',
+    color: '#4cc9f0',
+    featured: true,
+  },
+  {
+    title: 'Cursor Myanmar Hackathon',
+    event: 'Cursor Myanmar Hackathon',
+    kind: 'hackathon',
+    date: 'Aug 2026',
+    role: 'Selected participant',
+    result: 'Selected to compete',
+    description: 'Selected as a participant for the Cursor Myanmar Hackathon, building with AI-assisted coding.',
+    link: '',
     color: '#b18cff',
+    featured: true,
+  },
+  {
+    title: 'IBM Hackathon',
+    event: 'IBM Hackathon',
+    kind: 'hackathon',
+    date: '2026',
+    role: 'Participant',
+    result: '',
+    description: 'Attended every session of the IBM hackathon; location restrictions in Myanmar prevented the final submission.',
+    link: '',
+    color: '#3d7bff',
+  },
+  {
+    title: 'Myanmar-China Expo',
+    event: 'Myanmar-China Expo · Global Connect Asia',
+    kind: 'event',
+    date: '2026',
+    role: 'Odoo ERP consultant & support',
+    result: '',
+    description: 'Represented Global Connect Asia at the Myanmar-China Expo, consulting visitors and supporting the Odoo ERP solution on site.',
+    link: '',
+    color: '#ffb547',
+    featured: true,
+  },
+  {
+    title: 'Client Pilot Training',
+    event: 'Global Connect Asia',
+    kind: 'event',
+    date: '2026',
+    role: 'Trainer',
+    result: '',
+    description: 'Delivered pilot training to client users as part of a system rollout.',
+    link: '',
+    color: '#3ddc84',
+  },
+  {
+    title: 'Cursor × Grok Bot Meetup',
+    event: 'Cursor community meetup · Yangon',
+    kind: 'event',
+    date: '2026',
+    role: 'Attendee',
+    result: '',
+    description: 'Joined the Cursor and Grok bot builders meetup in Yangon to learn and connect with the local AI dev community.',
+    link: '',
+    color: '#ff6b9d',
+  },
+  {
+    title: 'Academic Excellence Award',
+    event: 'Yangon Institute of University Studies',
+    kind: 'award',
+    date: '2023',
+    role: 'Student · Vice President of the student council',
+    result: 'All high distinctions',
+    description: 'Earned high distinctions in every subject of the IT foundation degree while serving as student council Vice President.',
+    link: '',
+    color: '#ffd166',
   },
 ];
