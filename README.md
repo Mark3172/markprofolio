@@ -1,8 +1,12 @@
 # markprofolio
 
-Mark's (Myo Set Paing) portfolio as an explorable 3D floating island.
+Mark's (Myo Set Paing) portfolio: a fast, recruiter-friendly page that also opens as an explorable 3D floating island.
 
-Visitors walk around the island in third person (or first person with **V**). Every landmark opens a card:
+Visitors land on the **classic view** first, so the information is there straight away. Game mode is one
+click away from three places: the "Play game mode" button in the menu, the card in the hero section, and a
+floating "Game mode" button that follows the visitor down the page. `?view=3d` links straight into the game.
+
+In game mode, visitors walk around the island in third person (or first person with **V**). Every landmark opens a card:
 
 | Landmark | What's inside |
 | --- | --- |
@@ -91,7 +95,7 @@ npm run dev      # http://localhost:5173
 npm run build    # production build in dist/
 ```
 
-Add `?view=classic` to the URL to open the 2D view directly.
+The site opens on the classic view. Add `?view=3d` to the URL to open game mode directly.
 
 ## Deploy
 

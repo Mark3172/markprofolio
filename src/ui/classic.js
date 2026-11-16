@@ -100,7 +100,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       <nav aria-label="Sections">
         <span class="nav-ind" aria-hidden="true"></span>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
       </nav>
-      ${canExplore ? `<button class="cbtn cbtn-ghost" data-explore>${ICONS.cube}<span>Explore in 3D</span></button>` : ''}
+      ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore>${ICONS.cube}<span>Play game mode</span></button>` : ''}
     </header>
 
     <section class="hero" id="top">
@@ -116,6 +116,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </div>
         <div class="ctas">${ctas()}</div>
         <div class="socials">${socials()}</div>
+        ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
       <aside class="idcard reveal">
         <div class="avatar">${avatarHtml(initials)}</div>
@@ -253,6 +254,16 @@ export function renderClassic(root, { canExplore, onExplore }) {
     <footer class="cv-foot"><span>© ${new Date().getFullYear()} ${esc(profile.name)}</span>${canExplore ? '<button data-explore class="linkish">Prefer a game? Explore the 3D island →</button>' : '<span>Built with Three.js & Vite</span>'}</footer>
   </div>`;
 
+  // floating game-mode button: appears once the hero's own button has scrolled away
+  if (canExplore) {
+    const fab = document.createElement('button');
+    fab.className = 'fab-game';
+    fab.dataset.explore = '';
+    fab.innerHTML = `${ICONS.cube}<span>Game mode</span>`;
+    root.appendChild(fab);
+    const heroCta = root.querySelector('.game-cta');
+    new IntersectionObserver(([e]) => fab.classList.toggle('on', !e.isIntersecting)).observe(heroCta);
+  }
   root.querySelectorAll('[data-explore]').forEach((b) => b.addEventListener('click', onExplore));
 
   // tabs with a sliding indicator (project categories, hackathon kinds)
