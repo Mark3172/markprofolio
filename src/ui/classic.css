@@ -210,3 +210,36 @@ body.classic-mode { background: #080a18; }
 .pshot img, .ashot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transition: transform 0.6s ease; }
 .pcard:hover .pshot img, .acard:hover .ashot img { transform: scale(1.04); }
 .pcard:not(.feat) .pshot { aspect-ratio: 2 / 1; }
+
+/* ---- moving 3D backdrop ---- */
+.cv-3d { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.6s ease; }
+.cv-3d.on { opacity: 0.75; }
+
+/* ---- tabs with a sliding indicator ---- */
+.tabs { position: relative; display: inline-flex; flex-wrap: nowrap; gap: 2px; padding: 4px; margin-bottom: 18px; border-radius: 999px; background: rgba(12, 14, 34, 0.7); border: 1px solid var(--line); backdrop-filter: blur(10px); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: color 0.25s; }
+.tabs button:hover { color: var(--text); }
+.tabs button.on { color: #0b0d1f; }
+.tabs button em { font-style: normal; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); color: inherit; }
+.tabs button.on em { background: rgba(11, 13, 31, 0.15); }
+.tab-ind { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 6px 24px -6px rgba(124, 245, 255, 0.6); transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1.1), width 0.45s cubic-bezier(0.2, 0.9, 0.2, 1.1); }
+.pop { animation: pop 0.5s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+/* sliding highlight in the top nav */
+.cv-nav nav { position: relative; }
+.cv-nav nav a { position: relative; z-index: 1; }
+.cv-nav nav a.on { background: none; }
+.nav-ind { position: absolute; z-index: 0; top: 0; bottom: 0; left: 0; width: 0; opacity: 0; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(124, 245, 255, 0.25); transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.2, 1), width 0.4s, opacity 0.3s; }
+
+/* mobile bottom tab bar */
+.mtabs { display: none; }
+@media (max-width: 960px) {
+  .mtabs { position: fixed; z-index: 20; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(6, 1fr); padding: 6px; border-radius: 20px; background: rgba(12, 14, 34, 0.85); border: 1px solid var(--line); backdrop-filter: blur(16px); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45); }
+  .mtabs a { display: grid; justify-items: center; gap: 3px; padding: 7px 0; border-radius: 14px; color: var(--muted); text-decoration: none; font-size: 10.5px; font-weight: 600; transition: color 0.2s, background 0.2s; }
+  .mtabs a svg { width: 18px; height: 18px; }
+  .mtabs a.on { color: var(--text); background: linear-gradient(180deg, rgba(124, 92, 255, 0.35), rgba(124, 245, 255, 0.12)); }
+  .cv-foot { padding-bottom: 90px; }
+}
+.pcard.feat .pshot { aspect-ratio: 2.4 / 1; }

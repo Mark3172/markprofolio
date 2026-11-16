@@ -26,6 +26,13 @@ export function createHud(world, { onClassic, onAbout }) {
     <div class="travel" role="menu">
       ${world.zones.map((z) => `<button role="menuitem" data-zone="${z.id}"><span class="sw" style="background:${z.color}"></span><span><b style="display:block;font-size:14px">${esc(z.name)}</b><small style="color:var(--muted)">${esc(z.sub)}</small></span></button>`).join('')}
     </div>
+    <div class="tour off" aria-live="polite">
+      <div class="tour-top"><span data-tour-step>Highlights tour</span><button data-tour-close aria-label="Hide tour" title="Hide tour">✕</button></div>
+      <h4 data-tour-title></h4>
+      <p data-tour-sub></p>
+      <div class="tour-dots"></div>
+      <button class="tour-go" data-tour-go>Fly there</button>
+    </div>
     <div class="shards" title="Collect every data shard hidden around the island"><span class="gem"></span>Shards <b data-count>0/${world.shardTotal}</b></div>
     <div class="zone-title"><small></small><b></b></div>
     <div class="toast-wrap"></div>
@@ -79,6 +86,56 @@ export function createHud(world, { onClassic, onAbout }) {
   const lockHint = $('.lock-hint');
   lockHint.addEventListener('click', () => world.lockMouse());
 
+  /* ---- highlights tour: one stop at a time, so visitors know where to look ---- */
+  const STOPS = [
+    { id: 'arena', title: 'Hackathon Arena', sub: '4 hackathons in 2026, from NASA Space Apps to Cursor.' },
+    { id: 'projects', title: 'Project Workshop', sub: 'My featured builds: AstroMed, HRChronicle AI, GreenLens AI and ExpoTrans.' },
+    { id: 'timeline', title: 'Timeline Trail', sub: 'Where I work and study: Global Connect Asia, AIESEC, Curtin.' },
+    { id: 'certs', title: 'Hall of Badges', sub: 'My top certifications: AWS, CCNA, Google, Lloyds.' },
+    { id: 'about', title: 'The Beacon', sub: 'About me and how to reach me.' },
+  ];
+  const tourEl = $('.tour');
+  const dots = tourEl.querySelector('.tour-dots');
+  dots.innerHTML = STOPS.map(() => '<i></i>').join('');
+  let stop = 0;
+  let touring = false;
+  function renderTour() {
+    const s = STOPS[stop];
+    const z = world.zones.find((zz) => zz.id === s.id);
+    tourEl.style.setProperty('--tc', z.color);
+    $('[data-tour-step]').textContent = `Highlights tour · ${stop + 1} of ${STOPS.length}`;
+    $('[data-tour-title]').textContent = `Next: ${s.title}`;
+    $('[data-tour-sub]').textContent = s.sub;
+    [...dots.children].forEach((d, i) => (d.className = i < stop ? 'done' : i === stop ? 'now' : ''));
+    world.setGuide(s.id);
+  }
+  function startTour() {
+    touring = true;
+    stop = 0;
+    tourEl.classList.remove('off');
+    renderTour();
+  }
+  function endTour() {
+    touring = false;
+    tourEl.classList.add('off');
+    world.setGuide(null);
+  }
+  $('[data-tour-close]').addEventListener('click', endTour);
+  $('[data-tour-go]').addEventListener('click', (e) => {
+    world.travelTo(STOPS[stop].id);
+    e.currentTarget.blur();
+  });
+  function tourZone(z) {
+    if (!touring || z.id !== STOPS[stop].id) return;
+    stop++;
+    if (stop >= STOPS.length) {
+      endTour();
+      toast('🎉 <b>Tour complete!</b> You have seen the highlights. Open the Beacon to get in touch.', true);
+    } else {
+      setTimeout(() => touring && renderTour(), 1800);
+    }
+  }
+
   /* ---- minimap ---- */
   const mm = $('.minimap canvas');
   const g = mm.getContext('2d');
@@ -106,6 +163,14 @@ export function createHud(world, { onClassic, onAbout }) {
       g.beginPath();
       g.arc(x, y, z.id === 'plaza' ? 9 : 14, 0, Math.PI * 2);
       g.fill();
+    }
+    if (st.guide) {
+      const [gx, gy] = toMap(st.guide.c.x, st.guide.c.z);
+      g.strokeStyle = '#fff';
+      g.lineWidth = 4;
+      g.beginPath();
+      g.arc(gx, gy, 20 + Math.sin(performance.now() / 200) * 3, 0, Math.PI * 2);
+      g.stroke();
     }
     g.fillStyle = '#7cf5ff';
     for (const p of st.shards) {
@@ -205,7 +270,9 @@ export function createHud(world, { onClassic, onAbout }) {
       if (it) $('[data-label]').textContent = `View ${it.label}`;
       prompt.classList.toggle('on', !!it);
     },
+    startTour,
     zone(z) {
+      tourZone(z);
       zoneTitle.querySelector('small').textContent = z.sub;
       zoneTitle.querySelector('b').textContent = z.name;
       zoneTitle.classList.add('on');
