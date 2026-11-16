@@ -111,8 +111,8 @@ export const projects = [
     title: 'This 3D Portfolio',
     tagline: 'The island you are exploring right now',
     description:
-      'An explorable low-poly island built with Three.js: fly a little drone between landmarks, collect data shards, and open each project, certificate and role as a card. Falls back to a fast classic layout on phones and older devices.',
-    highlights: ['Three.js + Vite, no heavy framework', 'Single data file drives both 3D and classic views', 'Keyboard, mouse, touch joystick and fast-travel map'],
+      'A free-roam low-poly island built with Three.js: walk, sprint and jump around in third or first person, open every project, certificate and role as a card, collect data shards and climb a floating parkour route to a secret lookout. Falls back to a fast classic layout on older devices.',
+    highlights: ['Third-person and first-person cameras with mouse look (pointer lock)', 'Lightweight physics: jumping, platforms, jump pads, respawn', 'Single data file drives both the 3D world and the classic view'],
     tech: ['JavaScript', 'Three.js', 'Vite'],
     links: { code: 'https://github.com/Mark3172/markprofolio', demo: '' },
     color: '#ff6b9d',
