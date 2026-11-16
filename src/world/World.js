@@ -538,7 +538,7 @@ export function createWorld(container, hooks = {}) {
     const others = achievements.map((a, i) => ({ a, i })).filter((x) => !x.a.featured);
     const rows = [
       { list: featured, r: 3.2, w: 2.5, h: 2.3, spread: 0.6 },
-      { list: others, r: 5.6, w: 2.1, h: 3.4, spread: 0.42 },
+      { list: others, r: 6, w: 1.9, h: 3.4, spread: 0.36 },
     ];
     const KIND = { hackathon: 'HACKATHON', event: 'EVENT', award: 'AWARD', leadership: 'LEADERSHIP' };
     for (const row of rows) {

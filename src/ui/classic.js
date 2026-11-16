@@ -18,7 +18,7 @@ const ICONS = {
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6L12 2Z"/></svg>',
 };
 
-const CAT_LABEL = { professional: 'Professional', university: 'University', personal: 'Personal build' };
+const CAT_LABEL = { professional: 'Professional', hackathon: 'Hackathon', university: 'University', personal: 'Personal build' };
 const HL_ICONS = ['brief', 'trophy', 'cap', 'cube'];
 
 const link = (href, label, cls = '') => (href ? `<a class="${cls}" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>` : '');
