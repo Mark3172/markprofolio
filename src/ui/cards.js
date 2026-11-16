@@ -23,8 +23,8 @@ export const avatarHtml = (initials) =>
 
 export const KIND_LABEL = { certificate: 'Certificate', license: 'License', award: 'Award' };
 export const ACH_LABEL = { hackathon: 'Hackathon', event: 'Event', award: 'Award', leadership: 'Leadership' };
-export const TYPE_LABEL = { work: 'Experience', education: 'Education', volunteer: 'Volunteering' };
-export const TYPE_COLOR = { work: '#ffb547', education: '#7cf5ff', volunteer: '#3ddc84' };
+export const TYPE_LABEL = { work: 'Experience', education: 'Education', internship: 'Internship', volunteer: 'Volunteering' };
+export const TYPE_COLOR = { work: '#ffb547', education: '#7cf5ff', internship: '#3ddc84', volunteer: '#3ddc84' };
 
 /* ---- news ---- */
 export const SOURCE_LABEL = { linkedin: 'LinkedIn', facebook: 'Facebook', instagram: 'Instagram', github: 'GitHub' };

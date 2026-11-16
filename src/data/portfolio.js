@@ -259,7 +259,7 @@ export const projects = [
 
 /* ---------------------------------------------------------------------
  *  EXPERIENCE & EDUCATION — monoliths along the Timeline Trail, newest first.
- *  type: 'work' | 'education' | 'volunteer'
+ *  type: 'work' | 'education' | 'internship' | 'volunteer'
  * ------------------------------------------------------------------- */
 export const experience = [
   {
@@ -293,7 +293,7 @@ export const experience = [
     ],
   },
   {
-    type: 'volunteer',
+    type: 'internship',
     role: 'Talent Intelligence & Experience Manager',
     org: 'AIESEC in Myanmar',
     start: 'Feb 2022',
