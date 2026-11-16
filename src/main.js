@@ -27,7 +27,7 @@ function setView(v) {
 }
 
 function goClassic() {
-  setView('classic');
+  setView('');
   location.reload();
 }
 
@@ -35,7 +35,7 @@ function startClassic() {
   renderClassic(app, {
     canExplore,
     onExplore: () => {
-      setView('');
+      setView('3d');
       location.reload();
     },
   });
@@ -61,7 +61,7 @@ function intro() {
   document.body.appendChild(el);
   el.querySelector('[data-classic]').addEventListener('click', () => {
     el.remove();
-    setView('classic');
+    setView('');
     startClassic();
   });
   el.querySelector('[data-go]')?.addEventListener('click', (e) => {
@@ -69,8 +69,8 @@ function intro() {
     el.querySelector('.loader').classList.add('on');
     startWorld(el);
   });
-  // warm up the 3D chunk while the visitor reads
-  if (canExplore) import('./world/World.js');
+  // visitors arrive here from the classic view's "Play" button, so start loading right away
+  el.querySelector('[data-go]')?.click();
 }
 
 async function startWorld(introEl) {
@@ -119,9 +119,12 @@ async function startWorld(introEl) {
     console.error(err);
     container.remove();
     introEl.remove();
+    setView('');
     startClassic();
   }
 }
 
-if (!canExplore || params.get('view') === 'classic') startClassic();
-else intro();
+// The classic view is the landing page: the information comes first.
+// Game mode is one click away (?view=3d links straight to it).
+if (canExplore && ['3d', 'game'].includes(params.get('view'))) intro();
+else startClassic();
