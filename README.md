@@ -9,24 +9,36 @@ Visitors walk around the island in third person (or first person with **V**). Ev
 | **Project Workshop** | One glowing pedestal per project |
 | **Hall of Badges** | Floating medallions for certificates, licenses and awards |
 | **Timeline Trail** | Monoliths for each job and your education |
+| **Hackathon Arena** | Trophy boards for hackathons, events and awards (the biggest ones in the front row) |
 | **The Beacon** | About me, skills (the orbiting crystals) and contact links |
 
 There are also 9 hidden **data shards** to collect (one sits on the Sky Lookout at the top of a floating
 parkour route), a jump pad, a minimap, and fast travel. Fall off the island and you respawn at the plaza.
 Phones get a touch joystick. Browsers without WebGL 2 (and anyone who clicks
-"Classic view") get a fast, normal scrolling portfolio built from the same data.
+"Classic view") get a recruiter-friendly scrolling portfolio built from the same data:
+career highlights, experience, filterable projects, hackathons, certifications,
+education, skills and contact.
 
 ## Edit your content
 
 Everything lives in **one file: [`src/data/portfolio.js`](src/data/portfolio.js)**.
-It is filled in from Mark's LinkedIn profile and GitHub (Nov 2026): experience,
-education, all 9 licenses & certifications, LinkedIn projects, skills, highlights
-and a recommendation.
+It is filled in from Mark's LinkedIn profile, LinkedIn posts and GitHub (Nov 2026):
 
-Optional things still missing (search the file for `TODO`): an email address,
-a résumé PDF, and live demo links for projects.
+- **Projects**: 11, including three 2026 hackathon builds:
+  - [AstroMed](https://github.com/Planet-Coders/AstroMed) for NASA Space Apps Challenge Yangon ([live demo](https://astro-med-ashy.vercel.app))
+  - [HRChronicle AI](https://github.com/vibecode-ting/hr_chronicle_ai) for the Google Cloud AI Builder Cup ([live app](https://myanmardev.web.app))
+  - [GreenLens AI](https://github.com/Mark3172/greenlens-ai) for the Cursor Myanmar Hackathon ([live demo](https://greentechai.netlify.app/scan))
+- **Hackathons & achievements**: 4 hackathons, tech events (GITEX Asia, Myanmar-China Expo, ASEAN Data Science Program and more), leadership and awards
+- **Experience & education**: Global Connect Asia, AIESEC, Curtin Singapore and more
+- **Certifications**: all licenses & certifications from LinkedIn, with verify links
+- **About**: skills, career highlights, a recommendation, and a contact email for business inquiries
 
-To add a project, certificate or job, copy an existing block in the same list.
+Set `featured: true` on an item to highlight it: featured projects get the big cards, and featured
+hackathons and certificates go in the front row in 3D and in the classic view. Keep it to the biggest few.
+
+The only optional thing still missing is a résumé PDF (search the file for `TODO`).
+
+To add a project, certificate, hackathon or job, copy an existing block in the same list.
 The 3D world lays them out automatically.
 
 ## Run locally
@@ -42,7 +54,8 @@ Add `?view=classic` to the URL to open the 2D view directly.
 ## Deploy
 
 `netlify.toml` is included: connect the repo in Netlify and it builds with
-`npm run build` and publishes `dist/`. Any static host works.
+`npm run build` and publishes `dist/`. Vercel also works with no config (it builds
+a preview for every pull request). Any static host works.
 
 ## Controls
 
