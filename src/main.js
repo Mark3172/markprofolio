@@ -50,13 +50,13 @@ function intro() {
     <div class="intro-card">
       ${profile.status ? `<span class="intro-kicker"><span class="dot"></span>${esc(profile.status)}</span>` : ''}
       <h1>Hi, I'm <span class="grad">${esc(profile.nickname)}</span>.</h1>
-      <p>${esc(profile.tagline)}<br/>Hop in the drone and explore my floating island: every landmark is a project, certificate or chapter of my story.</p>
+      <p>${esc(profile.tagline)}<br/>Explore my floating island on foot: every landmark is a project, certificate or chapter of my story.</p>
       <div class="intro-actions">
         ${canExplore ? '<button class="btn btn-primary btn-lg" data-go>▶ Explore the island</button>' : ''}
         <button class="btn${canExplore ? '' : ' btn-primary btn-lg'}" data-classic>${canExplore ? 'Skip to classic view' : 'View portfolio'}</button>
       </div>
       <div class="loader"><i></i></div>
-      <div class="intro-hint">${canExplore ? (matchMedia('(pointer: coarse)').matches ? 'Use the joystick to fly · tap anything glowing' : 'WASD to fly · E to open · drag to look around') : 'Your browser does not support 3D, so here is the fast version.'}${reduced && canExplore ? '<br/>Reduced motion is on: the classic view may be more comfortable.' : ''}</div>
+      <div class="intro-hint">${canExplore ? (matchMedia('(pointer: coarse)').matches ? 'Joystick to walk · drag to look · tap anything glowing' : 'WASD to walk · Space to jump · V for first person · E to open') : 'Your browser does not support 3D, so here is the fast version.'}${reduced && canExplore ? '<br/>Reduced motion is on: the classic view may be more comfortable.' : ''}</div>
     </div>`;
   document.body.appendChild(el);
   el.querySelector('[data-classic]').addEventListener('click', () => {
@@ -90,7 +90,10 @@ async function startWorld(introEl) {
       },
       onNear: (it) => hud?.near(it),
       onZone: (z) => z.id !== 'plaza' && hud?.zone(z),
-      onShard: (n, t) => hud?.shard(n, t),
+      onShard: (n, t, secret) => hud?.shard(n, t, secret),
+      onView: (v) => hud?.setView(v),
+      onLock: (on) => hud?.lock(on),
+      onRespawn: () => hud?.toast('Whoops, you fell off the island! Back to the plaza.'),
       onAllShards: () => {
         hud?.allShards();
         setTimeout(() => {
@@ -108,7 +111,7 @@ async function startWorld(introEl) {
     });
     introEl.classList.add('hide');
     setTimeout(() => introEl.remove(), 900);
-    setTimeout(() => hud.toast('✦ 8 data shards are hidden around the island. Can you find them all?'), 3200);
+    setTimeout(() => hud.toast(`✦ ${world.shardTotal} data shards are hidden around the island, one of them up in the sky. Can you find them all?`), 3200);
   } catch (err) {
     console.error(err);
     container.remove();

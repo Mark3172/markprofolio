@@ -34,6 +34,19 @@ const SHARD_SPOTS = [
   [20, 28], [110, 27], [200, 28], [290, 27],
 ].map(([deg, r]) => V(Math.cos((deg * Math.PI) / 180) * r, 1.3, Math.sin((deg * Math.PI) / 180) * r));
 
+// floating parkour route out to a secret lookout (top = standing height)
+const PLATFORMS = [
+  { x: -13, z: -15, top: 1.0, r: 1.8 },
+  { x: -16.5, z: -18.5, top: 2.1, r: 1.5 },
+  { x: -20.5, z: -21, top: 3.2, r: 1.4 },
+  { x: -24.5, z: -23.5, top: 4.3, r: 1.4 },
+  { x: -28.5, z: -26, top: 5.4, r: 1.4 },
+  { x: -31, z: -30.5, top: 6.5, r: 1.4 },
+  { x: -29, z: -35.5, top: 7.6, r: 2.8, goal: true },
+];
+const SECRET_SHARD = V(-29, 7.6 + 1.2, -35.5);
+const JUMP_PADS = [{ x: 7, z: -7, power: 16 }];
+
 export function createWorld(container, hooks = {}) {
   const isTouch = matchMedia('(pointer: coarse)').matches;
   const small = Math.min(innerWidth, innerHeight) < 700;
@@ -270,7 +283,7 @@ export function createWorld(container, hooks = {}) {
     g.add(pole, bulb);
     g.position.copy(p);
     scene.add(g);
-    colliders.push({ x: p.x, z: p.z, r: 0.4 });
+    colliders.push({ x: p.x, z: p.z, r: 0.3, h: 2.3 });
     return g;
   }
 
@@ -279,7 +292,7 @@ export function createWorld(container, hooks = {}) {
     const post = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 4, 8), mat('#5b4a3a')));
     post.position.set(0, 2, 0);
     scene.add(post);
-    colliders.push({ x: 0, z: 0, r: 0.6 });
+    colliders.push({ x: 0, z: 0, r: 0.4, h: 99 });
     ZONES.slice(1).forEach((z, i) => {
       const tex = canvasTexture(512, 96, (g, w, h) => {
         g.fillStyle = '#efe1c0';
@@ -371,7 +384,7 @@ export function createWorld(container, hooks = {}) {
       gem.position.y = 4.8;
       g.add(base, rim, beam, screen, gem);
       scene.add(g);
-      colliders.push({ x: pos.x, z: pos.z, r: 1.6 });
+      colliders.push({ x: pos.x, z: pos.z, r: 1.45, h: 0.9 });
       const it = addInteractable(g, { section: 'project', index: i, label: p.title, radius: 3.4 });
       const ph = i * 0.9;
       animators.push((t) => {
@@ -394,7 +407,7 @@ export function createWorld(container, hooks = {}) {
     const trophy = new THREE.Mesh(new THREE.TorusKnotGeometry(0.55, 0.18, 64, 8), new THREE.MeshStandardMaterial({ color: '#ffcf6b', metalness: 0.9, roughness: 0.25, emissive: '#ff9a1f', emissiveIntensity: 0.5 }));
     trophy.position.set(zc.x, 2.4, zc.z);
     scene.add(podium, trophy);
-    colliders.push({ x: zc.x, z: zc.z, r: 2 });
+    colliders.push({ x: zc.x, z: zc.z, r: 1.8, h: 1.2 });
     animators.push((t) => {
       trophy.rotation.y = t * 0.8;
       trophy.position.y = 2.4 + Math.sin(t * 1.5) * 0.15;
@@ -447,7 +460,7 @@ export function createWorld(container, hooks = {}) {
       medal.position.y = 2.7;
       g.add(col, medal);
       scene.add(g);
-      colliders.push({ x: pos.x, z: pos.z, r: 0.9 });
+      colliders.push({ x: pos.x, z: pos.z, r: 0.6, h: 99 });
       const it = addInteractable(g, { section: 'certificate', index: i, label: c.name, radius: 3 });
       const ph = i * 1.3;
       const face = Math.atan2(-Math.cos(a), -Math.sin(a)); // outward-ish start
@@ -517,7 +530,7 @@ export function createWorld(container, hooks = {}) {
       orb.position.y = 5;
       g.add(stone, face, backFace, orb);
       scene.add(g);
-      colliders.push({ x, z, r: 1.8 });
+      colliders.push({ x, z, r: 1.7, h: 4.4 });
       const it = addInteractable(g, { section: 'experience', index: i, label: e.role + ' · ' + e.org, radius: 3.6 });
       animators.push((tt) => {
         orb.position.y = 5 + Math.sin(tt * 2 + i) * 0.2;
@@ -556,7 +569,7 @@ export function createWorld(container, hooks = {}) {
     pivot.add(beam);
     tower.add(pivot);
     scene.add(tower);
-    colliders.push({ x: tx, z: tz, r: 2.8 });
+    colliders.push({ x: tx, z: tz, r: 2.5, h: 1 }, { x: tx, z: tz, r: 1.4, h: 99 });
     animators.push((t) => (pivot.rotation.y = t * 0.6));
 
     // skill crystals orbiting
@@ -617,7 +630,7 @@ export function createWorld(container, hooks = {}) {
     screen.rotation.x = -0.25;
     kiosk.add(stand, screen);
     scene.add(kiosk);
-    colliders.push({ x: kiosk.position.x, z: kiosk.position.z, r: 1.1 });
+    colliders.push({ x: kiosk.position.x, z: kiosk.position.z, r: 0.9, h: 1.2 });
     const it = addInteractable(kiosk, { section: 'about', index: 0, label: 'About me & contact', radius: 3.4 });
     addInteractable(tower, { section: 'about', index: 0, label: 'About me & contact', radius: 0, pos: tower.position.clone() });
     animators.push(() => screen.scale.setScalar(1 + it.hover * 0.08));
@@ -642,6 +655,8 @@ export function createWorld(container, hooks = {}) {
       for (const zn of ZONES) if (Math.hypot(x - zn.c.x, z - zn.c.z) < zn.r + 0.5) return false;
       if (pathDist(x, z) < 2.8) return false;
       for (const s of SHARD_SPOTS) if (Math.hypot(x - s.x, z - s.z) < 2) return false;
+      for (const p of PLATFORMS) if (Math.hypot(x - p.x, z - p.z) < p.r + 2) return false;
+      for (const p of JUMP_PADS) if (Math.hypot(x - p.x, z - p.z) < 2.5) return false;
       return true;
     };
     const n = low ? 55 : 95;
@@ -675,7 +690,7 @@ export function createWorld(container, hooks = {}) {
         leaves.setMatrixAt(i * 2 + k, o.matrix);
         leaves.setColorAt(i * 2 + k, c);
       }
-      colliders.push({ x: s.x, z: s.z, r: 0.55 * s.s + 0.2 });
+      colliders.push({ x: s.x, z: s.z, r: 0.3 * s.s + 0.15, h: 99 });
     });
     scene.add(trunks, leaves);
 
@@ -740,137 +755,217 @@ export function createWorld(container, hooks = {}) {
 
   /* ---------------- data shards (collectibles) ---------------- */
   const shardGeo = new THREE.OctahedronGeometry(0.42, 0);
-  const shards = SHARD_SPOTS.map((p, i) => {
-    const m = new THREE.Mesh(shardGeo, glow(i % 2 ? '#7cf5ff' : '#b18cff', 3.2));
+  const shards = [...SHARD_SPOTS, SECRET_SHARD].map((p, i, all) => {
+    const secret = i === all.length - 1;
+    const m = new THREE.Mesh(shardGeo, glow(secret ? '#ffb547' : i % 2 ? '#7cf5ff' : '#b18cff', 3.2));
     m.position.copy(p);
     const halo = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.65, 24), new THREE.MeshBasicMaterial({ color: '#7cf5ff', transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
     halo.rotation.x = -Math.PI / 2;
-    halo.position.set(p.x, 0.06, p.z);
+    halo.position.set(p.x, p.y - 1.24, p.z);
     scene.add(m, halo);
-    return { m, halo, got: false, t: 0 };
+    return { m, halo, base: p.clone(), secret, got: false, t: 0 };
   });
   let shardCount = 0;
   const burst = createBurst(scene);
 
-  /* ---------------- player drone ---------------- */
-  const player = new THREE.Group();
-  const body = new THREE.Group();
-  player.add(body);
-  {
-    const shell = shadowy(new THREE.Mesh(new THREE.SphereGeometry(0.55, 24, 16), new THREE.MeshStandardMaterial({ color: '#f2f0ff', roughness: 0.35, metalness: 0.2 })), true, false);
-    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.38, 20, 12, -Math.PI / 2.4, Math.PI / 1.2, Math.PI / 3, Math.PI / 3), glow('#7cf5ff', 3));
-    visor.position.z = 0.22;
-    visor.scale.set(1, 1, 1);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.06, 8, 40), glow('#b18cff', 2.6));
-    ring.rotation.x = Math.PI / 2;
-    const fin = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.5, 6), mat('#b18cff'));
-    fin.position.set(0, 0.6, -0.1);
-    const thruster = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.5, 12, 1, true), new THREE.MeshBasicMaterial({ color: '#7cf5ff', transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }));
-    thruster.rotation.x = Math.PI;
-    thruster.position.y = -0.7;
-    body.add(shell, visor, ring, fin, thruster);
-    const light = new THREE.PointLight('#7cf5ff', 6, 7, 1.6);
-    light.position.y = -0.3;
-    player.add(light);
-    animators.push((t) => {
-      ring.rotation.z = t * 2;
-      thruster.scale.y = 0.8 + Math.sin(t * 30) * 0.15 + speedNow * 0.06;
-    });
+  /* ---------------- sky parkour route + jump pads ---------------- */
+  for (const p of PLATFORMS) {
+    const g = new THREE.Group();
+    const top = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(p.r, p.r * 0.95, 0.5, 9), mat('#2f7a68')), true, true);
+    top.position.y = -0.25;
+    const under = new THREE.Mesh(new THREE.ConeGeometry(p.r * 0.95, p.r * 1.8, 9), mat('#4b3a6e'));
+    under.rotation.x = Math.PI;
+    under.position.y = -0.5 - p.r * 0.9;
+    const edge = new THREE.Mesh(new THREE.TorusGeometry(p.r - 0.05, 0.05, 6, 24), glow(p.goal ? '#ffb547' : '#7cf5ff', 2));
+    edge.rotation.x = Math.PI / 2;
+    edge.position.y = 0.02;
+    g.add(top, under, edge);
+    g.position.set(p.x, p.top, p.z);
+    scene.add(g);
+    colliders.push({ x: p.x, z: p.z, r: p.r, y0: p.top - 0.5 - p.r * 1.8, h: p.top, platform: true });
   }
+  {
+    const goal = PLATFORMS[PLATFORMS.length - 1];
+    const sign = makeLabel('Sky Lookout', { sub: 'Secret spot', accent: '#ffb547', scale: 0.7 });
+    sign.position.set(goal.x, goal.top + 4.2, goal.z);
+    scene.add(sign);
+    fadeLabels.push(sign);
+    const hint = makeLabel('Parkour ↑', { sub: 'Jump with Space', accent: '#7cf5ff', scale: 0.55 });
+    hint.position.set(PLATFORMS[0].x, PLATFORMS[0].top + 2.6, PLATFORMS[0].z);
+    scene.add(hint);
+    fadeLabels.push(hint);
+  }
+  const pads = JUMP_PADS.map((p) => {
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.25, 0.25, 24), mat('#2a2440'));
+    disc.position.set(p.x, 0.12, p.z);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.09, 8, 32), glow('#3ddc84', 3));
+    ring.rotation.x = Math.PI / 2;
+    ring.position.set(p.x, 0.28, p.z);
+    const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.6, 4), glow('#3ddc84', 2.5));
+    arrow.position.set(p.x, 1.2, p.z);
+    scene.add(disc, ring, arrow);
+    animators.push((t) => {
+      arrow.position.y = 1.1 + ((t * 1.5) % 1) * 1.2;
+      arrow.material.opacity = 1;
+      ring.scale.setScalar(1 + Math.sin(t * 6) * 0.06);
+    });
+    return { ...p, ring };
+  });
+
+  /* ---------------- player character ---------------- */
+  const player = new THREE.Group();
+  const hero = makeCharacter(mat, glow, shadowy);
+  player.add(hero.root);
   const blob = new THREE.Mesh(
-    new THREE.CircleGeometry(0.8, 24),
+    new THREE.CircleGeometry(0.6, 24),
     new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: 0.35, depthWrite: false }),
   );
   blob.rotation.x = -Math.PI / 2;
   scene.add(blob);
-  player.position.set(0, 1.4, 9);
+  const SPAWN = V(0, 0, 9);
+  player.position.copy(SPAWN);
   scene.add(player);
+  const heroLight = new THREE.PointLight('#7cf5ff', 4, 6, 1.6);
+  heroLight.position.y = 1.2;
+  player.add(heroLight);
 
   const target = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: '#7cf5ff', transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
   target.rotation.x = -Math.PI / 2;
   target.visible = false;
   scene.add(target);
 
-  /* ---------------- input ---------------- */
+  /* ---------------- state ---------------- */
   const keys = new Set();
   const joy = { x: 0, y: 0 };
   let moveTo = null;
   let yaw = 0;
-  let zoom = isTouch ? 1.15 : 1;
+  let pitch = 0.32;
+  let dist = isTouch ? 8 : 7;
+  let view = 'tpp'; // 'tpp' | 'fpp'
   const vel = V(0, 0, 0);
+  let vy = 0;
+  let grounded = true;
+  let jumpQueued = false;
+  let coyote = 0;
   let heading = Math.PI;
   let speedNow = 0;
   let paused = false;
   let flight = null; // fast travel animation
   let introT = 0;
+  let hovered = null;
+  let aimed = null;
+  let nearest = null;
+  let shown = null;
+  let currentZone = null;
+  const HEIGHT = 1.75;
 
+  /* ---------------- physics helpers ---------------- */
+  function groundAt(x, z, feet) {
+    let g = Math.hypot(x, z) < R - 0.6 ? 0 : -Infinity;
+    for (const c of colliders) {
+      if (c.h >= 50) continue;
+      if (Math.hypot(x - c.x, z - c.z) < c.r && feet >= c.h - 0.35 && c.h > g) g = c.h;
+    }
+    return g;
+  }
+
+  /* ---------------- input ---------------- */
+  const MOVE_KEYS = ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'shift', 'q', 'r'];
   const onKey = (e, down) => {
     if (e.target.closest?.('input,textarea')) return;
     const k = e.key.toLowerCase();
-    if (down && (k === 'e' || k === 'enter' || k === ' ') && !e.repeat && !paused) {
-      if (nearest) {
-        e.preventDefault();
-        open(nearest);
+    if (down && !e.repeat && !paused) {
+      if (k === 'e' || k === 'enter') {
+        const it = aimed || nearest;
+        if (it) {
+          e.preventDefault();
+          open(it);
+        }
+        return;
       }
-      return;
+      if (k === ' ') {
+        e.preventDefault();
+        jumpQueued = true;
+        return;
+      }
+      if (k === 'v' || k === 'c') {
+        api.toggleView();
+        return;
+      }
     }
-    if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'shift', 'q', 'r'].includes(k)) {
+    if (k === ' ') e.preventDefault();
+    if (MOVE_KEYS.includes(k)) {
       if (down) keys.add(k);
       else keys.delete(k);
       if (down) moveTo = null;
       if (k.startsWith('arrow')) e.preventDefault();
     }
   };
-  const kd = (e) => onKey(e, true);
-  const ku = (e) => onKey(e, false);
-  addEventListener('keydown', kd);
-  addEventListener('keyup', ku);
+  addEventListener('keydown', (e) => onKey(e, true));
+  addEventListener('keyup', (e) => onKey(e, false));
   addEventListener('blur', () => keys.clear());
 
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
-  const groundPlane = new THREE.Plane(V(0, 1, 0), 0);
   let down = null;
   const el = renderer.domElement;
+  const locked = () => document.pointerLockElement === el;
   const setNdc = (e) => {
     const r = el.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
   };
+  const look = (dx, dy, k) => {
+    yaw -= dx * k;
+    pitch = THREE.MathUtils.clamp(pitch + dy * k, view === 'fpp' ? -1.35 : -0.25, view === 'fpp' ? 1.35 : 1.25);
+  };
+  document.addEventListener('pointerlockchange', () => hooks.onLock?.(locked()));
+  document.addEventListener('mousemove', (e) => {
+    if (locked() && !paused) look(e.movementX || 0, e.movementY || 0, 0.0022);
+  });
   el.addEventListener('pointerdown', (e) => {
-    down = { x: e.clientX, y: e.clientY, id: e.pointerId, drag: false };
+    if (locked()) {
+      if (e.button === 0 && aimed && !paused) open(aimed);
+      return;
+    }
+    down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, id: e.pointerId, drag: false };
     el.setPointerCapture(e.pointerId);
   });
   el.addEventListener('pointermove', (e) => {
+    if (locked()) return;
     if (down && down.id === e.pointerId) {
-      const dx = e.clientX - down.x;
-      if (!down.drag && Math.abs(dx) + Math.abs(e.clientY - down.y) > 6) down.drag = true;
+      if (!down.drag && Math.abs(e.clientX - down.x) + Math.abs(e.clientY - down.y) > 6) down.drag = true;
       if (down.drag) {
-        yaw -= (e.movementX || 0) * 0.006;
+        look(e.clientX - down.lx, e.clientY - down.ly, isTouch ? 0.007 : 0.005);
         el.style.cursor = 'grabbing';
       }
+      down.lx = e.clientX;
+      down.ly = e.clientY;
       return;
     }
     if (isTouch) return;
     setNdc(e);
     const hit = ray.intersectObjects(clickTargets, false)[0];
     hovered = hit ? hit.object.userData.interactable : null;
-    el.style.cursor = hovered ? 'pointer' : 'grab';
+    el.style.cursor = hovered ? 'pointer' : 'crosshair';
   });
   el.addEventListener('pointerup', (e) => {
     if (!down || down.id !== e.pointerId) return;
     const wasDrag = down.drag;
     down = null;
-    el.style.cursor = 'grab';
+    el.style.cursor = 'crosshair';
     if (wasDrag || paused) return;
     setNdc(e);
     const hit = ray.intersectObjects(clickTargets, false)[0];
     if (hit) return open(hit.object.userData.interactable);
-    const p = new THREE.Vector3();
-    if (ray.ray.intersectPlane(groundPlane, p) && Math.hypot(p.x, p.z) < R - 2.5) {
-      moveTo = p;
-      target.position.set(p.x, 0.08, p.z);
-      target.visible = true;
+    // desktop: a plain click on the world captures the mouse for free look
+    if (!isTouch && el.requestPointerLock) {
+      try {
+        const p = el.requestPointerLock();
+        p?.catch?.(() => {});
+      } catch {
+        /* pointer lock not available (e.g. iframe) — drag-to-look still works */
+      }
     }
   });
   el.addEventListener('pointercancel', () => (down = null));
@@ -878,18 +973,16 @@ export function createWorld(container, hooks = {}) {
     'wheel',
     (e) => {
       e.preventDefault();
-      zoom = THREE.MathUtils.clamp(zoom + e.deltaY * 0.0012, 0.5, 1.7);
+      if (view === 'fpp') return;
+      dist = THREE.MathUtils.clamp(dist + e.deltaY * 0.01, 3, 13);
     },
     { passive: false },
   );
-  el.style.cursor = 'grab';
-
-  let hovered = null;
-  let nearest = null;
-  let currentZone = null;
+  el.style.cursor = 'crosshair';
 
   function open(it) {
     if (!it) return;
+    if (locked()) document.exitPointerLock?.();
     hooks.onOpen?.(it.section, it.index);
   }
 
@@ -898,7 +991,7 @@ export function createWorld(container, hooks = {}) {
     const w = container.clientWidth;
     const h = container.clientHeight;
     camera.aspect = w / h;
-    camera.fov = w < h ? 62 : 50;
+    camera.fov = view === 'fpp' ? (w < h ? 75 : 68) : w < h ? 62 : 52;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     composer?.setSize(w, h);
@@ -911,10 +1004,20 @@ export function createWorld(container, hooks = {}) {
   const camGoal = V(0, 0, 0);
   const lookGoal = V(0, 0, 0);
   const lookAt = V(0, 1, 0);
+  const center = new THREE.Vector2(0, 0);
   camera.position.set(0, 60, 80);
   let frames = 0;
   let fpsT = 0;
   let checkedPerf = false;
+  let aimTick = 0;
+
+  function respawn() {
+    player.position.copy(SPAWN);
+    vel.set(0, 0, 0);
+    vy = 0;
+    yaw = 0;
+    hooks.onRespawn?.();
+  }
 
   function step() {
     clock.update();
@@ -927,8 +1030,7 @@ export function createWorld(container, hooks = {}) {
       fpsT += dt;
       if (fpsT > 3) {
         checkedPerf = true;
-        const fps = frames / fpsT;
-        if (fps < 40) {
+        if (frames / fpsT < 40) {
           composer = null;
           renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
           renderer.shadowMap.enabled = false;
@@ -937,15 +1039,15 @@ export function createWorld(container, hooks = {}) {
       }
     }
 
-    // ---- movement
+    // ---- input -> desired horizontal velocity
     let ix = joy.x;
     let iy = joy.y;
     if (keys.has('a') || keys.has('arrowleft')) ix -= 1;
     if (keys.has('d') || keys.has('arrowright')) ix += 1;
     if (keys.has('w') || keys.has('arrowup')) iy += 1;
     if (keys.has('s') || keys.has('arrowdown')) iy -= 1;
-    if (keys.has('q')) yaw += dt * 1.8;
-    if (keys.has('r')) yaw -= dt * 1.8;
+    if (keys.has('q')) yaw += dt * 2;
+    if (keys.has('r')) yaw -= dt * 2;
     const fwd = V(-Math.sin(yaw), 0, -Math.cos(yaw));
     const right = V(Math.cos(yaw), 0, -Math.sin(yaw));
     const want = V(0, 0, 0);
@@ -963,42 +1065,102 @@ export function createWorld(container, hooks = {}) {
       } else want.copy(tmp.normalize()).multiplyScalar(Math.min(1, d / 2));
     }
     if (paused) want.set(0, 0, 0);
-    const maxSpeed = keys.has('shift') ? 14 : 8.5;
-    const accel = 1 - Math.exp(-dt * 6);
-    vel.lerp(want.multiplyScalar(maxSpeed), accel);
+    const sprint = keys.has('shift') || Math.hypot(joy.x, joy.y) > 0.95;
+    const maxSpeed = sprint ? 10 : 6;
+    vel.lerp(want.multiplyScalar(maxSpeed), 1 - Math.exp(-dt * (grounded ? 12 : 3)));
 
     if (flight) {
       flight.t += dt / flight.dur;
       const k = Math.min(1, flight.t);
       const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
       player.position.lerpVectors(flight.from, flight.to, e);
-      player.position.y = 1.4 + Math.sin(k * Math.PI) * 8;
+      player.position.y = THREE.MathUtils.lerp(flight.from.y, flight.to.y, e) + Math.sin(k * Math.PI) * 9;
       vel.set(0, 0, 0);
-      if (k >= 1) flight = null;
+      vy = 0;
+      grounded = false;
+      if (k >= 1) {
+        flight = null;
+        grounded = true;
+      }
     } else {
-      player.position.addScaledVector(vel, dt);
-      // collisions
+      // horizontal move + collisions
+      player.position.x += vel.x * dt;
+      player.position.z += vel.z * dt;
+      const feet = player.position.y;
       for (const c of colliders) {
+        const y0 = c.y0 ?? -10;
+        if (feet >= c.h - 0.35 || feet + HEIGHT <= y0) continue; // above it (can stand on it) or below it
         const dx = player.position.x - c.x;
         const dz = player.position.z - c.z;
         const d = Math.hypot(dx, dz);
-        const min = c.r + 0.55;
+        const min = c.r + 0.4;
         if (d < min && d > 0.0001) {
           player.position.x = c.x + (dx / d) * min;
           player.position.z = c.z + (dz / d) * min;
         }
       }
-      const pd = Math.hypot(player.position.x, player.position.z);
-      if (pd > R - 2.5) player.position.multiplyScalar((R - 2.5) / pd);
-      player.position.y = 1.4 + Math.sin(t * 2.4) * 0.12;
+      // vertical
+      const g = groundAt(player.position.x, player.position.z, feet);
+      if (grounded && feet - g > 0.4) grounded = false; // walked off a ledge
+      if (grounded) coyote = 0.12;
+      else coyote -= dt;
+      if (jumpQueued && (grounded || coyote > 0) && !paused) {
+        vy = 9.2;
+        grounded = false;
+        coyote = 0;
+        hooks.onJump?.();
+      }
+      jumpQueued = false;
+      if (!grounded) {
+        vy -= 24 * dt;
+        player.position.y += vy * dt;
+        if (player.position.y <= g && vy <= 0) {
+          player.position.y = g;
+          vy = 0;
+          grounded = true;
+        }
+      } else {
+        player.position.y = THREE.MathUtils.lerp(player.position.y, g, 1 - Math.exp(-dt * 20)); // smooth small steps
+      }
+      // jump pads
+      if (grounded) {
+        for (const p of pads) {
+          if (Math.hypot(player.position.x - p.x, player.position.z - p.z) < 1.1) {
+            vy = p.power;
+            grounded = false;
+            burst.fire(V(p.x, 0.5, p.z), new THREE.Color('#3ddc84'), 30);
+            hooks.onJump?.();
+          }
+        }
+      }
+      if (player.position.y < -28) respawn();
     }
-    speedNow = vel.length();
-    if (speedNow > 0.3) heading = Math.atan2(vel.x, vel.z);
-    player.rotation.y = lerpAngle(player.rotation.y, heading, 1 - Math.exp(-dt * 10));
-    body.rotation.x = THREE.MathUtils.lerp(body.rotation.x, Math.min(speedNow / maxSpeed, 1) * 0.35, 0.1);
-    blob.position.set(player.position.x, 0.05, player.position.z);
-    blob.scale.setScalar(1 - (player.position.y - 1.4) * 0.06);
+
+    speedNow = Math.hypot(vel.x, vel.z);
+    if (view === 'fpp') heading = yaw + Math.PI;
+    else if (speedNow > 0.3) heading = Math.atan2(vel.x, vel.z);
+    player.rotation.y = lerpAngle(player.rotation.y, heading, 1 - Math.exp(-dt * 12));
+    hero.update(dt, speedNow / 6, grounded, vy);
+    hero.root.visible = view !== 'fpp';
+    const gb = groundAt(player.position.x, player.position.z, player.position.y + 0.01);
+    blob.visible = gb > -100;
+    if (blob.visible) {
+      blob.position.set(player.position.x, gb + 0.04, player.position.z);
+      blob.scale.setScalar(Math.max(0.3, 1 - (player.position.y - gb) * 0.12));
+    }
     if (target.visible) target.scale.setScalar(1 + Math.sin(t * 6) * 0.15);
+
+    // ---- aim (what the crosshair points at)
+    aimTick -= dt;
+    if (aimTick <= 0) {
+      aimTick = 0.1;
+      aimed = null;
+      if (view === 'fpp' || locked()) {
+        ray.setFromCamera(center, camera);
+        const hit = ray.intersectObjects(clickTargets, false)[0];
+        if (hit && hit.object.userData.interactable && hit.point.distanceTo(player.position) < 12) aimed = hit.object.userData.interactable;
+      }
+    }
 
     // ---- proximity / zones
     let best = null;
@@ -1011,12 +1173,14 @@ export function createWorld(container, hooks = {}) {
         bestD = d;
       }
     }
-    if (best !== nearest) {
-      nearest = best;
-      hooks.onNear?.(best);
+    nearest = best;
+    const focus = aimed || nearest;
+    if (focus !== shown) {
+      shown = focus;
+      hooks.onNear?.(focus);
     }
     for (const it of interactables) {
-      const goal = it === nearest || it === hovered || (hovered && hovered.section === 'about' && it.section === 'about') ? 1 : 0;
+      const goal = it === focus || it === hovered || (focus && focus.section === 'about' && it.section === 'about') ? 1 : 0;
       it.hover += (goal - it.hover) * Math.min(1, dt * 8);
     }
     let zone = null;
@@ -1039,15 +1203,18 @@ export function createWorld(container, hooks = {}) {
         continue;
       }
       s.m.rotation.y = t * 2;
-      s.m.position.y = 1.3 + Math.sin(t * 2 + s.m.position.x) * 0.25;
+      s.m.position.y = s.base.y + Math.sin(t * 2 + s.base.x) * 0.25;
       s.halo.scale.setScalar(1 + Math.sin(t * 3) * 0.15);
-      if (Math.hypot(player.position.x - s.m.position.x, player.position.z - s.m.position.z) < 1.4) {
+      if (
+        Math.hypot(player.position.x - s.m.position.x, player.position.z - s.m.position.z) < 1.3 &&
+        Math.abs(player.position.y + 0.9 - s.m.position.y) < 1.6
+      ) {
         s.got = true;
         shardCount++;
         burst.fire(s.m.position, s.m.material.emissive);
-        hooks.onShard?.(shardCount, shards.length);
+        hooks.onShard?.(shardCount, shards.length, s.secret);
         if (shardCount === shards.length) {
-          burst.fire(player.position.clone().setY(3), new THREE.Color('#ffb547'), 160);
+          burst.fire(player.position.clone().setY(player.position.y + 3), new THREE.Color('#ffb547'), 160);
           hooks.onAllShards?.();
         }
       }
@@ -1057,22 +1224,31 @@ export function createWorld(container, hooks = {}) {
     for (const a of animators) a(t, dt);
 
     // ---- camera
-    const dist = 15 * zoom;
-    const height = 9.5 * zoom + 1.5;
-    camGoal.set(player.position.x + Math.sin(yaw) * dist, height, player.position.z + Math.cos(yaw) * dist);
-    lookGoal.set(player.position.x, 1.6, player.position.z);
+    const head = V(player.position.x, player.position.y + 1.55, player.position.z);
+    if (view === 'fpp') {
+      camGoal.copy(head).addScaledVector(fwd, 0.15);
+      lookGoal.set(-Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch)).add(camGoal);
+    } else {
+      const cp = Math.cos(pitch);
+      camGoal.set(head.x + Math.sin(yaw) * cp * dist, head.y + Math.sin(pitch) * dist, head.z + Math.cos(yaw) * cp * dist).addScaledVector(right, 0.55);
+      const floor = Math.max(groundAt(camGoal.x, camGoal.z, camGoal.y), -2) + 0.5;
+      if (camGoal.y < floor) camGoal.y = floor;
+      lookGoal.copy(head).addScaledVector(right, 0.55);
+    }
     if (introT < 1) {
-      introT = Math.min(1, introT + dt / 2.8);
+      introT = Math.min(1, introT + dt / 2.6);
       const e = 1 - Math.pow(1 - introT, 3);
       camera.position.lerpVectors(V(-40, 55, 75), camGoal, e);
       lookAt.lerpVectors(V(0, 0, 0), lookGoal, e);
+    } else if (view === 'fpp') {
+      camera.position.copy(camGoal);
+      lookAt.copy(lookGoal);
     } else {
-      const k = 1 - Math.exp(-dt * (flight ? 3 : 5));
-      camera.position.lerp(camGoal, k);
-      lookAt.lerp(lookGoal, 1 - Math.exp(-dt * 8));
+      camera.position.lerp(camGoal, 1 - Math.exp(-dt * (flight ? 4 : 14)));
+      lookAt.lerp(lookGoal, 1 - Math.exp(-dt * 18));
     }
     camera.lookAt(lookAt);
-    for (const l of fadeLabels) l.material.opacity = THREE.MathUtils.smoothstep(camera.position.distanceTo(l.position), 9, 17);
+    for (const l of fadeLabels) l.material.opacity = THREE.MathUtils.smoothstep(camera.position.distanceTo(l.position), 6, 13);
     sun.position.set(player.position.x - 30, 50, player.position.z - 20);
     sun.target.position.set(player.position.x, 0, player.position.z);
     sun.target.updateMatrixWorld();
@@ -1094,17 +1270,19 @@ export function createWorld(container, hooks = {}) {
   }
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
-  // compile everything once before first frame to avoid hitches
   if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; } };
   renderer.compile(scene, camera);
   resize();
   start();
 
-  return {
+  const api = {
     zones: ZONES,
     islandRadius: R,
     get shardTotal() {
       return shards.length;
+    },
+    get view() {
+      return view;
     },
     setPaused(v) {
       paused = v;
@@ -1114,21 +1292,35 @@ export function createWorld(container, hooks = {}) {
       joy.x = x;
       joy.y = y;
     },
+    jump() {
+      jumpQueued = true;
+    },
+    toggleView() {
+      view = view === 'tpp' ? 'fpp' : 'tpp';
+      pitch = view === 'fpp' ? 0.05 : 0.32;
+      resize();
+      hooks.onView?.(view);
+    },
+    lockMouse() {
+      try {
+        el.requestPointerLock?.()?.catch?.(() => {});
+      } catch {
+        /* ignore */
+      }
+    },
     interact() {
-      open(nearest);
+      open(aimed || nearest);
     },
     travelTo(id) {
       const z = ZONES.find((zz) => zz.id === id);
       if (!z) return;
       const dir = z.c.clone().setY(0);
       const toward = dir.length() ? dir.clone().normalize() : V(0, 0, 1);
-      const to = z.id === 'plaza' ? V(0, 1.4, 8) : z.c.clone().sub(toward.multiplyScalar(z.id === 'timeline' ? 8 : 6)).setY(1.4);
-      flight = { from: player.position.clone(), to, t: 0, dur: 1.3 };
+      const to = z.id === 'plaza' ? V(0, 0, 8) : z.c.clone().sub(toward.multiplyScalar(z.id === 'timeline' ? 7 : 5.5)).setY(0);
+      flight = { from: player.position.clone(), to, t: 0, dur: 1.4 };
       moveTo = null;
       target.visible = false;
-      // face the zone
-      yaw = Math.atan2(-(z.c.x - to.x), -(z.c.z - to.z)) || 0;
-      if (z.id === 'plaza') yaw = 0;
+      yaw = z.id === 'plaza' ? 0 : Math.atan2(-(z.c.x - to.x), -(z.c.z - to.z)) || 0;
     },
     moveToWorld(x, z) {
       if (Math.hypot(x, z) > R - 2.5) return;
@@ -1138,6 +1330,89 @@ export function createWorld(container, hooks = {}) {
     },
     minimap() {
       return { px: player.position.x, pz: player.position.z, heading: player.rotation.y, yaw, shards: shards.filter((s) => !s.got).map((s) => s.m.position) };
+    },
+  };
+  return api;
+}
+
+/** Low-poly explorer with a simple procedural walk cycle. */
+function makeCharacter(mat, glow, shadowy) {
+  const root = new THREE.Group();
+  const body = new THREE.Group();
+  root.add(body);
+  const hoodie = mat('#6a4bd6');
+  const pants = mat('#26213f');
+  const skin = mat('#f0c9a0');
+  const shoe = mat('#f2f0ff');
+
+  const limb = (w, h, d, m, x, y) => {
+    const pivot = new THREE.Group();
+    pivot.position.set(x, y, 0);
+    const mesh = shadowy(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m), true, false);
+    mesh.position.y = -h / 2;
+    pivot.add(mesh);
+    body.add(pivot);
+    return { pivot, mesh };
+  };
+  const legL = limb(0.24, 0.8, 0.26, pants, -0.15, 0.82);
+  const legR = limb(0.24, 0.8, 0.26, pants, 0.15, 0.82);
+  for (const l of [legL, legR]) {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.14, 0.38), shoe);
+    s.position.set(0, -0.78, 0.05);
+    l.pivot.add(s);
+  }
+  const torso = shadowy(new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.72, 0.36), hoodie), true, false);
+  torso.position.y = 1.18;
+  body.add(torso);
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.06, 0.38), glow('#7cf5ff', 2.2));
+  stripe.position.y = 1.08;
+  body.add(stripe);
+  const armL = limb(0.18, 0.66, 0.2, hoodie, -0.41, 1.5);
+  const armR = limb(0.18, 0.66, 0.2, hoodie, 0.41, 1.5);
+  for (const a of [armL, armR]) {
+    const h = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.14, 0.18), skin);
+    h.position.y = -0.7;
+    a.pivot.add(h);
+  }
+  const headG = new THREE.Group();
+  headG.position.y = 1.62;
+  const head = shadowy(new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.46, 0.44), skin), true, false);
+  head.position.y = 0.22;
+  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 0.48), mat('#1d1830'));
+  hair.position.y = 0.48;
+  const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.1, 0.1), mat('#1d1830'));
+  fringe.position.set(0, 0.38, 0.2);
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.1, 0.04), glow('#7cf5ff', 2.6));
+  visor.position.set(0, 0.24, 0.23);
+  headG.add(head, hair, fringe, visor);
+  body.add(headG);
+  const pack = shadowy(new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.5, 0.2), mat('#2a2440')), true, false);
+  pack.position.set(0, 1.2, -0.28);
+  const jet = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.3, 8, 1, true), new THREE.MeshBasicMaterial({ color: '#7cf5ff', transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false }));
+  jet.rotation.x = Math.PI;
+  jet.position.set(0, 0.88, -0.3);
+  body.add(pack, jet);
+
+  let phase = 0;
+  return {
+    root,
+    update(dt, speed, grounded, vy) {
+      const s = Math.min(speed, 1.7);
+      phase += dt * (4 + s * 7) * (s > 0.05 ? 1 : 0);
+      let swing = Math.sin(phase) * 0.8 * Math.min(s, 1.2);
+      if (!grounded) swing = 0;
+      const air = grounded ? 0 : 1;
+      legL.pivot.rotation.x = THREE.MathUtils.lerp(swing, -0.6, air);
+      legR.pivot.rotation.x = THREE.MathUtils.lerp(-swing, 0.3, air);
+      armL.pivot.rotation.x = THREE.MathUtils.lerp(-swing * 0.9, -2.6, air * (vy > 0 ? 1 : 0.5));
+      armR.pivot.rotation.x = THREE.MathUtils.lerp(swing * 0.9, -2.6, air * (vy > 0 ? 1 : 0.5));
+      armL.pivot.rotation.z = -0.08 - air * 0.3;
+      armR.pivot.rotation.z = 0.08 + air * 0.3;
+      body.position.y = grounded ? Math.abs(Math.sin(phase)) * 0.06 * Math.min(s, 1) : 0;
+      body.rotation.x = THREE.MathUtils.lerp(body.rotation.x, grounded ? s * 0.12 : 0.05, 0.2);
+      headG.rotation.y = s < 0.05 ? Math.sin(phase * 0.2 + performance.now() * 0.0004) * 0.25 : 0;
+      jet.visible = !grounded;
+      jet.scale.y = 1 + Math.random() * 0.4;
     },
   };
 }

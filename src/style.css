@@ -167,3 +167,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* free-explore additions */
+.crosshair { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none !important; opacity: 0; transition: opacity 0.2s; }
+.crosshair::before, .crosshair::after { content: ''; position: absolute; background: rgba(255, 255, 255, 0.9); box-shadow: 0 0 6px rgba(0, 0, 0, 0.6); border-radius: 2px; }
+.crosshair::before { left: 10px; top: 3px; width: 2px; height: 16px; }
+.crosshair::after { top: 10px; left: 3px; height: 2px; width: 16px; }
+.hud.locked .crosshair, .hud.fpp .crosshair { opacity: 1; }
+.lock-hint { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); padding: 8px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.hud.locked .lock-hint, .touch .lock-hint { display: none; }
+.touch-btns { position: absolute; right: 18px; bottom: 28px; display: none; gap: 12px; flex-direction: column; align-items: center; }
+.touch .touch-btns { display: flex; }
+.touch-btns button { width: 64px; height: 64px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); font-family: var(--font-display); font-weight: 700; font-size: 13px; display: grid; place-items: center; touch-action: none; }
+.touch-btns button[data-jump] { width: 78px; height: 78px; background: linear-gradient(135deg, rgba(124, 245, 255, 0.85), rgba(177, 140, 255, 0.85)); color: #0b0d1f; border: none; }
+.touch-btns svg { width: 24px; height: 24px; }
+.touch [data-view] { display: none; }
+.touch .minimap { bottom: auto; top: 120px; width: 84px; height: 84px; }

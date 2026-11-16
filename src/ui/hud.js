@@ -4,6 +4,7 @@ import { esc } from './cards.js';
 const ICON = {
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
   user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
 };
 
@@ -18,6 +19,7 @@ export function createHud(world, { onClassic, onAbout }) {
       <span><b>${esc(profile.name)}</b><small>${esc(profile.title)}</small></span>
     </button>
     <div class="hud-top-right">
+      <button class="icon-btn" data-view title="Switch camera (V)">${ICON.eye}<span class="lbl" data-view-label>First person</span></button>
       <button class="icon-btn" data-travel aria-expanded="false">${ICON.map}<span class="lbl">Fast travel</span></button>
       <button class="icon-btn" data-classic>${ICON.list}<span class="lbl">Classic view</span></button>
     </div>
@@ -30,11 +32,14 @@ export function createHud(world, { onClassic, onAbout }) {
     <button class="prompt"><span class="kbd">${isTouch ? 'TAP' : 'E'}</span><span data-label></span></button>
     <div class="minimap" title="Click to fly there"><canvas width="312" height="312"></canvas></div>
     <div class="controls-hint">
-      <div><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> fly</div>
-      <div><span class="kbd">Shift</span> boost · <span class="kbd">E</span> open</div>
-      <div>Drag to look · scroll to zoom · click to move</div>
+      <div><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> walk · <span class="kbd">Shift</span> sprint</div>
+      <div><span class="kbd">Space</span> jump · <span class="kbd">E</span> open · <span class="kbd">V</span> 1st/3rd person</div>
+      <div>Click to look with the mouse · <span class="kbd">Esc</span> frees it</div>
     </div>
-    <div class="joy"><i></i></div>`;
+    <div class="crosshair" aria-hidden="true"></div>
+    <button class="lock-hint">Click to look around with your mouse</button>
+    <div class="joy"><i></i></div>
+    <div class="touch-btns"><button data-tview aria-label="Switch camera">${ICON.eye}</button><button data-jump aria-label="Jump">JUMP</button></div>`;
   document.body.appendChild(hud);
 
   const $ = (s) => hud.querySelector(s);
@@ -56,6 +61,23 @@ export function createHud(world, { onClassic, onAbout }) {
     travel.classList.remove('on');
   });
   prompt.addEventListener('click', () => world.interact());
+  const viewLabel = $('[data-view-label]');
+  const setView = (v) => {
+    viewLabel.textContent = v === 'fpp' ? 'Third person' : 'First person';
+    hud.classList.toggle('fpp', v === 'fpp');
+  };
+  $('[data-view]').addEventListener('click', (e) => {
+    world.toggleView();
+    e.currentTarget.blur();
+  });
+  $('[data-tview]').addEventListener('click', () => world.toggleView());
+  const jumpBtn = $('[data-jump]');
+  jumpBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    world.jump();
+  });
+  const lockHint = $('.lock-hint');
+  lockHint.addEventListener('click', () => world.lockMouse());
 
   /* ---- minimap ---- */
   const mm = $('.minimap canvas');
@@ -175,6 +197,10 @@ export function createHud(world, { onClassic, onAbout }) {
   }
 
   return {
+    setView,
+    lock(on) {
+      hud.classList.toggle('locked', on);
+    },
     near(it) {
       if (it) $('[data-label]').textContent = `View ${it.label}`;
       prompt.classList.toggle('on', !!it);
@@ -186,12 +212,13 @@ export function createHud(world, { onClassic, onAbout }) {
       clearTimeout(zoneTimer);
       zoneTimer = setTimeout(() => zoneTitle.classList.remove('on'), 2400);
     },
-    shard(n, total) {
+    shard(n, total, secret) {
       $('[data-count]').textContent = `${n}/${total}`;
-      if (n < total) toast(`✦ Data shard ${n}/${total} collected`);
+      if (secret) toast(`🌟 <b>Secret shard!</b> You conquered the Sky Lookout. (${n}/${total})`, n < total);
+      else if (n < total) toast(`✦ Data shard ${n}/${total} collected`);
     },
     allShards() {
-      toast('🏆 <b>Island Explorer unlocked!</b><br/>You found every shard. Thanks for exploring. Let\'s connect!', true);
+      toast('🏆 <b>Island Explorer unlocked!</b><br/>You found every shard, even the secret one. Thanks for exploring. Let\'s connect!', true);
     },
     toast,
     destroy() {
