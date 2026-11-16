@@ -183,3 +183,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .touch-btns svg { width: 24px; height: 24px; }
 .touch [data-view] { display: none; }
 .touch .minimap { bottom: auto; top: 120px; width: 84px; height: 84px; }
+
+.mini-h { margin: 18px 0 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
+.tile .mini-h { margin-top: 0; }
+ul.hl { margin: 0 0 12px; padding-left: 18px; line-height: 1.55; color: #d6d9f5; font-size: 14px; }
+.quote { margin: 18px 0 0; padding: 14px 16px; border-left: 3px solid var(--accent-2); background: rgba(177, 140, 255, 0.08); border-radius: 0 12px 12px 0; }
+.quote p { margin: 0 0 8px; font-style: italic; font-size: 14px; line-height: 1.6; }
+.quote footer { font-size: 12px; color: var(--muted); }

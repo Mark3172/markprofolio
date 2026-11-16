@@ -1,5 +1,5 @@
 import { profile, projects, experience, certificates } from '../data/portfolio.js';
-import { esc, sampleTag, contactButtons, KIND_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
+import { esc, sampleTag, contactButtons, highlightsHtml, testimonialHtml, KIND_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
 
 /** Fast, accessible 2D version of the portfolio (phones, no-WebGL, or by choice). */
 export function renderClassic(root, { canExplore, onExplore }) {
@@ -25,8 +25,9 @@ export function renderClassic(root, { canExplore, onExplore }) {
     <section class="c-section" id="about">
       <h2>About</h2>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))">
-        <div class="tile">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+        <div class="tile">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}${testimonialHtml()}</div>
         <div class="tile" style="--c:var(--accent-2)">
+          ${highlightsHtml()}
           ${profile.skills.map((g) => `<div style="margin-bottom:12px"><div class="meta">${esc(g.group)}</div><div class="chips" style="margin:6px 0 0">${g.items.map((i) => `<span class="chip">${esc(i)}</span>`).join('')}</div></div>`).join('')}
         </div>
       </div>

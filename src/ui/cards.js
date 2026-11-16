@@ -64,10 +64,23 @@ export const sections = {
         <div class="skills-grid">${profile.skills
           .map((g) => `<div><h4>${esc(g.group)}</h4><div class="chips" style="margin:0">${g.items.map((i) => `<span class="chip">${esc(i)}</span>`).join('')}</div></div>`)
           .join('')}</div>
+        ${highlightsHtml()}
+        ${testimonialHtml()}
         <div class="card-actions">${contactButtons()}</div>`,
     }),
   },
 };
+
+export function highlightsHtml() {
+  if (!profile.highlights?.length) return '';
+  return `<h4 class="mini-h">Highlights</h4><ul class="hl">${profile.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>`;
+}
+
+export function testimonialHtml() {
+  const t = profile.testimonial;
+  if (!t?.quote) return '';
+  return `<blockquote class="quote"><p>“${esc(t.quote)}”</p><footer>${esc(t.author)}${t.role ? ' · ' + esc(t.role) : ''}${t.date ? ' · ' + esc(t.date) : ''}</footer></blockquote>`;
+}
 
 export function contactButtons() {
   const l = profile.links;

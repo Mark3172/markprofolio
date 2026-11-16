@@ -336,8 +336,8 @@ export function createWorld(container, hooks = {}) {
   {
     const zc = ZONES[1].c;
     const n = projects.length;
-    const r = 7 + Math.max(0, n - 5) * 0.9;
-    const spread = Math.min(1.35, 0.34 * (n - 1));
+    const r = Math.min(11, 7 + Math.max(0, n - 5) * 0.9);
+    const spread = Math.min(1.6, 0.34 * (n - 1));
     projects.forEach((p, i) => {
       const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
       const pos = V(zc.x + Math.sin(a) * r, 0, zc.z + 3 - Math.cos(a) * r);
@@ -414,7 +414,7 @@ export function createWorld(container, hooks = {}) {
     });
 
     const n = certificates.length;
-    const r = Math.max(5, n * 1.1);
+    const r = Math.max(5, Math.min(7, (n * 2.9) / (Math.PI * 2)));
     certificates.forEach((c, i) => {
       const a = (i / n) * Math.PI * 2 + Math.PI; // start facing the plaza
       const pos = V(zc.x + Math.cos(a) * r, 0, zc.z + Math.sin(a) * r);
@@ -465,7 +465,7 @@ export function createWorld(container, hooks = {}) {
       const ph = i * 1.3;
       const face = Math.atan2(-Math.cos(a), -Math.sin(a)); // outward-ish start
       animators.push((t) => {
-        medal.rotation.y = face + Math.sin(t * 0.6 + ph) * 0.9 + (it.hover ? 0 : 0);
+        medal.rotation.y = face + Math.sin(t * 0.6 + ph) * 0.5;
         medal.position.y = 2.7 + Math.sin(t * 1.3 + ph) * 0.15;
         medal.scale.setScalar(1 + it.hover * 0.12);
       });
@@ -476,26 +476,27 @@ export function createWorld(container, hooks = {}) {
   {
     const zc = ZONES[3].c;
     const n = experience.length;
-    const width = Math.max(16, (n - 1) * 7);
-    // stepping stones
-    const stones = 18;
+    // monoliths stand on an arc that opens toward the plaza
+    const r = Math.min(11, Math.max(8, n * 1.3));
+    const spread = n === 1 ? 0 : Math.min(1.45, 0.3 * (n - 1));
+    const arc = (a, rr) => [zc.x + Math.sin(a) * rr, zc.z - 3 + Math.cos(a) * rr * 0.7];
+    const stones = 22;
     for (let s = 0; s <= stones; s++) {
-      const t = s / stones;
-      const x = zc.x + width / 2 + 2 - (width + 4) * t;
-      const z = zc.z - 4 + Math.sin(t * Math.PI) * -1.5;
+      const a = -spread - 0.2 + ((2 * spread + 0.4) * s) / stones;
+      const [x, z] = arc(a, r - 3.2);
       const st = shadowy(new THREE.Mesh(new THREE.CylinderGeometry(0.55 + rand() * 0.2, 0.65, 0.16, 7), mat('#9a93c4')), false, true);
       st.position.set(x, 0.06, z);
       st.rotation.y = rand() * 3;
       scene.add(st);
     }
     experience.forEach((e, i) => {
-      const t = n === 1 ? 0.5 : i / (n - 1);
-      const x = zc.x - width / 2 + width * t; // oldest on the left, newest on the right, seen from the plaza
-      const z = zc.z + 1 + Math.sin(t * Math.PI) * 1.5;
+      // newest (index 0) ends up on the right when seen from the plaza
+      const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
+      const [x, z] = arc(a, r);
       const color = TYPE_COLOR[e.type] || '#7cf5ff';
       const g = new THREE.Group();
       g.position.set(x, 0, z);
-      g.lookAt(x * 0.6, 0, zc.z - 12);
+      g.lookAt(zc.x + Math.sin(a) * 2, 0, zc.z - 10);
       const stone = shadowy(new THREE.Mesh(new THREE.BoxGeometry(3.3, 4.4, 0.5), mat('#2e2952')));
       stone.position.y = 2.2;
       const tex = canvasTexture(512, 680, (g2, w, h) => {
@@ -1270,7 +1271,7 @@ export function createWorld(container, hooks = {}) {
   }
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
-  if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; } };
+  if (import.meta.env.DEV) window.__w = { player, camera, get flight() { return flight; }, setYaw: (v) => (yaw = v) };
   renderer.compile(scene, camera);
   resize();
   start();
