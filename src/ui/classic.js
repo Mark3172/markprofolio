@@ -1,6 +1,7 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, ACH_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
+import { createModal } from './modal.js';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
@@ -143,32 +144,42 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div>`)}
 
     ${sec('projects', '03', 'Projects', `${projects.length} things I've led, designed or built.`, `
-      <div class="tabs" role="tablist" data-tabs="pcard"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
-      <div class="pgrid">${projects.map((p) => `
-        <article class="pcard glass${p.featured ? ' feat' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
-          ${shot(p.image, p.title, 'pshot')}
-          <div class="pcard-top"><span class="tag">${esc(CAT_LABEL[p.category] || 'Project')}</span>${p.featured ? `<span class="tag tag-star">${ICONS.star}Featured</span>` : ''}<span class="yr">${esc(p.year || '')}</span></div>
-          <h3>${esc(p.title)}${sampleTag(p)}</h3>
-          <p class="tl">${esc(p.tagline)}</p>
-          <p>${esc(p.description)}</p>
-          ${p.featured && p.highlights?.length ? `<ul>${p.highlights.slice(0, 3).map((h) => `<li>${esc(h)}</li>`).join('')}</ul>` : ''}
-          <div class="chips">${(p.tech || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>
-          <div class="plinks">${link(p.links?.demo, `Live demo ${ICONS.arrow}`)}${link(p.links?.code, `Code ${ICONS.arrow}`)}</div>
-        </article>`).join('')}
+      <div class="tabs" role="tablist" data-tabs="spot-row"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
+      <div class="spot" data-spot>
+        <ol class="spot-list">${projects.map((p, i) => `
+          <li class="spot-row${i === 0 ? ' on' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
+            <button class="spot-btn" data-i="${i}" aria-expanded="${i === 0}">
+              <span class="spot-n">${String(i + 1).padStart(2, '0')}</span>
+              <span class="spot-t"><b>${esc(p.title)}${p.featured ? ` <i class="spot-star" title="Featured">${ICONS.star}</i>` : ''}</b><small>${esc(p.tagline)}</small></span>
+              <span class="spot-tag">${esc(CAT_LABEL[p.category] || 'Project')}</span>
+              <span class="spot-arrow">${ICONS.arrow}</span>
+            </button>
+            <div class="spot-inline"></div>
+          </li>`).join('')}
+        </ol>
+        <div class="spot-view glass" aria-live="polite"></div>
       </div>`)}
 
     ${achievements?.length ? sec('hackathons', '04', 'Hackathons & achievements', 'Competitions, events and recognition.', `
-      <div class="tabs" role="tablist" data-tabs="acard"><span class="tab-ind" aria-hidden="true"></span>${ACH_TABS.filter((t) => t.id === 'all' || achievements.some((a) => achGroup(a) === t.id)).map((t, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${t.id}">${t.label}<em>${t.id === 'all' ? achievements.length : achievements.filter((a) => achGroup(a) === t.id).length}</em></button>`).join('')}</div>
-      <div class="agrid">${achievements.map((a) => `
-        <article class="acard glass${a.featured ? ' feat' : ''}" data-cat="${achGroup(a)}" style="--c:${esc(a.color)}">
-          ${shot(a.image, a.title, 'ashot')}
-          <div class="a-top"><span class="a-kind">${ICONS[a.kind === 'hackathon' || a.kind === 'award' ? 'trophy' : 'star']}${esc(ACH_LABEL[a.kind] || '')}</span><span class="yr">${esc(a.date)}</span></div>
-          <h3>${esc(a.title)}${sampleTag(a)}</h3>
-          <div class="a-ev">${esc(a.event)}</div>
-          ${a.role || a.result ? `<div class="a-role">${esc([a.role, a.result].filter(Boolean).join(' · '))}</div>` : ''}
-          ${a.description ? `<p>${esc(a.description)}</p>` : ''}
-          ${link(a.link, `See more ${ICONS.arrow}`, 'a-link')}
-        </article>`).join('')}
+      <div class="tabs" role="tablist" data-tabs="ach-item"><span class="tab-ind" aria-hidden="true"></span>${ACH_TABS.filter((t) => t.id === 'all' || achievements.some((a) => achGroup(a) === t.id)).map((t, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${t.id}">${t.label}<em>${t.id === 'all' ? achievements.length : achievements.filter((a) => achGroup(a) === t.id).length}</em></button>`).join('')}</div>
+      <div class="hbento">${achievements.map((a, i) => ({ a, i })).filter((x) => x.a.featured).map(({ a, i }) => `
+        <button class="htile ach-item" data-cat="${achGroup(a)}" data-open="achievement:${i}" style="--c:${esc(a.color)}">
+          ${a.image ? `<img src="${esc(mediaUrl(a.image))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+          <span class="htile-shade"></span>
+          <span class="htile-body">
+            <span class="htile-kind">${ICONS.trophy}${esc(ACH_LABEL[a.kind] || '')} · ${esc(a.date)}</span>
+            <b>${esc(a.title)}</b>
+            <small>${esc([a.result, a.role].filter(Boolean).join(' · ') || a.event)}</small>
+          </span>
+        </button>`).join('')}
+      </div>
+      <div class="hlist glass">${achievements.map((a, i) => ({ a, i })).filter((x) => !x.a.featured).map(({ a, i }) => `
+        <button class="hrow ach-item" data-cat="${achGroup(a)}" data-open="achievement:${i}" style="--c:${esc(a.color)}">
+          <span class="hrow-date">${esc(a.date)}</span>
+          <span class="hrow-t"><b>${esc(a.title)}</b><small>${esc(a.event)}${a.role ? ' · ' + esc(a.role) : ''}</small></span>
+          <span class="hrow-kind">${esc(ACH_LABEL[a.kind] || '')}</span>
+          <span class="spot-arrow">${ICONS.arrow}</span>
+        </button>`).join('')}
       </div>`) : ''}
 
     ${sec('certifications', '05', 'Licenses & certifications', `${certificates.length} credentials.`, `
@@ -179,9 +190,10 @@ export function renderClassic(root, { canExplore, onExplore }) {
           ${link(c.url, `Verify ${ICONS.arrow}`, 'cverify')}</div>
         </article>`).join('')}
       </div>
+      <details class="cmore"><summary>Show ${otherCerts.length} more credentials</summary>
       <div class="clist glass">${otherCerts.map((c) => `
         <div class="crow" style="--c:${esc(c.color)}"><span class="cdot"></span><div class="cname"><b>${esc(c.name)}</b><span>${esc(c.issuer)}</span></div><span class="cdate">${esc(c.date)}</span>${c.url ? link(c.url, `Verify ${ICONS.arrow}`, 'cverify') : '<span class="cverify off"></span>'}</div>`).join('')}
-      </div>`)}
+      </div></details>`)}
 
     ${sec('education', '06', 'Education', '', `
       <div class="edu">${edu.map((e) => `
@@ -236,7 +248,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
         placeInd(bar);
         const cat = b.dataset.cat;
         let k = 0;
-        root.querySelectorAll('.' + cls).forEach((c) => {
+        const scope = bar.closest('section') || root;
+        scope.querySelectorAll('.' + cls).forEach((c) => {
           const hide = cat !== 'all' && c.dataset.cat !== cat;
           c.hidden = hide;
           if (!hide) {
@@ -246,10 +259,76 @@ export function renderClassic(root, { canExplore, onExplore }) {
             c.classList.add('pop');
           }
         });
+        scope.querySelector('[data-spot]')?.dispatchEvent(new Event('spot:first'));
       }),
     );
     requestAnimationFrame(() => placeInd(bar));
   });
+
+  // project spotlight: pick a row, the preview panel shows it (inline on phones)
+  const spotView = (p, i) => `
+    ${shot(p.image, p.title, 'spot-shot')}
+    <div class="spot-body" style="--c:${esc(p.color)}">
+      <div class="pcard-top"><span class="tag">${esc(CAT_LABEL[p.category] || 'Project')}</span>${p.featured ? `<span class="tag tag-star">${ICONS.star}Featured</span>` : ''}<span class="yr">${esc(p.year || '')}</span></div>
+      <h3>${esc(p.title)}${sampleTag(p)}</h3>
+      <p class="tl">${esc(p.tagline)}</p>
+      <p>${esc(p.description)}</p>
+      ${p.highlights?.length ? `<ul>${p.highlights.slice(0, 3).map((h) => `<li>${esc(h)}</li>`).join('')}</ul>` : ''}
+      <div class="chips">${(p.tech || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>
+      <div class="plinks">${link(p.links?.demo, `Live demo ${ICONS.arrow}`)}${link(p.links?.code, `Code ${ICONS.arrow}`)}</div>
+    </div>`;
+  const spot = root.querySelector('[data-spot]');
+  if (spot) {
+    const view = spot.querySelector('.spot-view');
+    const narrow = matchMedia('(max-width: 860px)');
+    const select = (row, toggle = false) => {
+      const i = Number(row.querySelector('.spot-btn').dataset.i);
+      const wasOn = row.classList.contains('on');
+      spot.querySelectorAll('.spot-row').forEach((r) => {
+        r.classList.remove('on');
+        r.querySelector('.spot-btn').setAttribute('aria-expanded', 'false');
+        r.querySelector('.spot-inline').innerHTML = '';
+      });
+      if (toggle && wasOn && narrow.matches) return; // tap again to close on phones
+      row.classList.add('on');
+      row.querySelector('.spot-btn').setAttribute('aria-expanded', 'true');
+      const html = spotView(projects[i], i);
+      if (narrow.matches) row.querySelector('.spot-inline').innerHTML = `<div class="spot-card glass">${html}</div>`;
+      else {
+        view.classList.remove('swap');
+        void view.offsetWidth;
+        view.innerHTML = html;
+        view.classList.add('swap');
+      }
+    };
+    spot.addEventListener('click', (e) => {
+      const row = e.target.closest('.spot-btn')?.closest('.spot-row');
+      if (row) select(row, true);
+    });
+    // desktop: hovering a row previews it
+    spot.addEventListener('pointerover', (e) => {
+      if (narrow.matches || e.pointerType !== 'mouse') return;
+      const row = e.target.closest('.spot-row');
+      if (row && !row.classList.contains('on')) select(row);
+    });
+    spot.addEventListener('spot:first', () => {
+      const first = [...spot.querySelectorAll('.spot-row')].find((r) => !r.hidden);
+      if (first) select(first);
+    });
+    narrow.addEventListener('change', () => spot.dispatchEvent(new Event('spot:first')));
+    if (narrow.matches) spot.querySelector('.spot-row')?.classList.remove('on');
+    else select(spot.querySelector('.spot-row'));
+  }
+
+  // card -> full details in a modal (same cards as the 3D world)
+  const modal = createModal();
+  root.addEventListener('click', (e) => {
+    const card = e.target.closest('.ach-item[data-open]');
+    if (!card || e.target.closest('a')) return;
+    const [sec, i] = card.dataset.open.split(':');
+    modal.show(sec, Number(i));
+  });
+
   const navInd = root.querySelector('.nav-ind');
   const moveNav = () => {
     const on = root.querySelector('.cv-nav nav a.on');
