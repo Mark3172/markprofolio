@@ -39,6 +39,8 @@ export const profile = {
     { group: 'Programming & AI', items: ['Python', 'C', 'MySQL', 'TypeScript', 'Prompt Engineering', 'Chatbots & NLP'] },
     { group: 'Leadership', items: ['Project Management', 'Team Leadership', 'Event Planning', 'HR Management', 'Marketing', 'Time Management'] },
   ],
+  // Services listed on LinkedIn: shown as "I can help with" in the contact section.
+  services: ['UX Design', 'Web Design', 'Web Development', 'UX Writing', 'Content Strategy', 'Writing', 'Translation'],
   // Big numbers at the top of the classic view.
   keyFacts: [
     { value: '9', label: 'Licenses & certifications' },
@@ -74,7 +76,7 @@ export const projects = [
     title: 'AstroMed',
     tagline: 'Astronaut health console · NASA Space Apps Yangon 2026',
     description:
-      'Built in 48 hours for NASA Space Apps Challenge Yangon. AstroMed is a health-monitoring console for a Mars transit crew 20 light-minutes from Earth, organised around NASA’s five hazards of human spaceflight. Astronauts run their own daily checks with colour-coded results and plain-language guidance, and an on-board AI co-pilot keeps working when the link to Earth drops.',
+      'Built over the two-day NASA Space Apps Challenge Yangon (14–15 Nov 2026). AstroMed is a health-monitoring console for a Mars transit crew 20 light-minutes from Earth, organised around NASA’s five hazards of human spaceflight. Astronauts run their own daily checks with colour-coded results and plain-language guidance, and an on-board AI co-pilot keeps working when the link to Earth drops.',
     highlights: [
       'Clickable 3D body map for reporting injuries, plus live ECG and 24-hour HRV trends',
       '“Hotline to Earth” with real 20-minute link delay, urgency levels and an offline queue',
@@ -257,7 +259,7 @@ export const projects = [
 
 /* ---------------------------------------------------------------------
  *  EXPERIENCE & EDUCATION — monoliths along the Timeline Trail, newest first.
- *  type: 'work' | 'education' | 'volunteer'
+ *  type: 'work' | 'education' | 'internship' | 'volunteer'
  * ------------------------------------------------------------------- */
 export const experience = [
   {
@@ -291,7 +293,7 @@ export const experience = [
     ],
   },
   {
-    type: 'volunteer',
+    type: 'internship',
     role: 'Talent Intelligence & Experience Manager',
     org: 'AIESEC in Myanmar',
     start: 'Feb 2022',
@@ -478,6 +480,67 @@ export const certificates = [
 ];
 
 /* ---------------------------------------------------------------------
+ *  NEWS & ANNOUNCEMENTS — add one block whenever you post something new.
+ *  The newest item becomes the announcement banner at the top of the site
+ *  (for 45 days) and the News board on the island's plaza.
+ *
+ *  date:   'YYYY-MM-DD' (or 'YYYY-MM' if you don't know the day)
+ *  source: 'linkedin' | 'facebook' | 'instagram' | 'github'
+ *  link:   the post's own URL (LinkedIn: ⋯ on the post → "Copy link to post")
+ *  image:  optional, a file in /public, e.g. 'media/nasa.jpg'
+ * ------------------------------------------------------------------- */
+export const news = [
+  {
+    date: '2026-11-15',
+    title: 'We built AstroMed at NASA Space Apps Challenge Yangon',
+    text: 'Two days at UIT with team Planet Coders, building a health-monitoring console for a Mars transit crew. The best hackathon team I could have asked for.',
+    source: 'linkedin',
+    link: 'https://www.linkedin.com/in/mark3172/recent-activity/all/',
+    image: 'media/nasa.jpg',
+  },
+  {
+    date: '2026-10',
+    title: 'Submitted HRChronicle AI to the Google Cloud AI Builder Cup',
+    text: 'A Gemini-powered HR copilot for employee milestones across Asia-Pacific, built with a 3-person team.',
+    source: 'github',
+    link: 'https://github.com/vibecode-ting/hr_chronicle_ai',
+    image: 'media/hrchronicle.webp',
+  },
+  {
+    date: '2026-09-26',
+    title: 'Grok Bot Workshop at American Center Yangon',
+    text: 'A hands-on introduction to building with Grok bots alongside Yangon’s AI developer community.',
+    source: 'linkedin',
+    link: 'https://www.linkedin.com/in/mark3172/recent-activity/all/',
+    image: 'media/grok.jpg',
+  },
+  {
+    date: '2026-08-29',
+    title: 'Selected for the Cursor AI Hackathon Myanmar',
+    text: 'Went from zero to GreenLens AI, a working AI-vision sustainability inspector, in one intense build sprint.',
+    source: 'linkedin',
+    link: 'https://www.linkedin.com/in/mark3172/recent-activity/all/',
+    image: 'media/cursor.jpg',
+  },
+  {
+    date: '2026-07',
+    title: 'Joined the Myanmar-China Expo with Global Connect Asia',
+    text: 'As a GCA Consultant & Support, helping build business connections between Myanmar and China.',
+    source: 'linkedin',
+    link: 'https://www.linkedin.com/in/mark3172/recent-activity/all/',
+    image: 'media/expo.jpg',
+  },
+  {
+    date: '2026-05-03',
+    title: 'IBM Dev Day: Bob Edition certificate of participation',
+    text: 'Attended every session of IBM’s virtual event and hackathon with mentors and international participants.',
+    source: 'linkedin',
+    link: 'https://www.linkedin.com/in/mark3172/recent-activity/all/',
+    image: 'media/ibm.jpg',
+  },
+];
+
+/* ---------------------------------------------------------------------
  *  HACKATHONS, EVENTS & ACHIEVEMENTS — trophies in the Hackathon Arena.
  *  kind: 'hackathon' | 'event' | 'award' | 'leadership'
  *  `featured: true` makes it a big trophy and a career highlight.
@@ -546,7 +609,7 @@ export const achievements = [
     date: 'Jul 2026',
     role: 'GCA consultant & support',
     result: '',
-    description: 'Represented Global Connect Asia at the Myanmar-China Expo, consulting visitors on ERP solutions and supporting live Odoo demos.',
+    description: 'Joined the Myanmar-China Expo as a Global Connect Asia consultant and support, helping build business connections between Myanmar and China around ERP and Odoo solutions.',
     link: '',
     image: 'media/expo.jpg',
     color: '#ff8fab',
@@ -569,7 +632,7 @@ export const achievements = [
     date: 'Apr 2025',
     role: 'Attendee',
     result: '',
-    description: 'Three days at one of Asia’s largest tech shows with Curtin classmates, including the Cybersecurity Stage sessions.',
+    description: 'Attended GITEX ASIA x AI Everything Singapore (23–25 Apr 2025), one of Asia’s largest tech shows, with friends from Curtin, including the Cybersecurity Stage sessions.',
     link: '',
     image: 'media/gitex.jpg',
     color: '#ff6b9d',

@@ -108,7 +108,17 @@ export function createHud(world, { onClassic, onAbout }) {
     $('[data-tour-sub]').textContent = s.sub;
     [...dots.children].forEach((d, i) => (d.className = i < stop ? 'done' : i === stop ? 'now' : ''));
     world.setGuide(s.id);
+    // show the full card for a moment, then shrink it so it doesn't cover the view
+    tourEl.classList.remove('mini');
+    clearTimeout(miniT);
+    miniT = setTimeout(() => tourEl.classList.add('mini'), 7000);
   }
+  let miniT = 0;
+  tourEl.addEventListener('pointerenter', () => tourEl.classList.remove('mini'));
+  tourEl.addEventListener('pointerleave', () => {
+    clearTimeout(miniT);
+    miniT = setTimeout(() => touring && tourEl.classList.add('mini'), 2500);
+  });
   function startTour() {
     touring = true;
     stop = 0;
@@ -135,6 +145,10 @@ export function createHud(world, { onClassic, onAbout }) {
       setTimeout(() => touring && renderTour(), 1800);
     }
   }
+
+  // the controls card shrinks once people have had time to read it
+  const hint = $('.controls-hint');
+  setTimeout(() => hint.classList.add('dim'), 14000);
 
   /* ---- minimap ---- */
   const mm = $('.minimap canvas');

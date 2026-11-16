@@ -1,6 +1,6 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
 import { createModal } from './modal.js';
 
 const ICONS = {
@@ -81,13 +81,24 @@ export function renderClassic(root, { canExplore, onExplore }) {
       ${body}
     </section>`;
 
+  const allNews = sortedNews();
+  const latest = allNews[0];
+  let dismissed = '';
+  try {
+    dismissed = localStorage.getItem('news-dismissed') || '';
+  } catch {
+    /* storage blocked: banner just shows */
+  }
+  const showBanner = latest && isFresh(latest.date) && dismissed !== latest.date + latest.title;
+
   root.innerHTML = `
   <div class="cv-bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><div class="grid"></div></div>
+  ${showBanner ? `<div class="announce" role="status"><span class="announce-tag">New</span><a href="#news" class="announce-text"><b>${esc(latest.title)}</b><span> · ${esc(SOURCE_LABEL[latest.source] || 'Update')}, ${esc(newsDate(latest.date))}</span></a><button class="announce-x" aria-label="Dismiss announcement">✕</button></div>` : ''}
   <div class="cv">
     <header class="cv-nav">
       <a class="cv-brand" href="#top"><span class="mono">${esc(initials)}</span><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
       <nav aria-label="Sections">
-        <span class="nav-ind" aria-hidden="true"></span><a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
+        <span class="nav-ind" aria-hidden="true"></span>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
       </nav>
       ${canExplore ? `<button class="cbtn cbtn-ghost" data-explore>${ICONS.cube}<span>Explore in 3D</span></button>` : ''}
     </header>
@@ -120,6 +131,21 @@ export function renderClassic(root, { canExplore, onExplore }) {
     </section>
 
     ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => `<div class="stat"><b>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`).join('')}</section>` : ''}
+
+    ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
+      <div class="news-wrap">
+        <div class="news-list">${newsListHtml(allNews, 3)}</div>
+        <div class="news-follow glass">
+          <b>Follow along</b>
+          <p>I post about hackathons, ERP projects and what I'm building.</p>
+          <div class="news-links">
+            <a href="${esc(profile.links.linkedin)}" target="_blank" rel="noopener">${ICONS.linkedin}LinkedIn</a>
+            ${profile.links.instagram ? `<a href="${esc(profile.links.instagram)}" target="_blank" rel="noopener">${ICONS.instagram || ''}Instagram</a>` : ''}
+            ${profile.links.facebook ? `<a href="${esc(profile.links.facebook)}" target="_blank" rel="noopener">${ICONS.facebook || ''}Facebook</a>` : ''}
+          </div>
+          ${allNews.length > 3 ? `<button class="news-all" data-news-all>See all ${allNews.length} updates</button>` : ''}
+        </div>
+      </div>`) : ''}
 
     ${profile.highlights?.length ? sec('highlights', '★', 'Career highlights', 'The biggest things so far.', `
       <div class="bento">${profile.highlights.map((h, i) => `<div class="bento-card"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><p>${esc(h)}</p></div>`).join('')}</div>`) : ''}
@@ -210,6 +236,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       <h2>Let's work together.</h2>
       <p>Open to ERP, IT support, UI/UX and junior engineering roles in Singapore, plus hackathon teams and collaborations.</p>
       <div class="ctas">${ctas()}</div>
+      ${profile.services?.length ? `<div class="services"><span>I can help with</span>${profile.services.map((s) => `<em>${esc(s)}</em>`).join('')}</div>` : ''}
       ${profile.links.email ? `<p class="mailline">Business inquiries: <a href="mailto:${esc(profile.links.email)}">${esc(profile.links.email)}</a></p>` : ''}
       <div class="socials">${socials()}</div>
     </section>
@@ -327,6 +354,19 @@ export function renderClassic(root, { canExplore, onExplore }) {
     if (!card || e.target.closest('a')) return;
     const [sec, i] = card.dataset.open.split(':');
     modal.show(sec, Number(i));
+  });
+
+  // news: "see all" opens the full list; the announcement banner can be dismissed
+  root.querySelector('[data-news-all]')?.addEventListener('click', () => modal.show('news', 0));
+  const banner = root.querySelector('.announce');
+  banner?.querySelector('.announce-x').addEventListener('click', () => {
+    banner.classList.add('gone');
+    setTimeout(() => banner.remove(), 400);
+    try {
+      localStorage.setItem('news-dismissed', latest.date + latest.title);
+    } catch {
+      /* ignore */
+    }
   });
 
   const navInd = root.querySelector('.nav-ind');

@@ -95,3 +95,29 @@ export function chipRow(g, items, x, y, maxW, color) {
     cx += w + 10;
   }
 }
+
+/** Draw an image so it covers the box (like CSS object-fit: cover), anchored near the top. */
+export function coverImage(g, img, x, y, w, h, anchorY = 0.25) {
+  const s = Math.max(w / img.width, h / img.height);
+  const sw = w / s;
+  const sh = h / s;
+  g.drawImage(img, (img.width - sw) / 2, (img.height - sh) * anchorY, sw, sh, x, y, w, h);
+}
+
+/**
+ * Load a photo, then redraw the canvas texture with it. `draw(g, w, h, img)` is
+ * called again with the image; if it fails to load the plain version stays.
+ */
+export function withImage(texture, src, draw) {
+  if (!src) return;
+  const img = new Image();
+  img.decoding = 'async';
+  img.onload = () => {
+    const c = texture.image;
+    const g = c.getContext('2d');
+    g.clearRect(0, 0, c.width, c.height);
+    draw(g, c.width, c.height, img);
+    texture.needsUpdate = true;
+  };
+  img.src = src;
+}
