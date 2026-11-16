@@ -18,6 +18,13 @@ const ICONS = {
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6L12 2Z"/></svg>',
 };
 
+const ACH_TABS = [
+  { id: 'all', label: 'All' },
+  { id: 'hackathon', label: 'Hackathons' },
+  { id: 'event', label: 'Events' },
+  { id: 'recognition', label: 'Recognition' },
+];
+const achGroup = (a) => (a.kind === 'hackathon' ? 'hackathon' : a.kind === 'event' ? 'event' : 'recognition');
 const CAT_LABEL = { professional: 'Professional', hackathon: 'Hackathon', university: 'University', personal: 'Personal build' };
 const HL_ICONS = ['brief', 'trophy', 'cap', 'cube'];
 
@@ -79,7 +86,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
     <header class="cv-nav">
       <a class="cv-brand" href="#top"><span class="mono">${esc(initials)}</span><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
       <nav aria-label="Sections">
-        <a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
+        <span class="nav-ind" aria-hidden="true"></span><a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
       </nav>
       ${canExplore ? `<button class="cbtn cbtn-ghost" data-explore>${ICONS.cube}<span>Explore in 3D</span></button>` : ''}
     </header>
@@ -136,7 +143,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div>`)}
 
     ${sec('projects', '03', 'Projects', `${projects.length} things I've led, designed or built.`, `
-      <div class="filters" role="tablist">${cats.map((c, i) => `<button role="tab" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}</button>`).join('')}</div>
+      <div class="tabs" role="tablist" data-tabs="pcard"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
       <div class="pgrid">${projects.map((p) => `
         <article class="pcard glass${p.featured ? ' feat' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
           ${shot(p.image, p.title, 'pshot')}
@@ -151,8 +158,9 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div>`)}
 
     ${achievements?.length ? sec('hackathons', '04', 'Hackathons & achievements', 'Competitions, events and recognition.', `
+      <div class="tabs" role="tablist" data-tabs="acard"><span class="tab-ind" aria-hidden="true"></span>${ACH_TABS.filter((t) => t.id === 'all' || achievements.some((a) => achGroup(a) === t.id)).map((t, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${t.id}">${t.label}<em>${t.id === 'all' ? achievements.length : achievements.filter((a) => achGroup(a) === t.id).length}</em></button>`).join('')}</div>
       <div class="agrid">${achievements.map((a) => `
-        <article class="acard glass${a.featured ? ' feat' : ''}" style="--c:${esc(a.color)}">
+        <article class="acard glass${a.featured ? ' feat' : ''}" data-cat="${achGroup(a)}" style="--c:${esc(a.color)}">
           ${shot(a.image, a.title, 'ashot')}
           <div class="a-top"><span class="a-kind">${ICONS[a.kind === 'hackathon' || a.kind === 'award' ? 'trophy' : 'star']}${esc(ACH_LABEL[a.kind] || '')}</span><span class="yr">${esc(a.date)}</span></div>
           <h3>${esc(a.title)}${sampleTag(a)}</h3>
@@ -194,20 +202,79 @@ export function renderClassic(root, { canExplore, onExplore }) {
       <div class="socials">${socials()}</div>
     </section>
 
+    <nav class="mtabs" aria-label="Sections">
+      <a href="#top" class="on">${ICONS.star}<span>Top</span></a>
+      <a href="#experience">${ICONS.brief}<span>Work</span></a>
+      <a href="#projects">${ICONS.cube}<span>Projects</span></a>
+      <a href="#hackathons">${ICONS.trophy}<span>Hacks</span></a>
+      <a href="#certifications">${ICONS.cap}<span>Certs</span></a>
+      <a href="#contact">${ICONS.mail}<span>Contact</span></a>
+    </nav>
+
     <footer class="cv-foot"><span>© ${new Date().getFullYear()} ${esc(profile.name)}</span>${canExplore ? '<button data-explore class="linkish">Prefer a game? Explore the 3D island →</button>' : '<span>Built with Three.js & Vite</span>'}</footer>
   </div>`;
 
   root.querySelectorAll('[data-explore]').forEach((b) => b.addEventListener('click', onExplore));
 
-  // project filters
-  const fbtns = root.querySelectorAll('.filters button');
-  fbtns.forEach((b) =>
-    b.addEventListener('click', () => {
-      fbtns.forEach((x) => x.classList.toggle('on', x === b));
-      const cat = b.dataset.cat;
-      root.querySelectorAll('.pcard').forEach((c) => (c.hidden = cat !== 'all' && c.dataset.cat !== cat));
-    }),
-  );
+  // tabs with a sliding indicator (project categories, hackathon kinds)
+  const placeInd = (bar) => {
+    const on = bar.querySelector('button.on');
+    const ind = bar.querySelector('.tab-ind');
+    if (!on || !ind) return;
+    ind.style.width = on.offsetWidth + 'px';
+    ind.style.transform = `translateX(${on.offsetLeft}px)`;
+  };
+  root.querySelectorAll('[data-tabs]').forEach((bar) => {
+    const cls = bar.dataset.tabs;
+    const btns = bar.querySelectorAll('button');
+    btns.forEach((b) =>
+      b.addEventListener('click', () => {
+        btns.forEach((x) => {
+          x.classList.toggle('on', x === b);
+          x.setAttribute('aria-selected', x === b);
+        });
+        placeInd(bar);
+        const cat = b.dataset.cat;
+        let k = 0;
+        root.querySelectorAll('.' + cls).forEach((c) => {
+          const hide = cat !== 'all' && c.dataset.cat !== cat;
+          c.hidden = hide;
+          if (!hide) {
+            c.classList.remove('pop');
+            void c.offsetWidth;
+            c.style.animationDelay = `${Math.min(k++, 8) * 40}ms`;
+            c.classList.add('pop');
+          }
+        });
+      }),
+    );
+    requestAnimationFrame(() => placeInd(bar));
+  });
+  const navInd = root.querySelector('.nav-ind');
+  const moveNav = () => {
+    const on = root.querySelector('.cv-nav nav a.on');
+    if (!navInd) return;
+    navInd.style.opacity = on ? 1 : 0;
+    if (on) {
+      navInd.style.width = on.offsetWidth + 'px';
+      navInd.style.transform = `translateX(${on.offsetLeft}px)`;
+    }
+  };
+  addEventListener('resize', () => {
+    root.querySelectorAll('[data-tabs]').forEach(placeInd);
+    moveNav();
+  });
+  document.fonts?.ready.then(() => {
+    root.querySelectorAll('[data-tabs]').forEach(placeInd);
+    moveNav();
+  });
+
+  // moving 3D background (lazy, only where it will run smoothly)
+  if (canExplore && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const go = () => import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
+    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 });
+    else setTimeout(go, 300);
+  }
 
   // scroll reveal + active nav
   const els = root.querySelectorAll('.reveal');
@@ -217,11 +284,16 @@ export function renderClassic(root, { canExplore, onExplore }) {
       { rootMargin: '0px 0px -8% 0px' },
     );
     els.forEach((e) => io.observe(e));
-    const links = [...root.querySelectorAll('.cv-nav nav a')];
+    const links = [...root.querySelectorAll('.cv-nav nav a, .mtabs a')];
     const spy = new IntersectionObserver(
       (entries) =>
         entries.forEach((en) => {
-          if (en.isIntersecting) links.forEach((l) => l.classList.toggle('on', l.getAttribute('href') === '#' + en.target.id));
+          if (!en.isIntersecting) return;
+          const id = '#' + en.target.id;
+          // sections without their own tab keep the last one lit
+          if (!links.some((l) => l.getAttribute('href') === id)) return;
+          links.forEach((l) => l.classList.toggle('on', l.getAttribute('href') === id));
+          moveNav();
         }),
       { rootMargin: '-45% 0px -50% 0px' },
     );

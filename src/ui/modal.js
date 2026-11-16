@@ -42,6 +42,12 @@ export function createModal({ onClose } = {}) {
 
   el.addEventListener('click', (e) => {
     if (e.target === el || e.target.closest('.card-close')) hide();
+    const open = e.target.closest('[data-open]')?.dataset.open;
+    if (open) {
+      const [sec, i] = open.split(':');
+      show(sec, Number(i));
+      return;
+    }
     const dir = e.target.closest('[data-dir]')?.dataset.dir;
     if (dir && state) show(state.section, state.index + Number(dir));
   });

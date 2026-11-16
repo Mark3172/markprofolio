@@ -82,6 +82,25 @@ export const sections = {
         <div class="card-actions">${ext(a.link, 'See more ↗', true)}</div>`,
     }),
   },
+  // "See everything" lists opened by the kiosks in the 3D world
+  more: {
+    list: [
+      { section: 'project', title: 'All projects', sub: (p) => p.tagline, name: (p) => p.title, items: projects, color: '#ff6b9d' },
+      { section: 'achievement', title: 'All hackathons & events', sub: (a) => `${a.event} · ${a.date}`, name: (a) => a.title, items: achievements, color: '#3ddc84' },
+      { section: 'certificate', title: 'All certifications', sub: (c) => `${c.issuer}${c.date ? ' · ' + c.date : ''}`, name: (c) => c.name, items: certificates, color: '#ffb547' },
+      { section: 'experience', title: 'Experience & education', sub: (e) => `${e.org} · ${e.start} – ${e.end}`, name: (e) => e.role, items: experience, color: '#7cf5ff' },
+    ],
+    render: (m) => ({
+      color: m.color,
+      html: `
+        <div class="eyebrow">See everything</div>
+        <h2>${esc(m.title)}</h2>
+        <p class="sub">${m.items.length} items · ★ marks the highlights you can see on the island</p>
+        <div class="more-list">${m.items
+          .map((it, i) => `<button class="more-row" data-open="${m.section}:${i}" style="--c:${esc(it.color || m.color)}"><span class="dot"></span><span><b>${it.featured ? '★ ' : ''}${esc(m.name(it))}</b><small>${esc(m.sub(it) || '')}</small></span><span class="go">›</span></button>`)
+          .join('')}</div>`,
+    }),
+  },
   about: {
     list: [profile],
     render: () => ({

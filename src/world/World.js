@@ -336,11 +336,13 @@ export function createWorld(container, hooks = {}) {
   /* ---------------- PROJECT WORKSHOP ---------------- */
   {
     const zc = ZONES[1].c;
-    const n = projects.length;
+    // only the featured projects stand in the world; the rest live in the kiosk
+    const shown = projects.map((p, i) => ({ p, i })).filter((x) => x.p.featured);
+    const n = shown.length;
     const r = Math.min(11, 7 + Math.max(0, n - 5) * 0.9);
-    const spread = Math.min(1.6, 0.34 * (n - 1));
-    projects.forEach((p, i) => {
-      const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
+    const spread = Math.min(1.6, 0.32 * (n - 1));
+    shown.forEach(({ p, i }, k) => {
+      const a = n === 1 ? 0 : -spread + (2 * spread * k) / (n - 1);
       const pos = V(zc.x + Math.sin(a) * r, 0, zc.z + 3 - Math.cos(a) * r);
       const g = new THREE.Group();
       g.position.copy(pos);
@@ -370,7 +372,7 @@ export function createWorld(container, hooks = {}) {
         g2.stroke();
         g2.fillStyle = p.color;
         g2.font = `600 26px ${fonts.BODY}`;
-        g2.fillText(`PROJECT ${String(i + 1).padStart(2, '0')}${p.year ? ' · ' + p.year : ''}`, 40, 64);
+        g2.fillText(`★ FEATURED${p.year ? ' · ' + p.year : ''}`, 40, 64);
         g2.fillStyle = '#ffffff';
         g2.font = `700 58px ${fonts.DISPLAY}`;
         const y = wrap(g2, p.title, 40, 130, w - 80, 62, 2);
@@ -418,10 +420,8 @@ export function createWorld(container, hooks = {}) {
 
     const front = certificates.map((c, i) => ({ c, i })).filter((x) => x.c.featured);
     const back = certificates.map((c, i) => ({ c, i })).filter((x) => !x.c.featured);
-    const rows = [
-      { list: front, r: 5, size: 1.25, h: 2.7, spread: 0.32 },
-      { list: back, r: 8, size: 0.9, h: 3.4, spread: 0.24 },
-    ];
+    void back; // the other certificates are in the kiosk
+    const rows = [{ list: front, r: 5, size: 1.25, h: 2.7, spread: 0.36 }];
     const lookTarget = V(zc.x - 14, 0, zc.z);
     for (const row of rows) {
       const n = row.list.length;
@@ -536,10 +536,8 @@ export function createWorld(container, hooks = {}) {
     const away = Math.atan2(zc.z, zc.x); // pointing away from the plaza
     const featured = achievements.map((a, i) => ({ a, i })).filter((x) => x.a.featured);
     const others = achievements.map((a, i) => ({ a, i })).filter((x) => !x.a.featured);
-    const rows = [
-      { list: featured, r: 3.2, w: 2.5, h: 2.3, spread: 0.6 },
-      { list: others, r: 6, w: 1.9, h: 3.4, spread: 0.36 },
-    ];
+    void others; // the rest are in the kiosk
+    const rows = [{ list: featured, r: 3.4, w: 2.5, h: 2.3, spread: 0.55 }];
     const KIND = { hackathon: 'HACKATHON', event: 'EVENT', award: 'AWARD', leadership: 'LEADERSHIP' };
     for (const row of rows) {
       const n = row.list.length;
@@ -605,7 +603,9 @@ export function createWorld(container, hooks = {}) {
   /* ---------------- TIMELINE TRAIL ---------------- */
   {
     const zc = ZONES[3].c;
-    const n = experience.length;
+    const firstEdu = experience.findIndex((e) => e.type === 'education');
+    const shownXp = experience.map((e, i) => ({ e, i })).filter((x) => x.e.type !== 'education' || x.i === firstEdu);
+    const n = shownXp.length;
     // monoliths stand on an arc that opens toward the plaza
     const r = Math.min(11, Math.max(8, n * 1.3));
     const spread = n === 1 ? 0 : Math.min(1.45, 0.3 * (n - 1));
@@ -619,9 +619,9 @@ export function createWorld(container, hooks = {}) {
       st.rotation.y = rand() * 3;
       scene.add(st);
     }
-    experience.forEach((e, i) => {
+    shownXp.forEach(({ e, i }, k) => {
       // newest (index 0) ends up on the right when seen from the plaza
-      const a = n === 1 ? 0 : -spread + (2 * spread * i) / (n - 1);
+      const a = n === 1 ? 0 : -spread + (2 * spread * k) / (n - 1);
       const [x, z] = arc(a, r);
       const color = TYPE_COLOR[e.type] || '#7cf5ff';
       const g = new THREE.Group();
@@ -668,6 +668,84 @@ export function createWorld(container, hooks = {}) {
         orb.scale.setScalar(1 + it.hover * 0.4);
       });
     });
+  }
+
+  /* ---------------- "SEE EVERYTHING" KIOSKS ---------------- */
+  // The world only shows the highlights. Each zone has one small terminal that
+  // opens a list of everything else in that section.
+  function addKiosk(x, z, color, title, count, moreIndex) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, z);
+    g.lookAt(0, 0, 0);
+    const post = shadowy(new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.4), mat('#2e2952')));
+    post.position.y = 0.55;
+    const tex = canvasTexture(400, 260, (g2, w, h) => {
+      g2.fillStyle = '#121633';
+      rrect(g2, 0, 0, w, h, 24);
+      g2.fill();
+      g2.lineWidth = 6;
+      g2.strokeStyle = color;
+      g2.stroke();
+      g2.fillStyle = color;
+      g2.font = `700 26px ${fonts.BODY}`;
+      g2.fillText('SEE EVERYTHING', 30, 58);
+      g2.fillStyle = '#fff';
+      g2.font = `700 44px ${fonts.DISPLAY}`;
+      wrap(g2, title, 30, 118, w - 60, 48, 2);
+      g2.fillStyle = '#aeb4e0';
+      g2.font = `500 26px ${fonts.BODY}`;
+      g2.fillText(`+${count} more · press E`, 30, h - 34);
+    });
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.975), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, toneMapped: false }));
+    screen.position.set(0, 1.55, 0.05);
+    screen.rotation.x = -0.25;
+    g.add(post, screen);
+    scene.add(g);
+    colliders.push({ x, z, r: 0.5, h: 99 });
+    const it = addInteractable(g, { section: 'more', index: moreIndex, label: `all ${title.toLowerCase()}`, radius: 2.4 });
+    animators.push(() => screen.scale.setScalar(1 + it.hover * 0.12));
+  }
+  {
+    const extra = (list, keep) => list.length - list.filter(keep).length;
+    const pz = ZONES[1].c;
+    addKiosk(pz.x + 3.2, pz.z + 7.5, '#ff6b9d', 'All projects', extra(projects, (p) => p.featured), 0);
+    const az = ZONES[5].c;
+    const dir = az.clone().normalize();
+    const perp = V(-dir.z, 0, dir.x);
+    const ak = az.clone().sub(dir.clone().multiplyScalar(2.5)).add(perp.multiplyScalar(4.2));
+    addKiosk(ak.x, ak.z, '#3ddc84', 'All hackathons & events', extra(achievements, (a) => a.featured), 1);
+    const cz = ZONES[2].c;
+    addKiosk(cz.x - 6, cz.z + 5, '#ffb547', 'All certifications', extra(certificates, (c) => c.featured), 2);
+    const tz = ZONES[3].c;
+    const firstEdu = experience.findIndex((e) => e.type === 'education');
+    addKiosk(tz.x + 5, tz.z - 6, '#7cf5ff', 'Full experience & education', experience.filter((e, i) => e.type === 'education' && i !== firstEdu).length, 3);
+  }
+
+  /* ---------------- GUIDE (highlights tour) ---------------- */
+  // A light pillar on the next stop and an arrow over the player's head.
+  const guide = { zone: null };
+  const pillar = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.4, 1.4, 40, 24, 1, true),
+    new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.1, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }),
+  );
+  pillar.position.y = 20;
+  pillar.visible = false;
+  scene.add(pillar);
+  const arrowGeo = new THREE.ConeGeometry(0.28, 0.75, 4);
+  arrowGeo.rotateX(Math.PI / 2); // tip points +z
+  const arrow = new THREE.Mesh(arrowGeo, glow('#ffffff', 3));
+  arrow.visible = false;
+  scene.add(arrow);
+  function setGuide(id) {
+    const z = ZONES.find((zz) => zz.id === id) || null;
+    guide.zone = z;
+    pillar.visible = !!z;
+    if (z) {
+      pillar.position.x = z.c.x;
+      pillar.position.z = z.c.z;
+      pillar.material.color.set(z.color);
+      arrow.material.color.set(z.color);
+    } else arrow.visible = false;
   }
 
   /* ---------------- THE BEACON (about) ---------------- */
@@ -1320,6 +1398,18 @@ export function createWorld(container, hooks = {}) {
       currentZone = zone;
       if (zone) hooks.onZone?.(zone);
     }
+    if (guide.zone) {
+      const gz = guide.zone;
+      const dx = gz.c.x - player.position.x;
+      const dz = gz.c.z - player.position.z;
+      const far = Math.hypot(dx, dz) > gz.r * 0.8;
+      arrow.visible = far && view === 'tpp' && !flight;
+      if (arrow.visible) {
+        arrow.position.set(player.position.x + (dx / Math.hypot(dx, dz)) * 1.1, player.position.y + 2.6 + Math.sin(t * 4) * 0.08, player.position.z + (dz / Math.hypot(dx, dz)) * 1.1);
+        arrow.rotation.set(0, Math.atan2(dx, dz), 0);
+      }
+      pillar.material.opacity = 0.08 + Math.sin(t * 2) * 0.03;
+    }
 
     // ---- shards
     for (const s of shards) {
@@ -1460,8 +1550,9 @@ export function createWorld(container, hooks = {}) {
       target.visible = true;
     },
     minimap() {
-      return { px: player.position.x, pz: player.position.z, heading: player.rotation.y, yaw, shards: shards.filter((s) => !s.got).map((s) => s.m.position) };
+      return { px: player.position.x, pz: player.position.z, heading: player.rotation.y, yaw, guide: guide.zone, shards: shards.filter((s) => !s.got).map((s) => s.m.position) };
     },
+    setGuide,
   };
   return api;
 }

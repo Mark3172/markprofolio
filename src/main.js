@@ -111,7 +111,8 @@ async function startWorld(introEl) {
     });
     introEl.classList.add('hide');
     setTimeout(() => introEl.remove(), 900);
-    setTimeout(() => hud.toast(`✦ ${world.shardTotal} data shards are hidden around the island, one of them up in the sky. Can you find them all?`), 3200);
+    setTimeout(() => hud.startTour(), 1200);
+    setTimeout(() => hud.toast(`Follow the arrow for the highlights tour. Bonus: ${world.shardTotal} data shards are hidden around the island.`), 2400);
   } catch (err) {
     console.error(err);
     container.remove();
