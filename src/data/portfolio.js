@@ -25,7 +25,9 @@ export const profile = {
   links: {
     github: 'https://github.com/Mark3172',
     linkedin: 'https://www.linkedin.com/in/mark3172/',
-    email: '', // TODO (optional): add e.g. 'you@example.com' to show an "Email me" button
+    facebook: 'https://www.facebook.com/mark.myo/',
+    instagram: 'https://www.instagram.com/mark_hhh3172/',
+    email: 'markmyo6@gmail.com', // business inquiries
     resume: '', // TODO (optional): link to a PDF, e.g. '/resume.pdf' (put the file in /public)
   },
   // Each group becomes an orbiting crystal around the Beacon.
@@ -36,15 +38,19 @@ export const profile = {
     { group: 'Programming & AI', items: ['Python', 'C', 'MySQL', 'TypeScript', 'Prompt Engineering', 'Chatbots & NLP'] },
     { group: 'Leadership', items: ['Project Management', 'Team Leadership', 'Event Planning', 'HR Management', 'Marketing', 'Time Management'] },
   ],
-  // Shown in the About card and the classic view.
+  // Big numbers at the top of the classic view.
+  keyFacts: [
+    { value: '9', label: 'Licenses & certifications' },
+    { value: '4+', label: 'Hackathons & tech events' },
+    { value: '2 yrs', label: 'Team leadership at AIESEC' },
+    { value: 'Odoo', label: 'ERP go-lives supported' },
+  ],
+  // Only the biggest wins: shown in the About card and as "Career highlights".
   highlights: [
-    'NASA Space Apps Challenge Yangon (at UIT): hackathon team, Nov 2026',
-    'Selected participant, Cursor Myanmar Hackathon, Aug 2026',
-    'Odoo ERP consultant & support for Global Connect Asia at the Myanmar-China Expo',
-    'Delivered client pilot training at Global Connect Asia',
-    'Launched GreenLens AI: web app, CLI, API and AI vision with multiple model providers',
-    'Graduated from Curtin Singapore, Class of 2026',
-    'Academic excellence award: all high distinctions at YIUS foundation',
+    'Leading the ExpoTrans helpdesk team through an Odoo ERP go-live at Global Connect Asia',
+    'NASA Space Apps Challenge Yangon 2026 hackathon team',
+    'Graduated from Curtin Singapore (Class of 2026) after all high distinctions at foundation level',
+    'Built and launched GreenLens AI, an AI-vision sustainability inspector',
   ],
   testimonial: {
     quote:
@@ -62,6 +68,8 @@ export const profile = {
 export const projects = [
   {
     id: 'greenlens',
+    category: 'personal',
+    featured: true,
     title: 'GreenLens AI',
     tagline: 'AI-powered environmental inspector',
     description:
@@ -78,6 +86,8 @@ export const projects = [
   },
   {
     id: 'expotrans',
+    category: 'professional',
+    featured: true,
     title: 'ExpoTrans Helpdesk',
     tagline: 'Team lead · Odoo ERP rollout at Global Connect Asia',
     description:
@@ -94,6 +104,7 @@ export const projects = [
   },
   {
     id: 'alt',
+    category: 'professional',
     title: 'ALT App Pilot Launch',
     tagline: 'Help desk support & pilot testing for GERES',
     description:
@@ -110,6 +121,8 @@ export const projects = [
   },
   {
     id: 'ai-student-assistant',
+    category: 'university',
+    featured: true,
     title: 'AI Student Assistant',
     tagline: 'AI-powered student support chatbot · Curtin',
     description:
@@ -122,6 +135,8 @@ export const projects = [
   },
   {
     id: 'readly',
+    category: 'university',
+    featured: true,
     title: 'Readly',
     tagline: 'Accessible learning platform for dyslexic learners',
     description:
@@ -138,6 +153,7 @@ export const projects = [
   },
   {
     id: 'midnight-express',
+    category: 'personal',
     title: 'Midnight Express',
     tagline: 'A 2D pixel-art detective game',
     description:
@@ -154,6 +170,7 @@ export const projects = [
   },
   {
     id: 'bill-splitter',
+    category: 'personal',
     title: 'Bill Splitter',
     tagline: 'Split the bill in one touch',
     description:
@@ -170,6 +187,7 @@ export const projects = [
   },
   {
     id: 'weather',
+    category: 'personal',
     title: 'WeatherAI Dashboard',
     tagline: 'Glassmorphism weather + "Ask AI" assistant',
     description:
@@ -186,6 +204,7 @@ export const projects = [
   },
   {
     id: 'this-site',
+    category: 'personal',
     title: 'This 3D Portfolio',
     tagline: 'The island you are exploring right now',
     description:
@@ -296,10 +315,14 @@ export const experience = [
 /* ---------------------------------------------------------------------
  *  CERTIFICATES & LICENSES — floating medallions in the Hall of Badges.
  *  kind: 'certificate' | 'license' | 'award'
+ *  `short` / `issuerShort` are the few words printed on the 3D medal;
+ *  `featured: true` puts it in the big front row.
  * ------------------------------------------------------------------- */
 export const certificates = [
   {
     name: 'Build a Free Website with WordPress',
+    short: 'WordPress Website',
+    issuerShort: 'Coursera',
     issuer: 'Coursera',
     kind: 'certificate',
     date: 'Nov 2026',
@@ -309,6 +332,8 @@ export const certificates = [
   },
   {
     name: 'AI for Brainstorming and Planning',
+    short: 'AI for Planning',
+    issuerShort: 'Google',
     issuer: 'Google',
     kind: 'certificate',
     date: 'Oct 2026',
@@ -318,6 +343,8 @@ export const certificates = [
   },
   {
     name: 'AI Fundamentals',
+    short: 'AI Fundamentals',
+    issuerShort: 'Google',
     issuer: 'Google',
     kind: 'certificate',
     date: 'Oct 2026',
@@ -327,6 +354,9 @@ export const certificates = [
   },
   {
     name: 'Technical Support Fundamentals',
+    short: 'Tech Support Fundamentals',
+    issuerShort: 'Google',
+    featured: true,
     issuer: 'Google',
     kind: 'certificate',
     date: 'Oct 2026',
@@ -336,6 +366,9 @@ export const certificates = [
   },
   {
     name: 'UX Design Advanced Job Simulation',
+    short: 'UX Design Simulation',
+    issuerShort: 'Lloyds · Forage',
+    featured: true,
     issuer: 'Lloyds Banking Group · Forage',
     kind: 'certificate',
     date: 'Jan 2026',
@@ -345,6 +378,9 @@ export const certificates = [
   },
   {
     name: 'AWS Academy Cloud Foundations',
+    short: 'Cloud Foundations',
+    issuerShort: 'AWS',
+    featured: true,
     issuer: 'Amazon Web Services (AWS)',
     kind: 'certificate',
     date: 'Jul 2025',
@@ -354,6 +390,8 @@ export const certificates = [
   },
   {
     name: 'UI/UX Essentials Certificate',
+    short: 'UI/UX Essentials',
+    issuerShort: 'MM Project',
     issuer: 'MM PROJECT',
     kind: 'certificate',
     date: 'May 2025',
@@ -364,6 +402,9 @@ export const certificates = [
   },
   {
     name: 'CCNA: Switching, Routing & Wireless Essentials',
+    short: 'CCNA SRWE',
+    issuerShort: 'Cisco',
+    featured: true,
     issuer: 'Cisco Networking Academy · Curtin University',
     kind: 'certificate',
     date: 'May 2024',
@@ -374,6 +415,8 @@ export const certificates = [
   },
   {
     name: 'Volunteer Certificate',
+    short: 'Volunteer Leader',
+    issuerShort: 'AIESEC',
     issuer: 'AIESEC in Myanmar',
     kind: 'award',
     date: 'Feb 2022 – Feb 2024',
@@ -383,11 +426,101 @@ export const certificates = [
   },
   {
     name: 'GitHub Achievements',
+    short: 'GitHub Achievements',
+    issuerShort: 'GitHub',
     issuer: 'GitHub',
     kind: 'award',
     date: '',
     credentialId: 'Pull Shark ×2 · Pair Extraordinaire · YOLO · Developer Program Member',
     url: 'https://github.com/Mark3172?tab=achievements',
     color: '#c9a6ff',
+  },
+];
+
+/* ---------------------------------------------------------------------
+ *  HACKATHONS, EVENTS & ACHIEVEMENTS — trophies in the Hackathon Arena.
+ *  kind: 'hackathon' | 'event' | 'award' | 'leadership'
+ *  `featured: true` makes it a big trophy and a career highlight.
+ * ------------------------------------------------------------------- */
+export const achievements = [
+  {
+    title: 'NASA Space Apps Challenge',
+    event: 'NASA Space Apps Challenge Yangon · at UIT',
+    kind: 'hackathon',
+    date: 'Nov 2026',
+    role: 'Hackathon team member',
+    result: '',
+    description: 'Joined a team at the Yangon edition of NASA’s global hackathon, building a solution to one of the Space Apps challenges.',
+    link: '',
+    color: '#4cc9f0',
+    featured: true,
+  },
+  {
+    title: 'Cursor Myanmar Hackathon',
+    event: 'Cursor Myanmar Hackathon',
+    kind: 'hackathon',
+    date: 'Aug 2026',
+    role: 'Selected participant',
+    result: 'Selected to compete',
+    description: 'Selected as a participant for the Cursor Myanmar Hackathon, building with AI-assisted coding.',
+    link: '',
+    color: '#b18cff',
+    featured: true,
+  },
+  {
+    title: 'IBM Hackathon',
+    event: 'IBM Hackathon',
+    kind: 'hackathon',
+    date: '2026',
+    role: 'Participant',
+    result: '',
+    description: 'Attended every session of the IBM hackathon; location restrictions in Myanmar prevented the final submission.',
+    link: '',
+    color: '#3d7bff',
+  },
+  {
+    title: 'Myanmar-China Expo',
+    event: 'Myanmar-China Expo · Global Connect Asia',
+    kind: 'event',
+    date: '2026',
+    role: 'Odoo ERP consultant & support',
+    result: '',
+    description: 'Represented Global Connect Asia at the Myanmar-China Expo, consulting visitors and supporting the Odoo ERP solution on site.',
+    link: '',
+    color: '#ffb547',
+    featured: true,
+  },
+  {
+    title: 'Client Pilot Training',
+    event: 'Global Connect Asia',
+    kind: 'event',
+    date: '2026',
+    role: 'Trainer',
+    result: '',
+    description: 'Delivered pilot training to client users as part of a system rollout.',
+    link: '',
+    color: '#3ddc84',
+  },
+  {
+    title: 'Cursor × Grok Bot Meetup',
+    event: 'Cursor community meetup · Yangon',
+    kind: 'event',
+    date: '2026',
+    role: 'Attendee',
+    result: '',
+    description: 'Joined the Cursor and Grok bot builders meetup in Yangon to learn and connect with the local AI dev community.',
+    link: '',
+    color: '#ff6b9d',
+  },
+  {
+    title: 'Academic Excellence Award',
+    event: 'Yangon Institute of University Studies',
+    kind: 'award',
+    date: '2023',
+    role: 'Student · Vice President of the student council',
+    result: 'All high distinctions',
+    description: 'Earned high distinctions in every subject of the IT foundation degree while serving as student council Vice President.',
+    link: '',
+    color: '#ffd166',
   },
 ];
