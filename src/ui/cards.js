@@ -1,4 +1,4 @@
-import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
+import { profile, projects, experience, certificates, achievements, news } from '../data/portfolio.js';
 
 export const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -26,8 +26,51 @@ export const ACH_LABEL = { hackathon: 'Hackathon', event: 'Event', award: 'Award
 export const TYPE_LABEL = { work: 'Experience', education: 'Education', volunteer: 'Volunteering' };
 export const TYPE_COLOR = { work: '#ffb547', education: '#7cf5ff', volunteer: '#3ddc84' };
 
+/* ---- news ---- */
+export const SOURCE_LABEL = { linkedin: 'LinkedIn', facebook: 'Facebook', instagram: 'Instagram', github: 'GitHub' };
+export const SOURCE_COLOR = { linkedin: '#4aa3ff', facebook: '#6c8cff', instagram: '#ff6b9d', github: '#c9c3ff' };
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** '2026-11-15' -> '15 Nov 2026' (no timezone surprises). */
+export const newsDate = (d = '') => {
+  const [y, m, day] = d.split('-').map(Number);
+  return y ? `${day ? day + ' ' : ''}${MONTHS[(m || 1) - 1]} ${y}` : d;
+};
+/** True while a post is recent enough to announce. */
+export const isFresh = (d, days = 45) => {
+  const t = Date.parse(d);
+  return Number.isFinite(t) && Date.now() - t < days * 864e5 && Date.now() >= t - 864e5;
+};
+export const sortedNews = () => [...(news || [])].sort((a, b) => (a.date < b.date ? 1 : -1));
+export const newsListHtml = (items, limit = Infinity) =>
+  items
+    .slice(0, limit)
+    .map(
+      (n) => `
+    <a class="news-item" href="${esc(n.link || profile.links.linkedin)}" target="_blank" rel="noopener" style="--c:${SOURCE_COLOR[n.source] || '#7cf5ff'}">
+      ${n.image ? `<span class="news-thumb"><img src="${esc(mediaUrl(n.image))}" alt="" loading="lazy" onerror="this.parentNode.remove()"></span>` : ''}
+      <span class="news-body">
+        <span class="news-meta"><b>${esc(SOURCE_LABEL[n.source] || 'Update')}</b> · ${esc(newsDate(n.date))}${isFresh(n.date) ? '<i class="news-new">New</i>' : ''}</span>
+        <strong>${esc(n.title)}</strong>
+        ${n.text ? `<span class="news-text">${esc(n.text)}</span>` : ''}
+      </span>
+      <span class="news-go">↗</span>
+    </a>`,
+    )
+    .join('');
+
 /** Each section: list of items + a renderer that returns { color, html }. */
 export const sections = {
+  news: {
+    list: [null],
+    render: () => ({
+      color: '#4aa3ff',
+      html: `
+        <div class="eyebrow">Latest</div>
+        <h2>News & announcements</h2>
+        <p class="sub">What I have been posting about lately.</p>
+        <div class="news-list">${newsListHtml(sortedNews())}</div>`,
+    }),
+  },
   project: {
     list: projects,
     render: (p) => ({
