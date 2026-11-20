@@ -405,3 +405,100 @@ body.classic-mode { background: #080a18; }
 /* keyboard users can jump past the menu */
 .skip { position: fixed; z-index: 50; left: 16px; top: -60px; padding: 10px 16px; border-radius: 10px; background: var(--accent); color: #0b0d1f; font-weight: 700; text-decoration: none; transition: top 0.2s; }
 .skip:focus { top: 12px; }
+
+/* ---- about now holds just the story (the quote moved up to "Why hire me") ---- */
+.about-grid { grid-template-columns: 1fr; }
+
+/* ---- 3D portrait (replaces the profile card) ---- */
+.portrait { position: relative; text-align: center; }
+.portrait-stage { position: relative; width: 100%; max-width: 420px; aspect-ratio: 1; margin: 0 auto; touch-action: pan-y; }
+.portrait-flat { position: absolute; inset: 0; display: grid; place-items: center; transition: opacity 0.6s ease; }
+.portrait-flat .avatar { width: 62%; height: auto; aspect-ratio: 1; margin: 0; padding: 6px; box-shadow: 0 30px 90px -30px rgba(124, 92, 255, 0.8); }
+.portrait-flat .avatar span { font-size: 64px; }
+.portrait-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.8s ease; cursor: grab; }
+.portrait-stage.is-3d .portrait-canvas { opacity: 1; }
+.portrait-stage.is-3d .portrait-flat { opacity: 0; pointer-events: none; }
+.portrait-stage.is-3d:active .portrait-canvas { cursor: grabbing; }
+.portrait-status { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #c9ffe0; background: rgba(10, 30, 24, 0.75); border: 1px solid rgba(61, 220, 132, 0.45); backdrop-filter: blur(8px); white-space: nowrap; pointer-events: none; }
+.portrait-status i { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6); animation: live 2s infinite; }
+@keyframes live { 70% { box-shadow: 0 0 0 8px rgba(61, 220, 132, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 132, 0); } }
+.portrait-hint { margin: 2px 0 10px; font-size: 12px; color: var(--muted); opacity: 0; transition: opacity 0.6s; }
+.portrait:has(.is-3d) .portrait-hint { opacity: 0.85; }
+
+/* skill chips that filter projects */
+.skill-btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12px; padding: 5px 6px 5px 10px; border-radius: 999px; cursor: pointer; color: #cdf9ff; background: rgba(124, 245, 255, 0.1); border: 1px solid rgba(124, 245, 255, 0.35); transition: transform 0.15s, background 0.2s, border-color 0.2s; }
+.skill-btn em { font-style: normal; font-size: 11px; min-width: 18px; padding: 1px 6px; border-radius: 999px; background: rgba(124, 245, 255, 0.18); }
+.skill-btn:hover { transform: translateY(-1px); background: rgba(124, 245, 255, 0.18); border-color: var(--accent); }
+.skill-btn.on { background: var(--accent); color: #0b0d1f; border-color: var(--accent); }
+.skill-btn.on em { background: rgba(11, 13, 31, 0.2); }
+.sk .chips .skill-btn { font-size: 13px; }
+
+.id-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; max-width: 420px; margin-inline: auto; }
+.id-act { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 48px; border-radius: 14px; font: inherit; font-size: 13px; color: var(--text); text-align: left; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); overflow: hidden; }
+button.id-act { cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+button.id-act:hover { border-color: rgba(124, 245, 255, 0.45); background: rgba(255, 255, 255, 0.07); }
+.id-act svg { flex: none; width: 18px; height: 18px; color: var(--accent); }
+.id-clock b { display: block; font-size: 14px; font-variant-numeric: tabular-nums; }
+.id-clock small { color: var(--muted); font-size: 11px; }
+.ok { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-weight: 700; color: #0b0d1f; background: #3ddc84; opacity: 0; transform: translateY(100%); transition: 0.25s ease; border-radius: inherit; }
+.done .ok { opacity: 1; transform: none; }
+.cbtn { position: relative; overflow: hidden; }
+
+/* project filter pill (from a skill) */
+.skill-filter { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -6px 0 14px; padding: 8px 8px 8px 16px; border-radius: 14px; background: rgba(124, 245, 255, 0.08); border: 1px solid rgba(124, 245, 255, 0.35); font-size: 14px; }
+.skill-filter[hidden] { display: none; }
+.skill-filter b { color: var(--accent); }
+.skill-filter em { font-style: normal; color: var(--muted); }
+.skill-filter button { padding: 7px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+
+/* ---- why hire me + at a glance ---- */
+.why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.why-card { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--text); transition: transform 0.25s ease, border-color 0.25s; }
+.why-card .ic { margin-bottom: 6px; }
+.why-card b { font-family: var(--font-display); font-size: 19px; }
+.why-card p { font-family: inherit; font-size: 14px !important; font-weight: 400 !important; line-height: 1.55 !important; color: #c9cdf0; flex: 1; }
+.why-go { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); }
+.why-go svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.why-card:hover { transform: translateY(-4px); border-color: rgba(124, 245, 255, 0.5); }
+.why-card:hover .why-go svg { transform: translate(2px, -2px); }
+.hire-row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 14px; margin-top: 14px; }
+.glance { padding: 22px; }
+.glance h3 { margin: 0 0 12px; font-family: var(--font-display); font-size: 18px; }
+.glance dl { margin: 0; display: grid; gap: 10px; }
+.glance dl div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.glance dl div:last-child { border-bottom: 0; padding-bottom: 0; }
+.glance dt { color: var(--muted); font-size: 13px; }
+.glance dd { margin: 0; font-size: 14px; }
+.glance-cta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+/* ---- cards: soft light that follows the cursor ---- */
+@media (hover: hover) and (pointer: fine) {
+  .glass, .bento-card, .stat, .news-item { background-image: radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), rgba(124, 245, 255, 0.09), transparent 70%); }
+  .bento-card { background-image: radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), rgba(124, 245, 255, 0.12), transparent 70%), linear-gradient(160deg, rgba(124, 245, 255, 0.1), rgba(177, 140, 255, 0.08)); }
+}
+
+/* ---- experience: progress line ---- */
+.xp { position: relative; }
+.xp-line { position: absolute; left: -14px; top: 6px; bottom: 6px; width: 2px; border-radius: 2px; background: rgba(255, 255, 255, 0.08); }
+.xp-line i { position: absolute; inset: 0; transform-origin: top; transform: scaleY(0); background: linear-gradient(var(--accent), var(--accent-2)); border-radius: inherit; box-shadow: 0 0 12px var(--accent); }
+
+/* ---- toast ---- */
+.cv-toast { position: fixed; z-index: 60; left: 50%; bottom: 28px; transform: translate(-50%, 20px); padding: 10px 16px; border-radius: 12px; background: #0f1233; border: 1px solid rgba(61, 220, 132, 0.5); font-size: 14px; opacity: 0; pointer-events: none; transition: 0.25s ease; }
+.cv-toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 960px) {
+  .why { grid-template-columns: 1fr; }
+  .hire-row { grid-template-columns: 1fr; }
+  .portrait-stage { max-width: 340px; }
+  .xp-line { display: none; }
+  .cv-toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 520px) {
+  .glance dl div { grid-template-columns: 1fr; gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { .portrait-status i { animation: none; } }
+@media (max-width: 960px) {
+  .why-card { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 6px; align-items: center; min-height: 0 !important; padding: 18px; }
+  .why-card .ic { margin: 0; width: 36px; height: 36px; }
+  .why-card p, .why-card .why-go { grid-column: 1 / -1; }
+}

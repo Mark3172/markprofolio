@@ -49,6 +49,22 @@ export const profile = {
     { value: 'Odoo', label: 'ERP go-lives supported' },
   ],
   // Only the biggest wins: shown in the About card and as "Career highlights".
+  // "Why hire me" cards at the top of the classic view. Keep each claim backed by
+  // something on the site: `go` is the section the "See proof" link jumps to.
+  whyHire: [
+    { title: 'ERP go-live experience', text: 'I lead the ExpoTrans helpdesk team at Global Connect Asia through an Odoo ERP rollout: UAT, go-live and post-launch support.', go: 'experience' },
+    { title: 'Ships fast under pressure', text: '3 hackathon builds in 2026 for NASA Space Apps, the Google Cloud AI Builder Cup and Cursor, each with a live demo.', go: 'hackathons' },
+    { title: 'Design + tech in one person', text: 'UI/UX and accessibility work (Figma, user research) alongside CCNA networking, AWS and AI tooling.', go: 'projects' },
+  ],
+  // Quick facts for recruiters. Only add what is true; leave a line out rather than guess.
+  // TODO (optional): add { label: 'Available', value: '...' }, work authorisation or languages.
+  atAGlance: [
+    { label: 'Looking for', value: 'ERP, IT support, UI/UX and junior engineering roles' },
+    { label: 'Location', value: 'Yangon, Myanmar · open to Singapore (on-site, hybrid or remote)' },
+    { label: 'Now', value: 'Junior ERP Support Specialist at Global Connect Asia (since Mar 2026)' },
+    { label: 'Education', value: 'Curtin Singapore, IT · Class of 2026' },
+    { label: 'Credentials', value: '9 licenses & certifications, including AWS, CCNA and Google' },
+  ],
   highlights: [
     'Leading the ExpoTrans helpdesk team through an Odoo ERP go-live at Global Connect Asia',
     'Built AstroMed, an astronaut health console, at NASA Space Apps Challenge Yangon 2026',

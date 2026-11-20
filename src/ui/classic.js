@@ -1,7 +1,9 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, imgAttrs, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, imgAttrs, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
 import { createModal } from './modal.js';
+import { enhance, projectsFor } from './interactive.js';
+import MEDIA from '../data/media-manifest.json';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
@@ -72,6 +74,13 @@ export function renderClassic(root, { canExplore, onExplore }) {
   const featCerts = certificates.filter((c) => c.featured);
   const otherCerts = certificates.filter((c) => !c.featured);
   const topSkills = profile.skills.map((g) => g.items[0]).slice(0, 5);
+  // skills that orbit the 3D portrait: the ones with projects behind them
+  const portraitSkills = [...new Set(profile.skills.flatMap((g) => g.items))].filter((sk) => projectsFor(sk, projects).length).slice(0, 6);
+  // skills used in a project become buttons that filter the project list
+  const skillChip = (s) => {
+    const n = projectsFor(s, projects).length;
+    return n ? `<button type="button" class="skill-btn" data-skill="${esc(s)}" title="See ${n} project${n === 1 ? '' : 's'} using ${esc(s)}">${esc(s)}<em>${n}</em></button>` : `<span>${esc(s)}</span>`;
+  };
   const cats = ['all', ...new Set(projects.map((p) => p.category).filter(Boolean))];
   const hacks = achievements.filter((a) => a.kind === 'hackathon');
 
@@ -119,26 +128,35 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
         ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
-      <aside class="idcard">
-        <div class="avatar">${avatarHtml(initials)}</div>
-        <div class="id-name">${esc(profile.nickname)}</div>
-        <div class="id-title">${esc(profile.title.split(' · ')[0])}</div>
-        <ul class="id-list">
-          ${current ? `<li>${ICONS.brief}<div><b>${esc(current.org)}</b><small>${esc(current.start)} – ${esc(current.end)}</small></div></li>` : ''}
-          ${school ? `<li>${ICONS.cap}<div><b>${esc(school.org.split(' · ')[0])}</b><small>${esc(school.role)}</small></div></li>` : ''}
-          ${hacks.length ? `<li>${ICONS.trophy}<div><b>${hacks.length} hackathons</b><small>${esc(hacks.map((a) => a.title).slice(0, 2).join(', '))}</small></div></li>` : ''}
-        </ul>
-        <div class="id-skills">${topSkills.map((s) => `<span>${esc(s)}</span>`).join('')}</div>
+      <aside class="portrait" aria-label="Profile">
+        <div class="portrait-stage" data-portrait>
+          <div class="portrait-flat"><div class="avatar">${avatarHtml(initials)}</div></div>
+          <span class="portrait-status"><i></i>Open to work</span>
+        </div>
+        <p class="portrait-hint" aria-hidden="true">Drag to spin · tap a skill to see projects</p>
+        <div class="id-skills">${portraitSkills.map((s) => skillChip(s)).join('')}</div>
+        <div class="id-actions">
+          ${profile.links.email ? `<button class="id-act" data-copy="${esc(profile.links.email)}" title="Copy my email">${ICONS.mail}<span>Copy email</span><i class="ok">Copied ✓</i></button>` : ''}
+          <div class="id-act id-clock" data-clock="Asia/Yangon" title="My local time in Yangon">${ICONS.globe}<span><b>–</b><small>Yangon time</small></span></div>
+        </div>
       </aside>
     </section>
 
-    ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => `<div class="stat"><b>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`).join('')}</section>` : ''}
+    ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => { const m = /^(\d+)(.*)$/.exec(f.value); return `<div class="stat"><b${m ? ` data-count="${m[1]}" data-suffix="${esc(m[2])}"` : ''}>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`; }).join('')}</section>` : ''}
 
-    ${profile.highlights?.length ? sec('highlights', '★', 'Career highlights', 'The biggest things so far.', `
-      <div class="bento">${profile.highlights.map((h, i) => `<div class="bento-card"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><p>${esc(h)}</p></div>`).join('')}</div>`) : ''}
+    ${profile.whyHire?.length ? sec('hire', '★', 'Why hire me', 'The short version, with proof one click away.', `
+      <div class="why">${profile.whyHire.map((w, i) => `
+        <a class="why-card bento-card" href="#${esc(w.go)}" style="--d:${i * 80}ms"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><b>${esc(w.title)}</b><p>${esc(w.text)}</p><span class="why-go">See proof ${ICONS.arrow}</span></a>`).join('')}
+      </div>
+      <div class="hire-row">
+        ${profile.atAGlance?.length ? `<div class="glance glass"><h3>At a glance</h3><dl>${profile.atAGlance.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>
+          <div class="glance-cta">${profile.links.email ? `<a class="cbtn cbtn-primary" href="mailto:${esc(profile.links.email)}?subject=${encodeURIComponent('Opportunity for Mark')}">${ICONS.mail}Email me</a><button class="cbtn" data-copy="${esc(profile.links.email)}">Copy email<i class="ok">Copied ✓</i></button>` : ''}${link(profile.links.linkedin, `${ICONS.linkedin}LinkedIn`, 'cbtn')}</div></div>` : ''}
+        ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
+      </div>`) : ''}
 
     ${sec('projects', '01', 'Projects', `${projects.length} things I've led, designed or built.`, `
       <div class="tabs" role="tablist" data-tabs="spot-row"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
+      <div class="skill-filter" hidden role="status"><span>Projects using <b></b> · <em></em></span><button type="button" aria-label="Show all projects">Show all ✕</button></div>
       <div class="spot" data-spot>
         <ol class="spot-list">${projects.map((p, i) => `
           <li class="spot-row${i === 0 ? ' on' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
@@ -177,7 +195,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div>`) : ''}
 
     ${sec('experience', '03', 'Experience', 'Work and leadership roles.', `
-      <div class="xp">${work.map((e) => `
+      <div class="xp"><span class="xp-line" aria-hidden="true"><i></i></span>${work.map((e) => `
         <article class="xp-item glass" style="--c:${TYPE_COLOR[e.type] || '#7cf5ff'}">
           <div class="xp-when"><b>${esc(e.start)}</b><span>${esc(e.end)}</span><em>${esc(TYPE_LABEL[e.type] || '')}</em></div>
           <div class="xp-body">
@@ -210,13 +228,12 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </div>`).join('')}
       </div>`)}
 
-    ${sec('skills', '06', 'Skills', '', `
-      <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map((i) => `<span>${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>`)}
+    ${sec('skills', '06', 'Skills', 'Tap a highlighted skill to see the projects where I used it.', `
+      <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map(skillChip).join('')}</div></div>`).join('')}</div>`)}
 
     ${sec('about', '07', 'About', '', `
       <div class="about-grid">
         <div class="glass prose">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
-        ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
       </div>`)}
 
     ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
@@ -359,6 +376,32 @@ export function renderClassic(root, { canExplore, onExplore }) {
     else select(spot.querySelector('.spot-row'));
   }
 
+  enhance(root, { projects });
+
+  // 3D profile picture: loads after the page; the flat photo shows until then
+  const stage = root.querySelector('[data-portrait]');
+  if (stage && canExplore && profile.photo && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const SHORT = { 'User Acceptance Testing': 'UAT', 'Help Desk Support': 'Help Desk', 'Go-Live Support': 'Go-Live' };
+    const COLORS = ['#7cf5ff', '#b18cff', '#ff6b9d', '#3ddc84', '#ffb547', '#4aa3ff'];
+    const opts = {
+      photo: (() => { const v = MEDIA[profile.photo]; return mediaUrl(v ? v[v.length - 1][1] : profile.photo); })(),
+      initials,
+      back: ['Open to work', 'Singapore · on-site, hybrid', 'or remote'],
+      skills: portraitSkills.map((label, i) => ({ label: SHORT[label] || label, skill: label, color: COLORS[i % COLORS.length] })),
+      onSkill: (sk) => root.querySelector(`.id-skills [data-skill="${CSS.escape(sk)}"]`)?.click(),
+    };
+    // starts on the visitor's first move, scroll or tap, so it never competes with the first paint
+    const EVTS = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'];
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      EVTS.forEach((ev) => removeEventListener(ev, go));
+      import('./portrait3d.js').then((m) => m.mountPortrait(stage, opts)).catch(() => {});
+    };
+    EVTS.forEach((ev) => addEventListener(ev, go, { passive: true, once: true }));
+  }
+
   // card -> full details in a modal (same cards as the 3D world)
   const modal = createModal();
   root.addEventListener('click', (e) => {
@@ -401,15 +444,19 @@ export function renderClassic(root, { canExplore, onExplore }) {
   });
 
   // moving 3D background (lazy, only where it will run smoothly)
-  // Waits until the page has fully loaded so it never delays the content, and is
+  // Waits for the visitor's first interaction so it never delays the content, and is
   // skipped on data-saver or slow connections (the CSS gradient background stays).
   const conn = navigator.connection;
   const slowNet = conn && (conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || ''));
   if (canExplore && !slowNet && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const go = () => import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
-    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 2500 }) : setTimeout(go, 600));
-    if (document.readyState === 'complete') setTimeout(idle, 800);
-    else addEventListener('load', () => setTimeout(idle, 800), { once: true });
+    // like the portrait: starts on the first move, scroll or tap
+    const BG_EVTS = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'];
+    const start = () => {
+      BG_EVTS.forEach((ev) => removeEventListener(ev, start));
+      'requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 800 }) : setTimeout(go, 200);
+    };
+    BG_EVTS.forEach((ev) => addEventListener(ev, start, { passive: true, once: true }));
   }
 
   // scroll reveal + active nav

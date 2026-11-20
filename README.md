@@ -116,10 +116,18 @@ a preview for every pull request). Any static host works.
 - **E** at the yellow flag starts the Island Dash; fast travel during a dash cancels it
 - **Touch**: joystick bottom-left (push it all the way to run), drag anywhere to look, JUMP and camera buttons bottom-right, tap things to open them
 
+## Interactive touches (classic view)
+
+- **3D profile picture**: your photo on a floating coin that leans toward the cursor. Drag or tap to flip it; the back says what you are open to. Your skills orbit it, and clicking one shows the projects that used it. It starts on the visitor's first move or scroll, and the flat photo shows for reduced motion or without WebGL.
+- **Skill chips** with a number filter the project list to the projects that used that skill.
+- **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
+- **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.
+- Stats count up, cards get a soft light under the cursor, and a line fills as you read down Experience.
+
 ## Speed, accessibility and search
 
 The classic view follows Google's web.dev and Lighthouse guidance. In a local Lighthouse mobile run it scores
-98 for performance and 100 for accessibility, best practices and SEO. The largest paint takes about 1.6 s,
+100 for performance, accessibility, best practices and SEO. The largest paint takes about 1.5 s,
 well inside the 2.5 s that Google counts as good.
 
 - The hero shows instantly. Only the sections below it fade in.
