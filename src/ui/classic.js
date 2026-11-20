@@ -221,7 +221,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
     ${sec('certifications', '04', 'Licenses & certifications', `${certificates.length} credentials.`, `
       <div class="cfeat">${featCerts.map((c) => `
-        <article class="ccard glass" style="--c:${esc(c.color)}">
+        <article class="ccard glass${c.image ? ' has-img' : ''}" style="--c:${esc(c.color)}">
+          ${c.image ? `<button type="button" class="cthumb" data-open="certificate:${certificates.indexOf(c)}" aria-label="View the ${esc(c.name)} certificate"><img ${imgAttrs(c.image, '(max-width: 640px) 90vw, 520px')} alt="" loading="lazy" decoding="async" width="1200" height="928" onerror="this.closest('.cthumb').remove()"></button>` : ''}
           <span class="cmono${monogram(c.issuerShort || c.issuer).length > 3 ? ' sm' : ''}">${esc(monogram(c.issuerShort || c.issuer))}</span>
           <div><h3>${esc(c.name)}${sampleTag(c)}</h3><div class="cmeta">${esc(c.issuer)}${c.date ? ' · ' + esc(c.date) : ''}</div>
           ${link(c.url, `Verify ${ICONS.arrow}`, 'cverify')}</div>
@@ -229,7 +230,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div>
       <details class="cmore"><summary>Show ${otherCerts.length} more credentials</summary>
       <div class="clist glass">${otherCerts.map((c) => `
-        <div class="crow" style="--c:${esc(c.color)}"><span class="cdot"></span><div class="cname"><b>${esc(c.name)}</b><span>${esc(c.issuer)}</span></div><span class="cdate">${esc(c.date)}</span>${c.url ? link(c.url, `Verify ${ICONS.arrow}`, 'cverify') : '<span class="cverify off"></span>'}</div>`).join('')}
+        <div class="crow" style="--c:${esc(c.color)}">${c.image ? `<button type="button" class="cthumb cthumb-sm" data-open="certificate:${certificates.indexOf(c)}" aria-label="View the ${esc(c.name)} certificate"><img ${imgAttrs(c.image, '96px')} alt="" loading="lazy" decoding="async" width="1200" height="928"></button>` : '<span class="cdot"></span>'}<div class="cname"><b>${esc(c.name)}</b><span>${esc(c.issuer)}</span></div><span class="cdate">${esc(c.date)}</span>${c.url ? link(c.url, `Verify ${ICONS.arrow}`, 'cverify') : '<span class="cverify off"></span>'}</div>`).join('')}
       </div></details>`)}
 
     ${sec('education', '05', 'Education', '', `
@@ -407,7 +408,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
   // card -> full details in a modal (same cards as the 3D world)
   const modal = createModal();
   root.addEventListener('click', (e) => {
-    const card = e.target.closest('.ach-item[data-open]');
+    const card = e.target.closest('.ach-item[data-open], .cthumb[data-open]');
     if (!card || e.target.closest('a')) return;
     const [sec, i] = card.dataset.open.split(':');
     modal.show(sec, Number(i));

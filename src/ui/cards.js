@@ -119,6 +119,7 @@ export const sections = {
         <div class="eyebrow">${esc(KIND_LABEL[c.kind] || 'Certificate')}${c.date ? ' · ' + esc(c.date) : ''}</div>
         <h2>${esc(c.name)}${sampleTag(c)}</h2>
         <p class="sub">Issued by ${esc(c.issuer)}</p>
+        ${c.image ? `<a class="card-cert" href="${esc(mediaUrl(c.image))}" target="_blank" rel="noopener" title="Open full size"><img ${imgAttrs(c.image, '(max-width: 680px) 92vw, 600px')} alt="${esc(c.name)} certificate" loading="lazy" decoding="async" width="1200" height="928"></a>` : ''}
         ${c.credentialId ? `<p>${esc(c.credentialId)}</p>` : ''}
         <div class="card-actions">${ext(c.url, 'Show credential ↗', true)}</div>`,
     }),

@@ -385,6 +385,7 @@ export const experience = [
  *  kind: 'certificate' | 'license' | 'award'
  *  `short` / `issuerShort` are the few words printed on the 3D medal;
  *  `featured: true` puts it in the big front row.
+ *  `image` (optional): a photo/scan of the certificate in public/media/certs/.
  * ------------------------------------------------------------------- */
 export const certificates = [
   {
@@ -396,6 +397,7 @@ export const certificates = [
     date: 'Nov 2026',
     credentialId: 'Credential ID L33PA1IMV7EH',
     url: 'https://www.coursera.org/account/accomplishments/records/L33PA1IMV7EH',
+    image: 'media/certs/coursera-wordpress.jpg',
     color: '#4cc9f0',
   },
   {
@@ -407,6 +409,7 @@ export const certificates = [
     date: 'Oct 2026',
     credentialId: 'Credential ID WZ9V254STTDJ',
     url: 'https://www.coursera.org/account/accomplishments/records/WZ9V254STTDJ',
+    image: 'media/certs/google-ai-planning.jpg',
     color: '#3ddc84',
   },
   {
@@ -418,6 +421,7 @@ export const certificates = [
     date: 'Oct 2026',
     credentialId: 'Credential ID 9R1NPCOLNZX5',
     url: 'https://www.coursera.org/account/accomplishments/records/9R1NPCOLNZX5',
+    image: 'media/certs/google-ai-fundamentals.jpg',
     color: '#ffd166',
   },
   {
@@ -430,6 +434,7 @@ export const certificates = [
     date: 'Oct 2026',
     credentialId: 'Credential ID QX2W4CAS2KGC',
     url: 'https://www.coursera.org/account/accomplishments/verify/QX2W4CAS2KGC',
+    image: 'media/certs/google-tech-support.jpg',
     color: '#ff6b9d',
   },
   {
