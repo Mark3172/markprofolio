@@ -99,7 +99,20 @@ function intro() {
     },
     done() {
       progress.step('Ready!', 100, 100);
-      return new Promise((r) => setTimeout(r, reduced ? 0 : 450));
+      // let the bar catch up, but never show "Ready!" next to a half-full bar
+      const start = performance.now();
+      return new Promise((r) => {
+        const check = () => {
+          if (shown >= 99 || performance.now() - start > 500) {
+            shown = target = 100;
+            fill.style.width = '100%';
+            pct.textContent = '100%';
+            bar.setAttribute('aria-valuenow', 100);
+            setTimeout(r, reduced ? 0 : 250);
+          } else setTimeout(check, 40);
+        };
+        check();
+      });
     },
     stop() {
       cancelAnimationFrame(raf);
