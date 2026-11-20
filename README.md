@@ -1,59 +1,52 @@
 # markprofolio
 
-Mark's (Myo Set Paing) portfolio: a fast, recruiter-friendly page that also opens as an explorable 3D floating island.
+The portfolio of **Myo Set Paing (Mark)**, Junior ERP Support Specialist and IT graduate. It has two views built from the same data:
 
-Visitors land on the **classic view** first, so the information is there straight away. Game mode is one
-click away from three places: the "Play game mode" button in the menu, the card in the hero section, and a
-floating "Game mode" button that follows the visitor down the page. `?view=3d` links straight into the game.
+- **Classic view** (the landing page): a fast, recruiter-friendly single page that scores 99–100 in Lighthouse and has a downloadable CV.
+- **Game mode**: an explorable 3D floating island, one click away. Every landmark is a project, certificate or chapter of the story.
 
-In game mode, visitors walk around the island in third person (or first person with **V**). Every landmark opens a card:
+`?view=3d` links straight into the game. Browsers without WebGL 2 always get the classic view.
 
-| Landmark | What's inside |
-| --- | --- |
-| **Project Workshop** | One glowing pedestal per project |
-| **Hall of Badges** | Floating medallions for certificates, licenses and awards |
-| **Timeline Trail** | Monoliths for each job and your education |
-| **Hackathon Arena** | Trophy boards for hackathons, events and awards (the biggest ones in the front row) |
-| **The Beacon** | About me, skills (the orbiting crystals) and contact links |
+---
 
-### Things to do on the island
+## Quick start
 
-- **Highlights tour**: an arrow and a light pillar lead visitors through the five areas in order.
-- **Byte, the guide drone**: follows the player and explains each area the first time they arrive, plus a few tips.
-- **Explorer quests** (top right): seven goals such as visiting every area, opening exhibits and reading the news board. Each one raises the visitor's rank, from Visitor up to Island Legend. Finishing all seven opens the contact card.
-- **Island Dash**: start at the yellow flag in the plaza and run through 8 glowing rings against the clock. The best time is saved in the browser.
-- **Data shards**: 9 hidden collectibles. One sits on the Sky Lookout at the top of a floating parkour route.
-- **News board** in the plaza: shows the newest post and opens the full news list.
-- **Sound effects**: made in the browser with no audio files. The speaker button mutes them.
-- Also a jump pad, a minimap you can click to travel, and fast travel. Fall off the island and you respawn at the plaza.
+```bash
+npm install
+npm run dev                      # http://localhost:5173 (development mode)
+npm run build && npm run preview # http://localhost:4173 (the real, production speed)
+```
 
-Phones get a touch joystick. Browsers without WebGL 2 (and anyone who clicks
-"Classic view") get a recruiter-friendly scrolling portfolio built from the same data:
-latest news, career highlights, experience, a project spotlight, a hackathon photo wall,
-certifications, education, skills and contact. It has a moving 3D backdrop and an
-announcement banner for the newest post.
+> **Testing speed?** Use `npm run preview`, not `npm run dev`. Dev mode serves the 3D engine unbundled and unminified (about 5.9 MB), so game mode loads much more slowly there than it will for visitors (about 140 KB compressed).
 
 ## Edit your content
 
-Everything lives in **one file: [`src/data/portfolio.js`](src/data/portfolio.js)**.
-It is filled in from Mark's LinkedIn profile, LinkedIn posts and GitHub (Nov 2026):
+Almost everything lives in **one file: [`src/data/portfolio.js`](src/data/portfolio.js)**. Both views (and the CV) read from it, so one edit updates everything. It was filled in from Mark's LinkedIn, LinkedIn posts and GitHub (Nov 2026).
 
-- **Projects**: 11, including three 2026 hackathon builds:
-  - [AstroMed](https://github.com/Planet-Coders/AstroMed) for NASA Space Apps Challenge Yangon ([live demo](https://astro-med-ashy.vercel.app))
-  - [HRChronicle AI](https://github.com/vibecode-ting/hr_chronicle_ai) for the Google Cloud AI Builder Cup ([live app](https://myanmardev.web.app))
-  - [GreenLens AI](https://github.com/Mark3172/greenlens-ai) for the Cursor Myanmar Hackathon ([live demo](https://greentechai.netlify.app/scan))
-- **Hackathons & achievements**: 4 hackathons, tech events (GITEX Asia, Myanmar-China Expo, ASEAN Data Science Program and more), leadership and awards
-- **Experience & education**: Global Connect Asia, AIESEC, Curtin Singapore and more
-- **Certifications**: all licenses & certifications from LinkedIn, with verify links
-- **About**: skills, career highlights, a recommendation, and a contact email for business inquiries
+| What | Where in `portfolio.js` |
+| --- | --- |
+| Name, title, tagline, location, status | `profile` |
+| Photo | `profile.photo` (file in `public/media/`) |
+| Email, LinkedIn, GitHub, socials, CV link | `profile.links` |
+| "Why hire me" cards (each links to its proof) | `profile.whyHire` |
+| "At a glance" facts for recruiters | `profile.atAGlance` |
+| Growth timeline (2022 → 2026) | `profile.milestones` |
+| Big numbers under the hero | `profile.keyFacts` |
+| Skills (chips that filter projects) | `profile.skills` |
+| Recommendation quote | `profile.testimonial` |
+| Projects (11) | `projects` |
+| Jobs and education | `experience` |
+| Certificates and licenses | `certificates` |
+| Hackathons, events and awards | `achievements` |
+| News posts | `news` |
 
-Set `featured: true` on an item to highlight it: featured projects get the big cards, and featured
-hackathons and certificates go in the front row in 3D and in the classic view. Keep it to the biggest few.
+To add a project, certificate, hackathon or job, copy an existing block in the same list. The 3D world lays it out automatically. Set `featured: true` to put an item in the front row (keep it to the biggest few). Search the file for `TODO` to find optional facts still missing (availability, work authorisation, languages).
 
-### News & announcements
+**Only add what is true.** Leave a line out rather than guess.
 
-LinkedIn and Instagram do not let a personal site pull posts automatically, so news is a short list
-you add to when you post. Add a block to the top of the `news` list in `src/data/portfolio.js`:
+### News
+
+LinkedIn and Instagram don't let a personal site pull posts automatically, so add a block to the top of `news` when you post:
 
 ```js
 {
@@ -61,100 +54,116 @@ you add to when you post. Add a block to the top of the `news` list in `src/data
   source: 'linkedin',            // linkedin | github | instagram | facebook
   title: 'We built AstroMed at NASA Space Apps Challenge Yangon',
   text: 'One or two sentences about the post.',
-  link: 'https://www.linkedin.com/...', // the post URL
+  link: 'https://www.linkedin.com/...',
   image: 'media/nasa.jpg',       // optional
 },
 ```
 
-The newest item becomes the banner at the top of the classic view and the news board in the 3D plaza.
-Posts newer than 45 days get a "New" badge.
+The newest post becomes the banner at the top of the classic view and the news board in the 3D plaza. Posts from the last 45 days get a "New" badge.
 
 ### Photos
 
-Photos and screenshots live in [`public/media/`](public/media). Point an item at one with
-`image: 'media/your-file.jpg'` (projects, hackathons and news), or `photo` for the profile picture.
-Aim for at least 1200 px wide so they stay sharp. If a file is missing, the site hides the picture
-instead of showing a broken image.
+Put photos in [`public/media/`](public/media) and point items at them with `image: 'media/your-file.jpg'`. Aim for at least 1200 px wide. A missing file is hidden rather than shown broken.
 
-After adding or replacing photos, run `python scripts/optimize_media.py` (needs `pip install pillow`).
-It makes small WebP copies in `public/media/opt/`, so phones download a fraction of the size.
-The site still works if you skip this step: new photos just load at full size.
-
-### Contact
-
-The contact email, LinkedIn, GitHub, Facebook and Instagram links are in `profile.links`.
-The email shows on the "Email me" buttons and in the contact section for business inquiries.
-The "I can help with" list comes from `profile.services`.
-
-The only optional thing still missing is a résumé PDF (search the file for `TODO`).
-
-To add a project, certificate, hackathon or job, copy an existing block in the same list.
-The 3D world lays them out automatically.
-
-## Run locally
+After adding or replacing photos, run:
 
 ```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # production build in dist/
+pip install pillow               # once
+python scripts/optimize_media.py
 ```
 
-The site opens on the classic view. Add `?view=3d` to the URL to open game mode directly.
+This makes small WebP copies in `public/media/opt/` so phones download a fraction of the size. The site still works if you skip it.
 
-## Deploy
+### Your CV
 
-`netlify.toml` is included: connect the repo in Netlify and it builds with
-`npm run build` and publishes `dist/`. Vercel also works with no config (it builds
-a preview for every pull request). Any static host works.
-
-## Controls
-
-- **WASD / arrow keys** walk, **Shift** sprint, **Space** jump
-- **Click** the world to capture the mouse for free look (**Esc** releases it); in that mode the crosshair picks what **E** or a click opens
-- **V** switches between third-person and first-person view, **scroll** zooms the third-person camera
-- **E** opens whatever you are aiming at or standing next to; you can also click glowing things directly
-- **E** at the yellow flag starts the Island Dash; fast travel during a dash cancels it
-- **Touch**: joystick bottom-left (push it all the way to run), drag anywhere to look, JUMP and camera buttons bottom-right, tap things to open them
-
-## Interactive touches (classic view)
-
-- **Natural portrait**: your real photo (`profile.photo`) in a simple rounded frame with an Open to work label. No cut-out, blobs or floating badges, so it looks like you.
-- **Light theme by default**: warm off-white page, white cards, near-black text and one blue accent, because light pages read better in bright offices and recruiters scan fast. The moon button in the menu switches to the dark theme, and the choice is remembered. The 3D island game keeps its night look.
-- **Growth timeline**: a compact row of milestones (2022 to 2026) under Why hire me, from `profile.milestones`. Each one links to its proof section. There are deliberately no skill-percentage bars or charts, because recruiters read them as made-up numbers.
-- **Skill chips** with a number filter the project list to the projects that used that skill.
-- **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
-- **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.
-- Stats count up, cards get a soft light under the cursor, and a line fills as you read down Experience.
-
-## Speed, accessibility and search
-
-The classic view follows Google's web.dev and Lighthouse guidance. In a local Lighthouse mobile run it scores
-100 for performance, accessibility, best practices and SEO. The largest paint takes about 1.5 s,
-well inside the 2.5 s that Google counts as good.
-
-- The hero shows instantly. Only the sections below it fade in.
-- Fonts load without blocking the first paint.
-- Photos come in responsive WebP sizes.
-- The 3D background loads only after the page has finished, and is skipped on data-saver or slow connections.
-- There is a "Skip to content" link for keyboard users, and every button has a label.
-- Search engines get a descriptive title and description, `robots.txt`, and Person structured data
-  (name, role, employer, LinkedIn and GitHub).
-
-## Tech
-
-Three.js + Vite, plain JavaScript, no framework. All 3D text is drawn on canvas
-at runtime, so there are no models or fonts to download. The 3D code is
-lazy-loaded (about 155 KB gzipped) and the classic view never loads it.
-Quality drops automatically on phones and slow GPUs (no bloom/shadows, lower
-resolution), and rendering pauses when the tab is hidden.
-
-## Your CV
-
-The **Download CV** buttons (in the menu, the hero and Contact) serve `public/cv/Myo-Set-Paing-CV.pdf`. It is generated from `src/data/portfolio.js`, so after you edit your details, rebuild it:
+The **Download CV** buttons (menu, hero and contact) serve [`public/cv/Myo-Set-Paing-CV.pdf`](public/cv/Myo-Set-Paing-CV.pdf). It is generated from `portfolio.js`, so rebuild it after editing your details:
 
 ```bash
 npm i -D playwright && npx playwright install chromium   # once
 node scripts/build_cv.mjs
 ```
 
-The layout follows recruiter and ATS advice: A4, one column, real text, standard headings (Profile, Experience, Hackathons & Projects, Education, Certifications, Skills), dates on the right and no photo. `public/cv/Myo-Set-Paing-CV.html` is the page it prints from, if you want to tweak the styling.
+The layout follows recruiter and ATS advice: A4, two pages, one column, real text, standard headings (Profile, Experience, Hackathons & Projects, Education, Certifications, Skills, Awards), dates on the right and no photo. `public/cv/Myo-Set-Paing-CV.html` is the page it prints from.
+
+## The classic view
+
+Built for recruiters who scan in seconds:
+
+- **Light theme by default**: warm off-white page, white cards, near-black text and one blue accent. Light pages read better in bright offices (NN/g) and recruiters favour simple, high-contrast layouts (Ladders eye-tracking). The moon button switches to a dark theme, and the choice is remembered.
+- **Recruiter-first order**: hero → Why hire me + At a glance + recommendation + growth timeline → Projects → Hackathons → Experience → Certifications → Education → Skills → About → News → Contact.
+- **Natural portrait**: the real photo in a simple rounded frame with an "Open to work" label.
+- **Contact everywhere**: Email, Copy email, LinkedIn and Download CV in the hero, menu and contact section, plus a live Yangon time card.
+- **Useful interactions**: skill chips filter the project list; project and hackathon tabs; stats count up; a soft light follows the cursor over cards; older certificates and education fold away behind "Show more".
+- **No decorative charts**: no skill-percentage bars or radar charts, because recruiters read them as made-up numbers.
+- **Phones**: a bottom tab bar, a swipeable growth timeline, and 40 px+ tap targets.
+- **Game mode entry points**: the menu button, the hero card and a floating "Game mode" button. The 3D code starts downloading when a visitor hovers or taps one of these (or quietly once the page is idle), so the game starts faster.
+
+## Game mode
+
+Visitors land on a loading screen with real progress and control tips, then walk the island in third person (or first person with **V**).
+
+| Landmark | What's inside |
+| --- | --- |
+| **Project Workshop** | A glowing pedestal per project |
+| **Hall of Badges** | Floating medallions for certificates and awards |
+| **Timeline Trail** | Monoliths for each job and education step |
+| **Hackathon Arena** | Trophy boards, biggest wins in the front row |
+| **The Beacon** | About, skills (the orbiting crystals) and contact |
+
+Things to do:
+
+- **Highlights tour**: an arrow and light pillar lead through the five areas.
+- **Byte, the guide drone**: explains each area the first time a visitor arrives.
+- **Explorer quests** (top right): seven goals that raise the visitor's rank from Visitor to Island Legend. Finishing all seven opens the contact card.
+- **Island Dash**: a race through 8 rings from the yellow flag. The best time is saved in the browser.
+- **Data shards**: 9 hidden collectibles, one at the top of a parkour route.
+- **News board** in the plaza, sound effects made in the browser (the speaker button mutes them), a jump pad, a clickable minimap and fast travel. Fall off and you respawn at the plaza.
+
+### Controls
+
+- **WASD / arrows** walk, **Shift** sprint, **Space** jump
+- **Click** the world for mouse look (**Esc** releases it)
+- **V** first/third person, **scroll** zooms the camera
+- **E** opens what you're aiming at or standing next to (or just click glowing things)
+- **E** at the yellow flag starts the Island Dash
+- **Touch**: joystick bottom-left, drag to look, JUMP and camera buttons bottom-right, tap things to open them
+
+## Speed, accessibility and search
+
+Lighthouse mobile (local production build): **99 performance, 100 accessibility, 100 best practices, 100 SEO**, with the largest paint at about 1.5 s (Google's "good" is under 2.5 s).
+
+- The hero paints immediately, and fonts don't block it.
+- Photos are served as responsive WebP.
+- The 3D background (dark theme only) starts on the first interaction and is skipped on data-saver or slow connections.
+- The game code is lazy-loaded and split from the classic view.
+- Keyboard users get a "Skip to content" link, every button has a label, and reduced-motion users get no animations.
+- Search engines get a descriptive title and description, Open Graph tags, `robots.txt` and Person structured data.
+
+## Project structure
+
+```
+index.html              page shell, SEO tags, fonts
+public/
+  logo.svg, favicon.svg monogram logo
+  media/                photos and screenshots (+ opt/ WebP copies)
+  cv/                   generated CV (PDF + HTML source)
+src/
+  main.js               picks the view; game-mode loading screen
+  data/portfolio.js     ALL the content
+  ui/classic.js/.css    classic view (light/dark themes)
+  ui/interactive.js     copy email, clock, skill filter, count-up, cursor light
+  ui/cards.js, modal.js detail cards shared by both views
+  ui/hud.js, sfx.js     game HUD, quests, Byte, sounds
+  world/World.js        the 3D island (Three.js)
+scripts/
+  build_cv.mjs          builds the CV from portfolio.js
+  optimize_media.py     makes WebP photo sizes
+```
+
+## Deploy
+
+Vercel works with no config and builds a preview for every pull request. `netlify.toml` is included for Netlify. Any static host works: build with `npm run build` and publish `dist/`.
+
+## Tech
+
+Three.js and Vite, plain JavaScript, no framework. All 3D text is drawn on canvas at runtime, so there are no models or fonts to download. Quality drops automatically on phones and slow GPUs, and rendering pauses when the tab is hidden.

@@ -87,6 +87,11 @@ export function renderClassic(root, { canExplore, onExplore }) {
   const cats = ['all', ...new Set(projects.map((p) => p.category).filter(Boolean))];
   const hacks = achievements.filter((a) => a.kind === 'hackathon');
 
+  const eduRow = (e) => `
+        <div class="edu-row glass">
+          <div class="edu-when">${esc(e.start === e.end ? e.start : `${e.start} – ${e.end}`)}</div>
+          <div><h3>${esc(e.role)}${sampleTag(e)}</h3><div class="edu-org">${esc(e.org)}</div>${e.summary ? `<p>${esc(e.summary)}</p>` : ''}</div>
+        </div>`;
   const sec = (id, num, title, sub, body) => `
     <section class="cv-sec reveal" id="${id}">
       <div class="cv-sec-head"><span class="num">${num}</span><h2>${title}</h2>${sub ? `<p>${sub}</p>` : ''}</div>
@@ -228,12 +233,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
       </div></details>`)}
 
     ${sec('education', '05', 'Education', '', `
-      <div class="edu">${edu.map((e) => `
-        <div class="edu-row glass">
-          <div class="edu-when">${esc(e.start)} – ${esc(e.end)}</div>
-          <div><h3>${esc(e.role)}${sampleTag(e)}</h3><div class="edu-org">${esc(e.org)}</div>${e.summary ? `<p>${esc(e.summary)}</p>` : ''}</div>
-        </div>`).join('')}
-      </div>`)}
+      <div class="edu">${edu.slice(0, 3).map(eduRow).join('')}</div>
+      ${edu.length > 3 ? `<details class="cmore edu-more"><summary>Show ${edu.length - 3} earlier</summary><div class="edu">${edu.slice(3).map(eduRow).join('')}</div></details>` : ''}`)}
 
     ${sec('skills', '06', 'Skills', 'Tap a highlighted skill to see the projects where I used it.', `
       <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map(skillChip).join('')}</div></div>`).join('')}</div>`)}
