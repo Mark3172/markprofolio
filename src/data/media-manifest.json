@@ -9,6 +9,56 @@
       "media/opt/astromed-1200.webp"
     ]
   ],
+  "media/certs/coursera-wordpress.jpg": [
+    [
+      480,
+      "media/opt/certs-coursera-wordpress-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/certs-coursera-wordpress-1200.webp"
+    ]
+  ],
+  "media/certs/forage-ux.jpg": [
+    [
+      480,
+      "media/opt/certs-forage-ux-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/certs-forage-ux-1200.webp"
+    ]
+  ],
+  "media/certs/google-ai-fundamentals.jpg": [
+    [
+      480,
+      "media/opt/certs-google-ai-fundamentals-480.webp"
+    ],
+    [
+      1198,
+      "media/opt/certs-google-ai-fundamentals-1198.webp"
+    ]
+  ],
+  "media/certs/google-ai-planning.jpg": [
+    [
+      480,
+      "media/opt/certs-google-ai-planning-480.webp"
+    ],
+    [
+      1198,
+      "media/opt/certs-google-ai-planning-1198.webp"
+    ]
+  ],
+  "media/certs/google-tech-support.jpg": [
+    [
+      480,
+      "media/opt/certs-google-tech-support-480.webp"
+    ],
+    [
+      1198,
+      "media/opt/certs-google-tech-support-1198.webp"
+    ]
+  ],
   "media/cursor-event.jpg": [
     [
       480,

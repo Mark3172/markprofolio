@@ -38,7 +38,7 @@ const ul = (xs) => (xs?.length ? `<ul>${xs.map((x) => `<li>${esc(x)}</li>`).join
 
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>${esc(profile.name)} · CV</title>
+<title>${esc(profile.fullName || profile.name)} · CV</title>
 <style>
   @page { size: A4; margin: 13mm 15mm; }
   * { box-sizing: border-box; }
@@ -62,7 +62,7 @@ const html = `<!doctype html>
   .two .item { margin-bottom: 5px; }
 </style></head><body>
   <header>
-    <h1>${esc(profile.name)} (${esc(profile.nickname)})</h1>
+    <h1>${esc(profile.fullName || profile.name)}${profile.nickname && profile.nickname !== (profile.fullName || profile.name) ? ` (${esc(profile.nickname)})` : ''}</h1>
     <div class="title">${esc(role)} · IT Graduate</div>
     <div class="contact">
       <span>${esc(profile.location)} · open to roles in Singapore (on-site, hybrid or remote)</span><br>

@@ -1,6 +1,6 @@
 # markprofolio
 
-The portfolio of **Myo Set Paing (Mark)**, Junior ERP Support Specialist and IT graduate. It has two views built from the same data:
+The portfolio of **Mark** (full name Myo Set Paing, used on the CV), Junior ERP Support Specialist and IT graduate. It has two views built from the same data:
 
 - **Classic view** (the landing page): a fast, recruiter-friendly single page that scores 99–100 in Lighthouse and has a downloadable CV.
 - **Game mode**: an explorable 3D floating island, one click away. Every landmark is a project, certificate or chapter of the story.
@@ -65,6 +65,8 @@ The newest post becomes the banner at the top of the classic view and the news b
 
 Put photos in [`public/media/`](public/media) and point items at them with `image: 'media/your-file.jpg'`. Aim for at least 1200 px wide. A missing file is hidden rather than shown broken.
 
+**Certificate pictures** go in `public/media/certs/`. Add `image: 'media/certs/your-file.jpg'` to a certificate in `certificates`, and it appears as a thumbnail on the card and full size in the detail view (click to open the original). Coursera, Google and Forage certificates already have pictures. AWS, CCNA, MM PROJECT and AIESEC need a scan or screenshot.
+
 After adding or replacing photos, run:
 
 ```bash
@@ -93,6 +95,7 @@ Built for recruiters who scan in seconds:
 - **Recruiter-first order**: hero → Why hire me + At a glance + recommendation + growth timeline → Projects → Hackathons → Experience → Certifications → Education → Skills → About → News → Contact.
 - **Natural portrait**: the real photo in a simple rounded frame with an "Open to work" label.
 - **Contact everywhere**: Email, Copy email, LinkedIn and Download CV in the hero, menu and contact section, plus a live Yangon time card.
+- **Certificate pictures**: the real certificates show on the cards, and clicking one opens it full size.
 - **Useful interactions**: skill chips filter the project list; project and hackathon tabs; stats count up; a soft light follows the cursor over cards; older certificates and education fold away behind "Show more".
 - **No decorative charts**: no skill-percentage bars or radar charts, because recruiters read them as made-up numbers.
 - **Phones**: a bottom tab bar, a swipeable growth timeline, and 40 px+ tap targets.
