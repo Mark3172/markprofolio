@@ -118,7 +118,7 @@ a preview for every pull request). Any static host works.
 
 ## Interactive touches (classic view)
 
-- **3D profile picture**: your photo on a floating coin that leans toward the cursor. Drag or tap to flip it; the back says what you are open to. Your skills orbit it, and clicking one shows the projects that used it. It starts on the visitor's first move or scroll, and the flat photo shows for reduced motion or without WebGL.
+- **Cut-out portrait**: your photo with the background removed, standing over a soft colour blob with a dashed ring, twinkling dots and floating badges (Open to work, your two headline skills, hackathons). The layers shift gently with the mouse, and clicking a skill badge shows the projects that used it. To change the photo, replace `public/media/portrait.webp` (a transparent PNG/WebP works best) and run `python scripts/optimize_media.py`.
 - **Skill chips** with a number filter the project list to the projects that used that skill.
 - **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
 - **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.

@@ -99,6 +99,16 @@
       "media/opt/nasa-1200.webp"
     ]
   ],
+  "media/portrait.webp": [
+    [
+      480,
+      "media/opt/portrait-480.webp"
+    ],
+    [
+      628,
+      "media/opt/portrait-628.webp"
+    ]
+  ],
   "media/profile.jpg": [
     [
       480,

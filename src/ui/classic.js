@@ -1,9 +1,8 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, imgAttrs, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, imgAttrs, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
 import { createModal } from './modal.js';
 import { enhance, projectsFor } from './interactive.js';
-import MEDIA from '../data/media-manifest.json';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
@@ -74,8 +73,12 @@ export function renderClassic(root, { canExplore, onExplore }) {
   const featCerts = certificates.filter((c) => c.featured);
   const otherCerts = certificates.filter((c) => !c.featured);
   const topSkills = profile.skills.map((g) => g.items[0]).slice(0, 5);
-  // skills that orbit the 3D portrait: the ones with projects behind them
-  const portraitSkills = [...new Set(profile.skills.flatMap((g) => g.items))].filter((sk) => projectsFor(sk, projects).length).slice(0, 6);
+  // skills on the portrait badges: the ones with the most projects behind them
+  const portraitSkills = (profile.portraitSkills?.length ? profile.portraitSkills : [...new Set(profile.skills.flatMap((g) => g.items))])
+    .map((sk) => [sk, projectsFor(sk, projects).length])
+    .filter(([, n]) => n)
+    .sort((a, b) => (profile.portraitSkills?.length ? 0 : b[1] - a[1]))
+    .map(([sk]) => sk);
   // skills used in a project become buttons that filter the project list
   const skillChip = (s) => {
     const n = projectsFor(s, projects).length;
@@ -128,13 +131,19 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
         ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
-      <aside class="portrait" aria-label="Profile">
-        <div class="portrait-stage" data-portrait>
-          <div class="portrait-flat"><div class="avatar">${avatarHtml(initials)}</div></div>
-          <span class="portrait-status"><i></i>Open to work</span>
+      <aside class="portrait" aria-label="Profile" data-parallax>
+        <div class="pt-stage">
+          <span class="pt-ring" data-depth="-0.6" aria-hidden="true"></span>
+          <span class="pt-blob" data-depth="-0.35" aria-hidden="true"></span>
+          <span class="pt-dots" data-depth="-0.9" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          ${profile.portrait
+            ? `<img class="pt-photo" data-depth="0.25" ${imgAttrs(profile.portrait, '(max-width: 960px) 80vw, 420px')} alt="${esc(profile.name)}" width="628" height="730" fetchpriority="high" onerror="this.closest('.pt-stage').classList.add('pt-fallback')">`
+            : ''}
+          <div class="pt-flat avatar">${avatarHtml(initials)}</div>
+          <span class="pt-badge pt-open" data-depth="0.7"><i></i>Open to work</span>
+          ${portraitSkills.slice(0, 2).map((sk, i) => { const n = projectsFor(sk, projects).length; return `<button type="button" class="pt-badge pt-skill pt-s${i}" data-depth="${0.55 + i * 0.25}" data-skill="${esc(sk)}" title="See ${n} project${n === 1 ? '' : 's'} using ${esc(sk)}">${ICONS[i ? 'cube' : 'brief']}<span><b>${esc(sk)}</b><small>${n} project${n === 1 ? '' : 's'} →</small></span></button>`; }).join('')}
+          <span class="pt-badge pt-hack" data-depth="0.9">${ICONS.trophy}<span><b>${hacks.length} hackathons</b><small>2026</small></span></span>
         </div>
-        <p class="portrait-hint" aria-hidden="true">Drag to spin · tap a skill to see projects</p>
-        <div class="id-skills">${portraitSkills.map((s) => skillChip(s)).join('')}</div>
         <div class="id-actions">
           ${profile.links.email ? `<button class="id-act" data-copy="${esc(profile.links.email)}" title="Copy my email">${ICONS.mail}<span>Copy email</span><i class="ok">Copied ✓</i></button>` : ''}
           <div class="id-act id-clock" data-clock="Asia/Yangon" title="My local time in Yangon">${ICONS.globe}<span><b>–</b><small>Yangon time</small></span></div>
@@ -377,30 +386,6 @@ export function renderClassic(root, { canExplore, onExplore }) {
   }
 
   enhance(root, { projects });
-
-  // 3D profile picture: loads after the page; the flat photo shows until then
-  const stage = root.querySelector('[data-portrait]');
-  if (stage && canExplore && profile.photo && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const SHORT = { 'User Acceptance Testing': 'UAT', 'Help Desk Support': 'Help Desk', 'Go-Live Support': 'Go-Live' };
-    const COLORS = ['#7cf5ff', '#b18cff', '#ff6b9d', '#3ddc84', '#ffb547', '#4aa3ff'];
-    const opts = {
-      photo: (() => { const v = MEDIA[profile.photo]; return mediaUrl(v ? v[v.length - 1][1] : profile.photo); })(),
-      initials,
-      back: ['Open to work', 'Singapore · on-site, hybrid', 'or remote'],
-      skills: portraitSkills.map((label, i) => ({ label: SHORT[label] || label, skill: label, color: COLORS[i % COLORS.length] })),
-      onSkill: (sk) => root.querySelector(`.id-skills [data-skill="${CSS.escape(sk)}"]`)?.click(),
-    };
-    // starts on the visitor's first move, scroll or tap, so it never competes with the first paint
-    const EVTS = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'];
-    let started = false;
-    const go = () => {
-      if (started) return;
-      started = true;
-      EVTS.forEach((ev) => removeEventListener(ev, go));
-      import('./portrait3d.js').then((m) => m.mountPortrait(stage, opts)).catch(() => {});
-    };
-    EVTS.forEach((ev) => addEventListener(ev, go, { passive: true, once: true }));
-  }
 
   // card -> full details in a modal (same cards as the 3D world)
   const modal = createModal();
