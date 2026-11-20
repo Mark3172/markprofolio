@@ -109,7 +109,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
   ${showBanner ? `<div class="announce" role="status"><span class="announce-tag">New</span><a href="#news" class="announce-text"><b>${esc(latest.title)}</b><span> · ${esc(SOURCE_LABEL[latest.source] || 'Update')}, ${esc(newsDate(latest.date))}</span></a><button class="announce-x" aria-label="Dismiss announcement">✕</button></div>` : ''}
   <div class="cv">
     <header class="cv-nav">
-      <a class="cv-brand" href="#top"><span class="mono">${esc(initials)}</span><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
+      <a class="cv-brand" href="#top"><img class="mono" src="logo.svg" alt="" width="36" height="36"><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
       <nav aria-label="Sections">
         <span class="nav-ind" aria-hidden="true"></span><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#experience">Experience</a><a href="#certifications">Certifications</a><a href="#education">Education</a>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#contact">Contact</a>
       </nav>
