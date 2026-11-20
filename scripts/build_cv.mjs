@@ -76,10 +76,11 @@ const html = `<!doctype html>
   <p>${esc(profile.tagline)} Curtin Singapore IT graduate (Class of 2026), currently leading the ExpoTrans helpdesk team at Global Connect Asia and helping clients go live on Odoo ERP. Background in systems and networking (CCNA), UI/UX design and AI tooling, with ${hackProjects.length} hackathon builds in 2026.</p>
 
   <h2>Experience</h2>
-  ${work.map((e) => item(esc(e.role), `${esc(e.org)}${e.location ? ` · ${esc(e.location)}` : ''}`, range(e), `<p>${esc(e.summary)}</p>${ul(e.points.filter((x) => !/^Skills:/.test(x)).slice(0, 3))}`)).join('')}
+  ${work.map((e) => item(esc(e.role), `${esc(e.org)}${e.location ? ` · ${esc(e.location)}` : ''}`, range(e), `<p>${esc(e.summary)}</p>${ul(e.points.filter((x) => !/^Skills:/.test(x) && !x.startsWith(e.role)).slice(0, 3))}`)).join('')}
 
   <h2>Hackathons &amp; Projects</h2>
   ${hackProjects.map((p) => { const a = hackEvent(p); return item(`${esc(p.title)}`, esc(p.tagline), p.year || a?.date || '', ul(p.highlights.slice(0, 2))); }).join('')}
+  ${achievements.filter((a) => a.kind === 'hackathon' && !a.result).map((a) => item(esc(a.title), `${esc(a.event)} · ${esc(a.role)}`, a.date)).join('')}
   ${otherProjects.map((p) => item(esc(p.title), esc(p.tagline), p.year || '', ul(p.highlights.slice(0, 2)))).join('')}
 
   <h2>Education</h2>
