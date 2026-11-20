@@ -447,6 +447,7 @@ export const certificates = [
     date: 'Jan 2026',
     credentialId: 'Credential ID sMu34p2XdhZhyxK82',
     url: 'https://www.theforage.com/completion-certificates/Zbnc2o4ok6kD2NEXx/bBWnMDoKTJCzwyu5f_Zbnc2o4ok6kD2NEXx_695a4ff2f76d215bcfd2e789_1767793543479_completion_certificate.pdf',
+    image: 'media/certs/forage-ux.jpg',
     color: '#b18cff',
   },
   {

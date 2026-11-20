@@ -19,6 +19,16 @@
       "media/opt/certs-coursera-wordpress-1200.webp"
     ]
   ],
+  "media/certs/forage-ux.jpg": [
+    [
+      480,
+      "media/opt/certs-forage-ux-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/certs-forage-ux-1200.webp"
+    ]
+  ],
   "media/certs/google-ai-fundamentals.jpg": [
     [
       480,
