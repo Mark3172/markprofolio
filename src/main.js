@@ -127,6 +127,9 @@ function intro() {
   startWorld(el, progress);
 }
 
+// next animation frame, or 100 ms if the tab is in the background (rAF is paused there)
+const frame = () => new Promise((r) => { requestAnimationFrame(() => r()); setTimeout(r, 100); });
+
 async function startWorld(introEl, progress) {
   const container = document.createElement('div');
   container.id = 'world';
@@ -136,7 +139,7 @@ async function startWorld(introEl, progress) {
     progress.step('Loading fonts…', 70, 80);
     await document.fonts?.ready; // so canvas text uses the web fonts
     progress.step('Building the island…', 80, 94);
-    await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0))); // let the label paint first
+    await frame(); // let the label paint first
     let hud;
     let world;
     const modal = createModal({ onClose: () => world?.setPaused(false) });
@@ -169,7 +172,7 @@ async function startWorld(introEl, progress) {
         }, 2600),
     });
     progress.step('Placing projects and quests…', 95, 99);
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); // first frame drawn
+    await frame(); await frame(); // first frame drawn
     await progress.done();
     progress.stop();
     introEl.classList.add('hide');
