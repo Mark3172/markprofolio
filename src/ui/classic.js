@@ -6,6 +6,7 @@ import { enhance, projectsFor } from './interactive.js';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>',
   github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>',
   facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20.6 20.6 0 0 0 14.3 4.3c-2.24 0-3.8 1.37-3.8 3.9v2.3H8v3h2.5V21h3Z"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
@@ -45,7 +46,7 @@ function ctas() {
   return [
     l.email ? `<a class="cbtn cbtn-primary" href="mailto:${esc(l.email)}">${ICONS.mail}Email me</a>` : '',
     link(l.linkedin, `${ICONS.linkedin}Connect on LinkedIn`, `cbtn${l.email ? '' : ' cbtn-primary'}`),
-    link(l.resume, `Download CV`, 'cbtn'),
+    l.resume ? `<a class="cbtn" href="${esc(l.resume)}" download>${ICONS.doc}Download CV</a>` : '',
     link(l.github, `${ICONS.github}GitHub`, 'cbtn'),
   ].join('');
 }
@@ -65,6 +66,11 @@ const monogram = (s) =>
 /** Recruiter-friendly 2D portfolio (also the no-WebGL fallback). */
 export function renderClassic(root, { canExplore, onExplore }) {
   document.body.classList.add('classic-mode');
+  // Light theme by default (easier to read for most visitors); the choice is remembered.
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch {}
+  const isLight = () => document.body.classList.contains('light');
+  document.body.classList.toggle('light', saved !== 'dark');
   const initials = profile.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
   const work = experience.filter((e) => e.type !== 'education');
   const edu = experience.filter((e) => e.type === 'education');
@@ -73,12 +79,6 @@ export function renderClassic(root, { canExplore, onExplore }) {
   const featCerts = certificates.filter((c) => c.featured);
   const otherCerts = certificates.filter((c) => !c.featured);
   const topSkills = profile.skills.map((g) => g.items[0]).slice(0, 5);
-  // skills on the portrait badges: the ones with the most projects behind them
-  const portraitSkills = (profile.portraitSkills?.length ? profile.portraitSkills : [...new Set(profile.skills.flatMap((g) => g.items))])
-    .map((sk) => [sk, projectsFor(sk, projects).length])
-    .filter(([, n]) => n)
-    .sort((a, b) => (profile.portraitSkills?.length ? 0 : b[1] - a[1]))
-    .map(([sk]) => sk);
   // skills used in a project become buttons that filter the project list
   const skillChip = (s) => {
     const n = projectsFor(s, projects).length;
@@ -113,6 +113,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
       <nav aria-label="Sections">
         <span class="nav-ind" aria-hidden="true"></span><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#experience">Experience</a><a href="#certifications">Certifications</a><a href="#education">Education</a>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#contact">Contact</a>
       </nav>
+      ${profile.links.resume ? `<a class="cbtn cbtn-ghost nav-cv" href="${esc(profile.links.resume)}" download aria-label="Download CV (PDF)">${ICONS.doc}<span>CV</span></a>` : ''}
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
       ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore aria-label="Play game mode">${ICONS.cube}<span>Play game mode</span></button>` : ''}
     </header>
 
@@ -131,19 +133,14 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
         ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
-      <aside class="portrait" aria-label="Profile" data-parallax>
-        <div class="pt-stage">
-          <span class="pt-ring" data-depth="-0.6" aria-hidden="true"></span>
-          <span class="pt-blob" data-depth="-0.35" aria-hidden="true"></span>
-          <span class="pt-dots" data-depth="-0.9" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-          ${profile.portrait
-            ? `<img class="pt-photo" data-depth="0.25" ${imgAttrs(profile.portrait, '(max-width: 960px) 80vw, 420px')} alt="${esc(profile.name)}" width="628" height="730" fetchpriority="high" onerror="this.closest('.pt-stage').classList.add('pt-fallback')">`
+      <aside class="portrait" aria-label="Profile">
+        <figure class="pt-frame">
+          ${profile.photo
+            ? `<img class="pt-photo" ${imgAttrs(profile.photo, '(max-width: 960px) 80vw, 400px')} alt="${esc(profile.name)}" width="800" height="800" fetchpriority="high" onerror="this.parentNode.classList.add('pt-fallback')">`
             : ''}
           <div class="pt-flat avatar">${avatarHtml(initials)}</div>
-          <span class="pt-badge pt-open" data-depth="0.7"><i></i>Open to work</span>
-          ${portraitSkills.slice(0, 2).map((sk, i) => { const n = projectsFor(sk, projects).length; return `<button type="button" class="pt-badge pt-skill pt-s${i}" data-depth="${0.55 + i * 0.25}" data-skill="${esc(sk)}" title="See ${n} project${n === 1 ? '' : 's'} using ${esc(sk)}">${ICONS[i ? 'cube' : 'brief']}<span><b>${esc(sk)}</b><small>${n} project${n === 1 ? '' : 's'} →</small></span></button>`; }).join('')}
-          <span class="pt-badge pt-hack" data-depth="0.9">${ICONS.trophy}<span><b>${hacks.length} hackathons</b><small>2026</small></span></span>
-        </div>
+          <figcaption class="pt-open"><i></i>Open to work</figcaption>
+        </figure>
         <div class="id-actions">
           ${profile.links.email ? `<button class="id-act" data-copy="${esc(profile.links.email)}" title="Copy my email">${ICONS.mail}<span>Copy email</span><i class="ok">Copied ✓</i></button>` : ''}
           <div class="id-act id-clock" data-clock="Asia/Yangon" title="My local time in Yangon">${ICONS.globe}<span><b>–</b><small>Yangon time</small></span></div>
@@ -428,13 +425,33 @@ export function renderClassic(root, { canExplore, onExplore }) {
     moveNav();
   });
 
+  // theme switch
+  const themeBtn = root.querySelector('[data-theme-toggle]');
+  const syncTheme = () => {
+    const light = isLight();
+    themeBtn?.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f7f6f3' : '#080a18');
+  };
+  syncTheme();
+  themeBtn?.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    try { localStorage.setItem('theme', isLight() ? 'light' : 'dark'); } catch {}
+    syncTheme();
+  });
+
   // moving 3D background (lazy, only where it will run smoothly)
   // Waits for the visitor's first interaction so it never delays the content, and is
   // skipped on data-saver or slow connections (the CSS gradient background stays).
   const conn = navigator.connection;
   const slowNet = conn && (conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || ''));
   if (canExplore && !slowNet && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const go = () => import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
+    let mounted = false;
+    const go = () => {
+      if (mounted || isLight()) return;
+      mounted = true;
+      import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
+    };
+    root.querySelector('[data-theme-toggle]')?.addEventListener('click', () => setTimeout(go, 50));
     // like the portrait: starts on the first move, scroll or tap
     const BG_EVTS = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'];
     const start = () => {

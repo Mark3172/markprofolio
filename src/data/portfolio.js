@@ -23,17 +23,13 @@ export const profile = {
   ],
   status: 'Open to work in Singapore · on-site, hybrid or remote',
   photo: 'media/profile.jpg', // LinkedIn profile photo (initials show if missing)
-  // Cut-out photo (transparent background) for the hero portrait. Falls back to `photo`.
-  portrait: 'media/portrait.webp',
-  // Two skills shown as badges next to the portrait (clicking one filters the projects)
-  portraitSkills: ['Odoo ERP', 'UI/UX'],
   links: {
     github: 'https://github.com/Mark3172',
     linkedin: 'https://www.linkedin.com/in/mark3172/',
     facebook: 'https://www.facebook.com/mark.myo/',
     instagram: 'https://www.instagram.com/mark_hhh3172/',
     email: 'markmyo6@gmail.com', // business inquiries
-    resume: '', // TODO (optional): link to a PDF, e.g. '/resume.pdf' (put the file in /public)
+    resume: 'cv/Myo-Set-Paing-CV.pdf', // built from this file: `node scripts/build_cv.mjs`
   },
   // Each group becomes an orbiting crystal around the Beacon.
   skills: [

@@ -37,22 +37,6 @@ export function toast(root, msg) {
 }
 
 export function enhance(root, { projects }) {
-  /* ---- hero portrait: layers drift at different depths with the pointer ---- */
-  const px = root.querySelector('[data-parallax]');
-  if (px && finePointer && !reduced) {
-    const layers = [...px.querySelectorAll('[data-depth]')].map((el) => ({ el, d: Number(el.dataset.depth) }));
-    const hero = px.closest('section') || px;
-    let raf = 0;
-    hero.addEventListener('pointermove', (e) => {
-      const r = px.getBoundingClientRect();
-      const x = (e.clientX - (r.left + r.width / 2)) / r.width;
-      const y = (e.clientY - (r.top + r.height / 2)) / r.height;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => layers.forEach(({ el, d }) => el.style.setProperty('--px', `${x * d * 22}px`) || el.style.setProperty('--py', `${y * d * 16}px`)));
-    });
-    hero.addEventListener('pointerleave', () => layers.forEach(({ el }) => (el.style.setProperty('--px', '0px'), el.style.setProperty('--py', '0px'))));
-  }
-
   /* ---- copy email (falls back to opening the mail app) ---- */
   root.querySelectorAll('[data-copy]').forEach((b) =>
     b.addEventListener('click', async () => {

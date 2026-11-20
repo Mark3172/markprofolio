@@ -118,7 +118,8 @@ a preview for every pull request). Any static host works.
 
 ## Interactive touches (classic view)
 
-- **Cut-out portrait**: your photo with the background removed, standing over a soft colour blob with a dashed ring, twinkling dots and floating badges (Open to work, your two headline skills, hackathons). The layers shift gently with the mouse, and clicking a skill badge shows the projects that used it. To change the photo, replace `public/media/portrait.webp` (a transparent PNG/WebP works best) and run `python scripts/optimize_media.py`.
+- **Natural portrait**: your real photo (`profile.photo`) in a simple rounded frame with an Open to work label. No cut-out, blobs or floating badges, so it looks like you.
+- **Light theme by default**: warm off-white page, white cards, near-black text and one blue accent, because light pages read better in bright offices and recruiters scan fast. The moon button in the menu switches to the dark theme, and the choice is remembered. The 3D island game keeps its night look.
 - **Skill chips** with a number filter the project list to the projects that used that skill.
 - **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
 - **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.
@@ -145,3 +146,14 @@ at runtime, so there are no models or fonts to download. The 3D code is
 lazy-loaded (about 155 KB gzipped) and the classic view never loads it.
 Quality drops automatically on phones and slow GPUs (no bloom/shadows, lower
 resolution), and rendering pauses when the tab is hidden.
+
+## Your CV
+
+The **Download CV** buttons (in the menu, the hero and Contact) serve `public/cv/Myo-Set-Paing-CV.pdf`. It is generated from `src/data/portfolio.js`, so after you edit your details, rebuild it:
+
+```bash
+npm i -D playwright && npx playwright install chromium   # once
+node scripts/build_cv.mjs
+```
+
+The layout follows recruiter and ATS advice: A4, one column, real text, standard headings (Profile, Experience, Hackathons & Projects, Education, Certifications, Skills), dates on the right and no photo. `public/cv/Myo-Set-Paing-CV.html` is the page it prints from, if you want to tweak the styling.
