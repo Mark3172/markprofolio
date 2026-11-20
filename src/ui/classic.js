@@ -1,6 +1,6 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, imgAttrs, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
 import { createModal } from './modal.js';
 
 const ICONS = {
@@ -93,18 +93,19 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
   root.innerHTML = `
   <div class="cv-bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><div class="grid"></div></div>
+  <a class="skip" href="#projects">Skip to content</a>
   ${showBanner ? `<div class="announce" role="status"><span class="announce-tag">New</span><a href="#news" class="announce-text"><b>${esc(latest.title)}</b><span> · ${esc(SOURCE_LABEL[latest.source] || 'Update')}, ${esc(newsDate(latest.date))}</span></a><button class="announce-x" aria-label="Dismiss announcement">✕</button></div>` : ''}
   <div class="cv">
     <header class="cv-nav">
       <a class="cv-brand" href="#top"><span class="mono">${esc(initials)}</span><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
       <nav aria-label="Sections">
-        <span class="nav-ind" aria-hidden="true"></span>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
+        <span class="nav-ind" aria-hidden="true"></span><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#experience">Experience</a><a href="#certifications">Certifications</a><a href="#education">Education</a>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#contact">Contact</a>
       </nav>
-      ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore>${ICONS.cube}<span>Play game mode</span></button>` : ''}
+      ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore aria-label="Play game mode">${ICONS.cube}<span>Play game mode</span></button>` : ''}
     </header>
 
     <section class="hero" id="top">
-      <div class="hero-main reveal">
+      <div class="hero-main">
         ${profile.status ? `<span class="pill"><span class="dot"></span>${esc(profile.status)}</span>` : ''}
         <h1>${esc(profile.name)} <span class="nick">(${esc(profile.nickname)})</span></h1>
         <p class="role">${esc(current ? current.role : profile.title)}${current ? ` <span>at</span> ${esc(current.org)}` : ''}</p>
@@ -118,7 +119,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
         ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
-      <aside class="idcard reveal">
+      <aside class="idcard">
         <div class="avatar">${avatarHtml(initials)}</div>
         <div class="id-name">${esc(profile.nickname)}</div>
         <div class="id-title">${esc(profile.title.split(' · ')[0])}</div>
@@ -133,44 +134,10 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
     ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => `<div class="stat"><b>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`).join('')}</section>` : ''}
 
-    ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
-      <div class="news-wrap">
-        <div class="news-list">${newsListHtml(allNews, 3)}</div>
-        <div class="news-follow glass">
-          <b>Follow along</b>
-          <p>I post about hackathons, ERP projects and what I'm building.</p>
-          <div class="news-links">
-            <a href="${esc(profile.links.linkedin)}" target="_blank" rel="noopener">${ICONS.linkedin}LinkedIn</a>
-            ${profile.links.instagram ? `<a href="${esc(profile.links.instagram)}" target="_blank" rel="noopener">${ICONS.instagram || ''}Instagram</a>` : ''}
-            ${profile.links.facebook ? `<a href="${esc(profile.links.facebook)}" target="_blank" rel="noopener">${ICONS.facebook || ''}Facebook</a>` : ''}
-          </div>
-          ${allNews.length > 3 ? `<button class="news-all" data-news-all>See all ${allNews.length} updates</button>` : ''}
-        </div>
-      </div>`) : ''}
-
     ${profile.highlights?.length ? sec('highlights', '★', 'Career highlights', 'The biggest things so far.', `
       <div class="bento">${profile.highlights.map((h, i) => `<div class="bento-card"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><p>${esc(h)}</p></div>`).join('')}</div>`) : ''}
 
-    ${sec('about', '01', 'About', '', `
-      <div class="about-grid">
-        <div class="glass prose">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
-        ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
-      </div>`)}
-
-    ${sec('experience', '02', 'Experience', 'Work and leadership roles.', `
-      <div class="xp">${work.map((e) => `
-        <article class="xp-item glass" style="--c:${TYPE_COLOR[e.type] || '#7cf5ff'}">
-          <div class="xp-when"><b>${esc(e.start)}</b><span>${esc(e.end)}</span><em>${esc(TYPE_LABEL[e.type] || '')}</em></div>
-          <div class="xp-body">
-            <h3>${esc(e.role)}${sampleTag(e)}</h3>
-            <div class="xp-org">${esc(e.org)}${e.location ? `<span>${esc(e.location)}</span>` : ''}</div>
-            ${e.summary ? `<p>${esc(e.summary)}</p>` : ''}
-            ${e.points?.length ? `<ul>${e.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-          </div>
-        </article>`).join('')}
-      </div>`)}
-
-    ${sec('projects', '03', 'Projects', `${projects.length} things I've led, designed or built.`, `
+    ${sec('projects', '01', 'Projects', `${projects.length} things I've led, designed or built.`, `
       <div class="tabs" role="tablist" data-tabs="spot-row"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
       <div class="spot" data-spot>
         <ol class="spot-list">${projects.map((p, i) => `
@@ -187,11 +154,11 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="spot-view glass" aria-live="polite"></div>
       </div>`)}
 
-    ${achievements?.length ? sec('hackathons', '04', 'Hackathons & achievements', 'Competitions, events and recognition.', `
+    ${achievements?.length ? sec('hackathons', '02', 'Hackathons & achievements', 'Competitions, events and recognition.', `
       <div class="tabs" role="tablist" data-tabs="ach-item"><span class="tab-ind" aria-hidden="true"></span>${ACH_TABS.filter((t) => t.id === 'all' || achievements.some((a) => achGroup(a) === t.id)).map((t, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${t.id}">${t.label}<em>${t.id === 'all' ? achievements.length : achievements.filter((a) => achGroup(a) === t.id).length}</em></button>`).join('')}</div>
       <div class="hbento">${achievements.map((a, i) => ({ a, i })).filter((x) => x.a.featured).map(({ a, i }) => `
         <button class="htile ach-item" data-cat="${achGroup(a)}" data-open="achievement:${i}" style="--c:${esc(a.color)}">
-          ${a.image ? `<img src="${esc(mediaUrl(a.image))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+          ${a.image ? `<img ${imgAttrs(a.image, '(max-width: 860px) 100vw, 640px')} alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
           <span class="htile-shade"></span>
           <span class="htile-body">
             <span class="htile-kind">${ICONS.trophy}${esc(ACH_LABEL[a.kind] || '')} · ${esc(a.date)}</span>
@@ -209,7 +176,20 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </button>`).join('')}
       </div>`) : ''}
 
-    ${sec('certifications', '05', 'Licenses & certifications', `${certificates.length} credentials.`, `
+    ${sec('experience', '03', 'Experience', 'Work and leadership roles.', `
+      <div class="xp">${work.map((e) => `
+        <article class="xp-item glass" style="--c:${TYPE_COLOR[e.type] || '#7cf5ff'}">
+          <div class="xp-when"><b>${esc(e.start)}</b><span>${esc(e.end)}</span><em>${esc(TYPE_LABEL[e.type] || '')}</em></div>
+          <div class="xp-body">
+            <h3>${esc(e.role)}${sampleTag(e)}</h3>
+            <div class="xp-org">${esc(e.org)}${e.location ? `<span>${esc(e.location)}</span>` : ''}</div>
+            ${e.summary ? `<p>${esc(e.summary)}</p>` : ''}
+            ${e.points?.length ? `<ul>${e.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+          </div>
+        </article>`).join('')}
+      </div>`)}
+
+    ${sec('certifications', '04', 'Licenses & certifications', `${certificates.length} credentials.`, `
       <div class="cfeat">${featCerts.map((c) => `
         <article class="ccard glass" style="--c:${esc(c.color)}">
           <span class="cmono${monogram(c.issuerShort || c.issuer).length > 3 ? ' sm' : ''}">${esc(monogram(c.issuerShort || c.issuer))}</span>
@@ -222,7 +202,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="crow" style="--c:${esc(c.color)}"><span class="cdot"></span><div class="cname"><b>${esc(c.name)}</b><span>${esc(c.issuer)}</span></div><span class="cdate">${esc(c.date)}</span>${c.url ? link(c.url, `Verify ${ICONS.arrow}`, 'cverify') : '<span class="cverify off"></span>'}</div>`).join('')}
       </div></details>`)}
 
-    ${sec('education', '06', 'Education', '', `
+    ${sec('education', '05', 'Education', '', `
       <div class="edu">${edu.map((e) => `
         <div class="edu-row glass">
           <div class="edu-when">${esc(e.start)} – ${esc(e.end)}</div>
@@ -230,8 +210,29 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </div>`).join('')}
       </div>`)}
 
-    ${sec('skills', '07', 'Skills', '', `
+    ${sec('skills', '06', 'Skills', '', `
       <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map((i) => `<span>${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>`)}
+
+    ${sec('about', '07', 'About', '', `
+      <div class="about-grid">
+        <div class="glass prose">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+        ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
+      </div>`)}
+
+    ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
+      <div class="news-wrap">
+        <div class="news-list">${newsListHtml(allNews, 3)}</div>
+        <div class="news-follow glass">
+          <b>Follow along</b>
+          <p>I post about hackathons, ERP projects and what I'm building.</p>
+          <div class="news-links">
+            <a href="${esc(profile.links.linkedin)}" target="_blank" rel="noopener">${ICONS.linkedin}LinkedIn</a>
+            ${profile.links.instagram ? `<a href="${esc(profile.links.instagram)}" target="_blank" rel="noopener">${ICONS.instagram || ''}Instagram</a>` : ''}
+            ${profile.links.facebook ? `<a href="${esc(profile.links.facebook)}" target="_blank" rel="noopener">${ICONS.facebook || ''}Facebook</a>` : ''}
+          </div>
+          ${allNews.length > 3 ? `<button class="news-all" data-news-all>See all ${allNews.length} updates</button>` : ''}
+        </div>
+      </div>`) : ''}
 
     <section class="contact reveal" id="contact">
       <h2>Let's work together.</h2>
@@ -244,9 +245,9 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
     <nav class="mtabs" aria-label="Sections">
       <a href="#top" class="on">${ICONS.star}<span>Top</span></a>
-      <a href="#experience">${ICONS.brief}<span>Work</span></a>
       <a href="#projects">${ICONS.cube}<span>Projects</span></a>
       <a href="#hackathons">${ICONS.trophy}<span>Hacks</span></a>
+      <a href="#experience">${ICONS.brief}<span>Work</span></a>
       <a href="#certifications">${ICONS.cap}<span>Certs</span></a>
       <a href="#contact">${ICONS.mail}<span>Contact</span></a>
     </nav>
@@ -400,10 +401,15 @@ export function renderClassic(root, { canExplore, onExplore }) {
   });
 
   // moving 3D background (lazy, only where it will run smoothly)
-  if (canExplore && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Waits until the page has fully loaded so it never delays the content, and is
+  // skipped on data-saver or slow connections (the CSS gradient background stays).
+  const conn = navigator.connection;
+  const slowNet = conn && (conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || ''));
+  if (canExplore && !slowNet && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const go = () => import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
-    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 });
-    else setTimeout(go, 300);
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 2500 }) : setTimeout(go, 600));
+    if (document.readyState === 'complete') setTimeout(idle, 800);
+    else addEventListener('load', () => setTimeout(idle, 800), { once: true });
   }
 
   // scroll reveal + active nav

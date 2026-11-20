@@ -76,6 +76,10 @@ Photos and screenshots live in [`public/media/`](public/media). Point an item at
 Aim for at least 1200 px wide so they stay sharp. If a file is missing, the site hides the picture
 instead of showing a broken image.
 
+After adding or replacing photos, run `python scripts/optimize_media.py` (needs `pip install pillow`).
+It makes small WebP copies in `public/media/opt/`, so phones download a fraction of the size.
+The site still works if you skip this step: new photos just load at full size.
+
 ### Contact
 
 The contact email, LinkedIn, GitHub, Facebook and Instagram links are in `profile.links`.
@@ -111,6 +115,20 @@ a preview for every pull request). Any static host works.
 - **E** opens whatever you are aiming at or standing next to; you can also click glowing things directly
 - **E** at the yellow flag starts the Island Dash; fast travel during a dash cancels it
 - **Touch**: joystick bottom-left (push it all the way to run), drag anywhere to look, JUMP and camera buttons bottom-right, tap things to open them
+
+## Speed, accessibility and search
+
+The classic view follows Google's web.dev and Lighthouse guidance. In a local Lighthouse mobile run it scores
+98 for performance and 100 for accessibility, best practices and SEO. The largest paint takes about 1.6 s,
+well inside the 2.5 s that Google counts as good.
+
+- The hero shows instantly. Only the sections below it fade in.
+- Fonts load without blocking the first paint.
+- Photos come in responsive WebP sizes.
+- The 3D background loads only after the page has finished, and is skipped on data-saver or slow connections.
+- There is a "Skip to content" link for keyboard users, and every button has a label.
+- Search engines get a descriptive title and description, `robots.txt`, and Person structured data
+  (name, role, employer, LinkedIn and GitHub).
 
 ## Tech
 

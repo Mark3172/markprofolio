@@ -401,3 +401,7 @@ body.classic-mode { background: #080a18; }
   .game-txt small { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .game-ic { animation: none; } }
+
+/* keyboard users can jump past the menu */
+.skip { position: fixed; z-index: 50; left: 16px; top: -60px; padding: 10px 16px; border-radius: 10px; background: var(--accent); color: #0b0d1f; font-weight: 700; text-decoration: none; transition: top 0.2s; }
+.skip:focus { top: 12px; }
