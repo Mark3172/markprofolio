@@ -126,7 +126,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
     <section class="hero" id="top">
       <div class="hero-main">
         ${profile.status ? `<span class="pill"><span class="dot"></span>${esc(profile.status)}</span>` : ''}
-        <h1>${esc(profile.name)} <span class="nick">(${esc(profile.nickname)})</span></h1>
+        <h1>${esc(profile.name)}${profile.nickname && profile.nickname !== profile.name ? ` <span class="nick">(${esc(profile.nickname)})</span>` : ''}</h1>
         <p class="role">${esc(current ? current.role : profile.title)}${current ? ` <span>at</span> ${esc(current.org)}` : ''}</p>
         <p class="lead">${esc(profile.tagline)}</p>
         <div class="meta">

@@ -11,7 +11,8 @@
  * ===================================================================== */
 
 export const profile = {
-  name: 'Myo Set Paing',
+  name: 'Mark', // shown on the site
+  fullName: 'Myo Set Paing', // used on the CV (matches certificates and LinkedIn)
   nickname: 'Mark',
   title: 'Junior ERP Support Specialist @ Global Connect Asia · IT graduate',
   tagline: 'I solve problems where IT systems, people and good design meet: ERP, networks, UI/UX and AI.',

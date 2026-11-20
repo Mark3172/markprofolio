@@ -165,7 +165,7 @@ export const sections = {
       html: `
         ${profile.photo ? `<div class="about-photo">${avatarHtml('')}</div>` : ''}
         <div class="eyebrow">About · ${esc(profile.location)}</div>
-        <h2>${esc(profile.name)} <span style="color:var(--muted);font-weight:400">(${esc(profile.nickname)})</span></h2>
+        <h2>${esc(profile.name)}${profile.nickname && profile.nickname !== profile.name ? ` <span style="color:var(--muted);font-weight:400">(${esc(profile.nickname)})</span>` : ''}</h2>
         <p class="sub">${esc(profile.title)}</p>
         ${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}
         <div class="skills-grid">${profile.skills

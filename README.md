@@ -1,6 +1,6 @@
 # markprofolio
 
-The portfolio of **Myo Set Paing (Mark)**, Junior ERP Support Specialist and IT graduate. It has two views built from the same data:
+The portfolio of **Mark** (full name Myo Set Paing, used on the CV), Junior ERP Support Specialist and IT graduate. It has two views built from the same data:
 
 - **Classic view** (the landing page): a fast, recruiter-friendly single page that scores 99–100 in Lighthouse and has a downloadable CV.
 - **Game mode**: an explorable 3D floating island, one click away. Every landmark is a project, certificate or chapter of the story.
