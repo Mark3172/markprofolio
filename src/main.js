@@ -41,45 +41,89 @@ function startClassic() {
   });
 }
 
+// Loading screen for game mode: real progress through each loading step, plus control tips.
 function intro() {
-  const stars = Array.from({ length: 70 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${Math.random() * 3}s;opacity:${Math.random()}"></i>`).join('');
+  const touch = matchMedia('(pointer: coarse)').matches;
+  const tips = touch
+    ? ['Use the joystick to walk', 'Drag anywhere to look around', 'Tap anything glowing to open it', 'Finish the quests in the top right']
+    : ['<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to walk', '<kbd>Space</kbd> to jump', '<kbd>E</kbd> to open whatever is glowing', '<kbd>V</kbd> switches to first person', 'Finish the quests in the top right'];
+  const stars = Array.from({ length: 60 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${Math.random() * 3}s;opacity:${Math.random()}"></i>`).join('');
   const el = document.createElement('div');
-  el.className = 'intro';
+  el.className = 'intro loading';
   el.innerHTML = `
     <div class="intro-stars">${stars}</div>
-    <div class="intro-card">
-      ${profile.status ? `<span class="intro-kicker"><span class="dot"></span>${esc(profile.status)}</span>` : ''}
-      <h1>Hi, I'm <span class="grad">${esc(profile.nickname)}</span>.</h1>
-      <p>${esc(profile.tagline)}<br/>Explore my floating island on foot: every landmark is a project, certificate or chapter of my story.</p>
-      <div class="intro-actions">
-        ${canExplore ? '<button class="btn btn-primary btn-lg" data-go>▶ Explore the island</button>' : ''}
-        <button class="btn${canExplore ? '' : ' btn-primary btn-lg'}" data-classic>${canExplore ? 'Skip to classic view' : 'View portfolio'}</button>
-      </div>
-      <div class="loader"><i></i></div>
-      <div class="intro-hint">${canExplore ? (matchMedia('(pointer: coarse)').matches ? 'Joystick to walk · drag to look · tap anything glowing' : 'WASD to walk · Space to jump · V for first person · E to open') : 'Your browser does not support 3D, so here is the fast version.'}${reduced && canExplore ? '<br/>Reduced motion is on: the classic view may be more comfortable.' : ''}</div>
+    <div class="ld-card" role="status" aria-live="polite">
+      <div class="ld-logo"><img src="logo.svg" alt="" width="64" height="64"><span class="ld-orbit" aria-hidden="true"></span></div>
+      <h1 class="ld-title">Building <span class="grad">${esc(profile.nickname)}</span>'s island</h1>
+      <p class="ld-step">Loading the 3D engine…</p>
+      <div class="ld-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+      <div class="ld-pct">0%</div>
+      <p class="ld-tip"><span>Tip</span><b>${tips[0]}</b></p>
+      ${reduced ? '<p class="ld-note">Reduced motion is on: the classic view may be more comfortable.</p>' : ''}
+      <button class="ld-skip" type="button" data-classic>← Back to the classic view</button>
     </div>`;
   document.body.appendChild(el);
+
+  const bar = el.querySelector('.ld-bar');
+  const fill = bar.querySelector('i');
+  const pct = el.querySelector('.ld-pct');
+  const stepEl = el.querySelector('.ld-step');
+  const tipEl = el.querySelector('.ld-tip b');
+  let shown = 0;
+  let target = 4;
+  let cap = 70;
+  let raf = 0;
+  const tick = () => {
+    if (target < cap) target += (cap - target) * 0.012; // creep while a step is running
+    shown += (target - shown) * (reduced ? 1 : 0.12);
+    const v = Math.min(100, Math.round(shown));
+    fill.style.width = `${v}%`;
+    pct.textContent = `${v}%`;
+    bar.setAttribute('aria-valuenow', v);
+    raf = requestAnimationFrame(tick);
+  };
+  tick();
+  let t = 0;
+  const tipTimer = setInterval(() => {
+    t = (t + 1) % tips.length;
+    tipEl.classList.remove('in');
+    void tipEl.offsetWidth;
+    tipEl.innerHTML = tips[t];
+    tipEl.classList.add('in');
+  }, 2400);
+  const progress = {
+    step(label, reached, nextCap) {
+      stepEl.textContent = label;
+      target = Math.max(target, reached);
+      cap = nextCap;
+    },
+    done() {
+      progress.step('Ready!', 100, 100);
+      return new Promise((r) => setTimeout(r, reduced ? 0 : 450));
+    },
+    stop() {
+      cancelAnimationFrame(raf);
+      clearInterval(tipTimer);
+    },
+  };
   el.querySelector('[data-classic]').addEventListener('click', () => {
+    progress.stop();
     el.remove();
-    setView('');
-    startClassic();
+    goClassic();
   });
-  el.querySelector('[data-go]')?.addEventListener('click', (e) => {
-    e.currentTarget.disabled = true;
-    el.querySelector('.loader').classList.add('on');
-    startWorld(el);
-  });
-  // visitors arrive here from the classic view's "Play" button, so start loading right away
-  el.querySelector('[data-go]')?.click();
+  startWorld(el, progress);
 }
 
-async function startWorld(introEl) {
+async function startWorld(introEl, progress) {
   const container = document.createElement('div');
   container.id = 'world';
   app.appendChild(container);
   try {
     const [{ createWorld }, { createHud }] = await Promise.all([import('./world/World.js'), import('./ui/hud.js')]);
+    progress.step('Loading fonts…', 70, 80);
     await document.fonts?.ready; // so canvas text uses the web fonts
+    progress.step('Building the island…', 80, 94);
+    await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 30))); // let the label paint first
     let hud;
     let world;
     const modal = createModal({ onClose: () => world?.setPaused(false) });
@@ -111,12 +155,17 @@ async function startWorld(introEl) {
           modal.show('about', 0);
         }, 2600),
     });
+    progress.step('Placing projects and quests…', 95, 99);
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); // first frame drawn
+    await progress.done();
+    progress.stop();
     introEl.classList.add('hide');
     setTimeout(() => introEl.remove(), 900);
     setTimeout(() => hud.startTour(), 1200);
     setTimeout(() => hud.say(`Hi, I'm Byte, your guide! Follow the arrow for the highlights. Your quests are in the top right.`, 8), 2600);
   } catch (err) {
     console.error(err);
+    progress.stop();
     container.remove();
     introEl.remove();
     setView('');
