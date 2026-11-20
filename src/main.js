@@ -103,12 +103,12 @@ function intro() {
       const start = performance.now();
       return new Promise((r) => {
         const check = () => {
-          if (shown >= 99 || performance.now() - start > 500) {
+          if (shown >= 99 || performance.now() - start > 250) {
             shown = target = 100;
             fill.style.width = '100%';
             pct.textContent = '100%';
             bar.setAttribute('aria-valuenow', 100);
-            setTimeout(r, reduced ? 0 : 250);
+            setTimeout(r, reduced ? 0 : 120);
           } else setTimeout(check, 40);
         };
         check();
@@ -136,7 +136,7 @@ async function startWorld(introEl, progress) {
     progress.step('Loading fonts…', 70, 80);
     await document.fonts?.ready; // so canvas text uses the web fonts
     progress.step('Building the island…', 80, 94);
-    await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 30))); // let the label paint first
+    await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0))); // let the label paint first
     let hud;
     let world;
     const modal = createModal({ onClose: () => world?.setPaused(false) });

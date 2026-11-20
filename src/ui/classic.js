@@ -290,6 +290,24 @@ export function renderClassic(root, { canExplore, onExplore }) {
     new IntersectionObserver(([e]) => fab.classList.toggle('on', !e.isIntersecting)).observe(heroCta);
   }
   root.querySelectorAll('[data-explore]').forEach((b) => b.addEventListener('click', onExplore));
+  // Warm up the game while the visitor is still deciding: on hover/focus/touch of any
+  // game button (and once the page is idle on fast connections) fetch the 3D code, so the
+  // loading screen mostly has nothing left to download.
+  if (canExplore) {
+    let warmed = false;
+    const warm = () => {
+      if (warmed) return;
+      warmed = true;
+      import('../world/World.js').catch(() => {});
+      import('./hud.js').catch(() => {});
+    };
+    root.querySelectorAll('[data-explore]').forEach((b) => ['pointerenter', 'focus', 'touchstart'].forEach((ev) => b.addEventListener(ev, warm, { once: true, passive: true })));
+    const c = navigator.connection;
+    if (!(c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')))) {
+      const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 6000 }) : setTimeout(warm, 4000));
+      addEventListener('load', () => setTimeout(idle, 2500), { once: true });
+    }
+  }
 
   // tabs with a sliding indicator (project categories, hackathon kinds)
   const placeInd = (bar) => {
