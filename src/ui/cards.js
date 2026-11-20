@@ -1,4 +1,5 @@
 import { profile, projects, experience, certificates, achievements, news } from '../data/portfolio.js';
+import MEDIA from '../data/media-manifest.json';
 
 export const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -11,14 +12,26 @@ const ext = (href, label, primary = false) =>
 /** Resolve an image path from portfolio.js ('media/x.jpg' -> served from /public). */
 export const mediaUrl = (src) => (!src ? '' : /^(https?:|data:|\/)/.test(src) ? src : import.meta.env.BASE_URL + src);
 
+/**
+ * src + srcset attributes for a photo. Uses the small WebP copies made by
+ * scripts/optimize_media.py when they exist, and the original file otherwise.
+ * `sizes` tells the browser how wide the image is shown, so phones get the small copy.
+ */
+export const imgAttrs = (src, sizes = '100vw') => {
+  const v = MEDIA[src];
+  if (!v?.length) return `src="${esc(mediaUrl(src))}"`;
+  const set = v.map(([w, f]) => `${esc(mediaUrl(f))} ${w}w`).join(', ');
+  return `src="${esc(mediaUrl(v[v.length - 1][1]))}" srcset="${set}" sizes="${esc(sizes)}"`;
+};
+
 /** An <img> that quietly removes its wrapper if the file is missing. */
-export const shot = (src, alt, cls = 'card-shot') =>
-  src ? `<div class="${cls}"><img src="${esc(mediaUrl(src))}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></div>` : '';
+export const shot = (src, alt, cls = 'card-shot', sizes = '(max-width: 700px) 100vw, 640px') =>
+  src ? `<div class="${cls}"><img ${imgAttrs(src, sizes)} alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></div>` : '';
 
 /** Round avatar: photo if set, initials otherwise (and if the photo fails to load). */
 export const avatarHtml = (initials) =>
   profile.photo
-    ? `<img src="${esc(mediaUrl(profile.photo))}" alt="${esc(profile.name)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(initials)}'}))">`
+    ? `<img ${imgAttrs(profile.photo, '120px')} alt="${esc(profile.name)}" width="112" height="112" fetchpriority="high" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(initials)}'}))">`
     : `<span>${esc(initials)}</span>`;
 
 export const KIND_LABEL = { certificate: 'Certificate', license: 'License', award: 'Award' };
@@ -47,7 +60,7 @@ export const newsListHtml = (items, limit = Infinity) =>
     .map(
       (n) => `
     <a class="news-item" href="${esc(n.link || profile.links.linkedin)}" target="_blank" rel="noopener" style="--c:${SOURCE_COLOR[n.source] || '#7cf5ff'}">
-      ${n.image ? `<span class="news-thumb"><img src="${esc(mediaUrl(n.image))}" alt="" loading="lazy" onerror="this.parentNode.remove()"></span>` : ''}
+      ${n.image ? `<span class="news-thumb"><img ${imgAttrs(n.image, '96px')} alt="" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span>` : ''}
       <span class="news-body">
         <span class="news-meta"><b>${esc(SOURCE_LABEL[n.source] || 'Update')}</b> · ${esc(newsDate(n.date))}${isFresh(n.date) ? '<i class="news-new">New</i>' : ''}</span>
         <strong>${esc(n.title)}</strong>

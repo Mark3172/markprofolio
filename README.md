@@ -76,6 +76,10 @@ Photos and screenshots live in [`public/media/`](public/media). Point an item at
 Aim for at least 1200 px wide so they stay sharp. If a file is missing, the site hides the picture
 instead of showing a broken image.
 
+After adding or replacing photos, run `python scripts/optimize_media.py` (needs `pip install pillow`).
+It makes small WebP copies in `public/media/opt/`, so phones download a fraction of the size.
+The site still works if you skip this step: new photos just load at full size.
+
 ### Contact
 
 The contact email, LinkedIn, GitHub, Facebook and Instagram links are in `profile.links`.
@@ -112,6 +116,30 @@ a preview for every pull request). Any static host works.
 - **E** at the yellow flag starts the Island Dash; fast travel during a dash cancels it
 - **Touch**: joystick bottom-left (push it all the way to run), drag anywhere to look, JUMP and camera buttons bottom-right, tap things to open them
 
+## Interactive touches (classic view)
+
+- **Natural portrait**: your real photo (`profile.photo`) in a simple rounded frame with an Open to work label. No cut-out, blobs or floating badges, so it looks like you.
+- **Light theme by default**: warm off-white page, white cards, near-black text and one blue accent, because light pages read better in bright offices and recruiters scan fast. The moon button in the menu switches to the dark theme, and the choice is remembered. The 3D island game keeps its night look.
+- **Growth timeline**: a compact row of milestones (2022 to 2026) under Why hire me, from `profile.milestones`. Each one links to its proof section. There are deliberately no skill-percentage bars or charts, because recruiters read them as made-up numbers.
+- **Skill chips** with a number filter the project list to the projects that used that skill.
+- **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
+- **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.
+- Stats count up, cards get a soft light under the cursor, and a line fills as you read down Experience.
+
+## Speed, accessibility and search
+
+The classic view follows Google's web.dev and Lighthouse guidance. In a local Lighthouse mobile run it scores
+100 for performance, accessibility, best practices and SEO. The largest paint takes about 1.5 s,
+well inside the 2.5 s that Google counts as good.
+
+- The hero shows instantly. Only the sections below it fade in.
+- Fonts load without blocking the first paint.
+- Photos come in responsive WebP sizes.
+- The 3D background loads only after the page has finished, and is skipped on data-saver or slow connections.
+- There is a "Skip to content" link for keyboard users, and every button has a label.
+- Search engines get a descriptive title and description, `robots.txt`, and Person structured data
+  (name, role, employer, LinkedIn and GitHub).
+
 ## Tech
 
 Three.js + Vite, plain JavaScript, no framework. All 3D text is drawn on canvas
@@ -119,3 +147,14 @@ at runtime, so there are no models or fonts to download. The 3D code is
 lazy-loaded (about 155 KB gzipped) and the classic view never loads it.
 Quality drops automatically on phones and slow GPUs (no bloom/shadows, lower
 resolution), and rendering pauses when the tab is hidden.
+
+## Your CV
+
+The **Download CV** buttons (in the menu, the hero and Contact) serve `public/cv/Myo-Set-Paing-CV.pdf`. It is generated from `src/data/portfolio.js`, so after you edit your details, rebuild it:
+
+```bash
+npm i -D playwright && npx playwright install chromium   # once
+node scripts/build_cv.mjs
+```
+
+The layout follows recruiter and ATS advice: A4, one column, real text, standard headings (Profile, Experience, Hackathons & Projects, Education, Certifications, Skills), dates on the right and no photo. `public/cv/Myo-Set-Paing-CV.html` is the page it prints from, if you want to tweak the styling.

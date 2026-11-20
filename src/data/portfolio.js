@@ -29,7 +29,7 @@ export const profile = {
     facebook: 'https://www.facebook.com/mark.myo/',
     instagram: 'https://www.instagram.com/mark_hhh3172/',
     email: 'markmyo6@gmail.com', // business inquiries
-    resume: '', // TODO (optional): link to a PDF, e.g. '/resume.pdf' (put the file in /public)
+    resume: 'cv/Myo-Set-Paing-CV.pdf', // built from this file: `node scripts/build_cv.mjs`
   },
   // Each group becomes an orbiting crystal around the Beacon.
   skills: [
@@ -49,6 +49,32 @@ export const profile = {
     { value: 'Odoo', label: 'ERP go-lives supported' },
   ],
   // Only the biggest wins: shown in the About card and as "Career highlights".
+  // "Why hire me" cards at the top of the classic view. Keep each claim backed by
+  // something on the site: `go` is the section the "See proof" link jumps to.
+  whyHire: [
+    { title: 'ERP go-live experience', text: 'I lead the ExpoTrans helpdesk team at Global Connect Asia through an Odoo ERP rollout: UAT, go-live and post-launch support.', go: 'experience' },
+    { title: 'Ships fast under pressure', text: '3 hackathon builds in 2026 for NASA Space Apps, the Google Cloud AI Builder Cup and Cursor, each with a live demo.', go: 'hackathons' },
+    { title: 'Design + tech in one person', text: 'UI/UX and accessibility work (Figma, user research) alongside CCNA networking, AWS and AI tooling.', go: 'projects' },
+  ],
+  // "Growth" timeline under Why hire me: one line per milestone, oldest first.
+  // Only real facts; `go` is the section the milestone links to.
+  milestones: [
+    { year: '2022', title: 'AIESEC in Myanmar', text: 'Joined; led HR and logistics teams for 2 years', go: 'experience' },
+    { year: '2022–23', title: 'Network & system admin', text: 'Two YIU certificates, both Grade A', go: 'education' },
+    { year: '2023', title: 'IT foundation degree', text: 'All high distinctions · student council VP', go: 'education' },
+    { year: '2023–26', title: 'Curtin Singapore', text: 'Diploma → Bachelor of IT, Class of 2026', go: 'education' },
+    { year: 'Mar 2026', title: 'Global Connect Asia', text: 'Junior ERP Support Specialist, leading the ExpoTrans helpdesk', go: 'experience' },
+    { year: '2026', title: '4 hackathons, 5 certificates', text: 'NASA Space Apps, Google Cloud, Cursor, IBM', go: 'hackathons' },
+  ],
+  // Quick facts for recruiters. Only add what is true; leave a line out rather than guess.
+  // TODO (optional): add { label: 'Available', value: '...' }, work authorisation or languages.
+  atAGlance: [
+    { label: 'Looking for', value: 'ERP, IT support, UI/UX and junior engineering roles' },
+    { label: 'Location', value: 'Yangon, Myanmar · open to Singapore (on-site, hybrid or remote)' },
+    { label: 'Now', value: 'Junior ERP Support Specialist at Global Connect Asia (since Mar 2026)' },
+    { label: 'Education', value: 'Curtin Singapore, IT · Class of 2026' },
+    { label: 'Credentials', value: '9 licenses & certifications, including AWS, CCNA and Google' },
+  ],
   highlights: [
     'Leading the ExpoTrans helpdesk team through an Odoo ERP go-live at Global Connect Asia',
     'Built AstroMed, an astronaut health console, at NASA Space Apps Challenge Yangon 2026',

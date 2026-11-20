@@ -1,0 +1,112 @@
+{
+  "media/astromed.jpg": [
+    [
+      480,
+      "media/opt/astromed-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/astromed-1200.webp"
+    ]
+  ],
+  "media/cursor-event.jpg": [
+    [
+      480,
+      "media/opt/cursor-event-480.webp"
+    ],
+    [
+      1087,
+      "media/opt/cursor-event-1087.webp"
+    ]
+  ],
+  "media/cursor.jpg": [
+    [
+      480,
+      "media/opt/cursor-480.webp"
+    ],
+    [
+      1080,
+      "media/opt/cursor-1080.webp"
+    ]
+  ],
+  "media/expo.jpg": [
+    [
+      480,
+      "media/opt/expo-480.webp"
+    ],
+    [
+      1128,
+      "media/opt/expo-1128.webp"
+    ]
+  ],
+  "media/gitex.jpg": [
+    [
+      480,
+      "media/opt/gitex-480.webp"
+    ],
+    [
+      934,
+      "media/opt/gitex-934.webp"
+    ]
+  ],
+  "media/greenlens.jpg": [
+    [
+      480,
+      "media/opt/greenlens-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/greenlens-1200.webp"
+    ]
+  ],
+  "media/grok.jpg": [
+    [
+      480,
+      "media/opt/grok-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/grok-1200.webp"
+    ]
+  ],
+  "media/hrchronicle.webp": [
+    [
+      480,
+      "media/opt/hrchronicle-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/hrchronicle-1200.webp"
+    ]
+  ],
+  "media/ibm.jpg": [
+    [
+      480,
+      "media/opt/ibm-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/ibm-1200.webp"
+    ]
+  ],
+  "media/nasa.jpg": [
+    [
+      480,
+      "media/opt/nasa-480.webp"
+    ],
+    [
+      1200,
+      "media/opt/nasa-1200.webp"
+    ]
+  ],
+  "media/profile.jpg": [
+    [
+      480,
+      "media/opt/profile-480.webp"
+    ],
+    [
+      800,
+      "media/opt/profile-800.webp"
+    ]
+  ]
+}

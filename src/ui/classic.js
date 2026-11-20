@@ -1,10 +1,12 @@
 import './classic.css';
 import { profile, projects, experience, certificates, achievements } from '../data/portfolio.js';
-import { esc, sampleTag, shot, avatarHtml, mediaUrl, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
+import { esc, sampleTag, shot, avatarHtml, imgAttrs, ACH_LABEL, TYPE_LABEL, TYPE_COLOR, sortedNews, newsListHtml, newsDate, isFresh, SOURCE_LABEL } from './cards.js';
 import { createModal } from './modal.js';
+import { enhance, projectsFor } from './interactive.js';
 
 const ICONS = {
   linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.13V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>',
   github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>',
   facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.87.25-1.46 1.5-1.46h1.55V4.47A20.6 20.6 0 0 0 14.3 4.3c-2.24 0-3.8 1.37-3.8 3.9v2.3H8v3h2.5V21h3Z"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
@@ -44,7 +46,7 @@ function ctas() {
   return [
     l.email ? `<a class="cbtn cbtn-primary" href="mailto:${esc(l.email)}">${ICONS.mail}Email me</a>` : '',
     link(l.linkedin, `${ICONS.linkedin}Connect on LinkedIn`, `cbtn${l.email ? '' : ' cbtn-primary'}`),
-    link(l.resume, `Download CV`, 'cbtn'),
+    l.resume ? `<a class="cbtn" href="${esc(l.resume)}" download>${ICONS.doc}Download CV</a>` : '',
     link(l.github, `${ICONS.github}GitHub`, 'cbtn'),
   ].join('');
 }
@@ -64,6 +66,11 @@ const monogram = (s) =>
 /** Recruiter-friendly 2D portfolio (also the no-WebGL fallback). */
 export function renderClassic(root, { canExplore, onExplore }) {
   document.body.classList.add('classic-mode');
+  // Light theme by default (easier to read for most visitors); the choice is remembered.
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch {}
+  const isLight = () => document.body.classList.contains('light');
+  document.body.classList.toggle('light', saved !== 'dark');
   const initials = profile.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
   const work = experience.filter((e) => e.type !== 'education');
   const edu = experience.filter((e) => e.type === 'education');
@@ -72,6 +79,11 @@ export function renderClassic(root, { canExplore, onExplore }) {
   const featCerts = certificates.filter((c) => c.featured);
   const otherCerts = certificates.filter((c) => !c.featured);
   const topSkills = profile.skills.map((g) => g.items[0]).slice(0, 5);
+  // skills used in a project become buttons that filter the project list
+  const skillChip = (s) => {
+    const n = projectsFor(s, projects).length;
+    return n ? `<button type="button" class="skill-btn" data-skill="${esc(s)}" title="See ${n} project${n === 1 ? '' : 's'} using ${esc(s)}">${esc(s)}<em>${n}</em></button>` : `<span>${esc(s)}</span>`;
+  };
   const cats = ['all', ...new Set(projects.map((p) => p.category).filter(Boolean))];
   const hacks = achievements.filter((a) => a.kind === 'hackathon');
 
@@ -93,18 +105,21 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
   root.innerHTML = `
   <div class="cv-bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><div class="grid"></div></div>
+  <a class="skip" href="#projects">Skip to content</a>
   ${showBanner ? `<div class="announce" role="status"><span class="announce-tag">New</span><a href="#news" class="announce-text"><b>${esc(latest.title)}</b><span> · ${esc(SOURCE_LABEL[latest.source] || 'Update')}, ${esc(newsDate(latest.date))}</span></a><button class="announce-x" aria-label="Dismiss announcement">✕</button></div>` : ''}
   <div class="cv">
     <header class="cv-nav">
-      <a class="cv-brand" href="#top"><span class="mono">${esc(initials)}</span><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
+      <a class="cv-brand" href="#top"><img class="mono" src="logo.svg" alt="" width="36" height="36"><span>${esc(profile.nickname)}<small>.portfolio</small></span></a>
       <nav aria-label="Sections">
-        <span class="nav-ind" aria-hidden="true"></span>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#certifications">Certifications</a><a href="#education">Education</a><a href="#contact">Contact</a>
+        <span class="nav-ind" aria-hidden="true"></span><a href="#projects">Projects</a><a href="#hackathons">Hackathons</a><a href="#experience">Experience</a><a href="#certifications">Certifications</a><a href="#education">Education</a>${allNews.length ? '<a href="#news">News</a>' : ''}<a href="#contact">Contact</a>
       </nav>
-      ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore>${ICONS.cube}<span>Play game mode</span></button>` : ''}
+      ${profile.links.resume ? `<a class="cbtn cbtn-ghost nav-cv" href="${esc(profile.links.resume)}" download aria-label="Download CV (PDF)">${ICONS.doc}<span>CV</span></a>` : ''}
+      <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      ${canExplore ? `<button class="cbtn cbtn-ghost cbtn-game" data-explore aria-label="Play game mode">${ICONS.cube}<span>Play game mode</span></button>` : ''}
     </header>
 
     <section class="hero" id="top">
-      <div class="hero-main reveal">
+      <div class="hero-main">
         ${profile.status ? `<span class="pill"><span class="dot"></span>${esc(profile.status)}</span>` : ''}
         <h1>${esc(profile.name)} <span class="nick">(${esc(profile.nickname)})</span></h1>
         <p class="role">${esc(current ? current.role : profile.title)}${current ? ` <span>at</span> ${esc(current.org)}` : ''}</p>
@@ -118,60 +133,37 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="socials">${socials()}</div>
         ${canExplore ? `<button class="game-cta" data-explore><span class="game-ic">${ICONS.cube}</span><span class="game-txt"><b>Explore this portfolio as a 3D game</b><small>Walk my island, finish quests and race the Island Dash.</small></span><span class="game-go">Play ▶</span></button>` : ''}
       </div>
-      <aside class="idcard reveal">
-        <div class="avatar">${avatarHtml(initials)}</div>
-        <div class="id-name">${esc(profile.nickname)}</div>
-        <div class="id-title">${esc(profile.title.split(' · ')[0])}</div>
-        <ul class="id-list">
-          ${current ? `<li>${ICONS.brief}<div><b>${esc(current.org)}</b><small>${esc(current.start)} – ${esc(current.end)}</small></div></li>` : ''}
-          ${school ? `<li>${ICONS.cap}<div><b>${esc(school.org.split(' · ')[0])}</b><small>${esc(school.role)}</small></div></li>` : ''}
-          ${hacks.length ? `<li>${ICONS.trophy}<div><b>${hacks.length} hackathons</b><small>${esc(hacks.map((a) => a.title).slice(0, 2).join(', '))}</small></div></li>` : ''}
-        </ul>
-        <div class="id-skills">${topSkills.map((s) => `<span>${esc(s)}</span>`).join('')}</div>
+      <aside class="portrait" aria-label="Profile">
+        <figure class="pt-frame">
+          ${profile.photo
+            ? `<img class="pt-photo" ${imgAttrs(profile.photo, '(max-width: 960px) 80vw, 400px')} alt="${esc(profile.name)}" width="800" height="800" fetchpriority="high" onerror="this.parentNode.classList.add('pt-fallback')">`
+            : ''}
+          <div class="pt-flat avatar">${avatarHtml(initials)}</div>
+          <figcaption class="pt-open"><i></i>Open to work</figcaption>
+        </figure>
+        <div class="id-actions">
+          ${profile.links.email ? `<button class="id-act" data-copy="${esc(profile.links.email)}" title="Copy my email">${ICONS.mail}<span>Copy email</span><i class="ok">Copied ✓</i></button>` : ''}
+          <div class="id-act id-clock" data-clock="Asia/Yangon" title="My local time in Yangon">${ICONS.globe}<span><b>–</b><small>Yangon time</small></span></div>
+        </div>
       </aside>
     </section>
 
-    ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => `<div class="stat"><b>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`).join('')}</section>` : ''}
+    ${profile.keyFacts?.length ? `<section class="stats reveal">${profile.keyFacts.map((f) => { const m = /^(\d+)(.*)$/.exec(f.value); return `<div class="stat"><b${m ? ` data-count="${m[1]}" data-suffix="${esc(m[2])}"` : ''}>${esc(f.value)}</b><span>${esc(f.label)}</span></div>`; }).join('')}</section>` : ''}
 
-    ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
-      <div class="news-wrap">
-        <div class="news-list">${newsListHtml(allNews, 3)}</div>
-        <div class="news-follow glass">
-          <b>Follow along</b>
-          <p>I post about hackathons, ERP projects and what I'm building.</p>
-          <div class="news-links">
-            <a href="${esc(profile.links.linkedin)}" target="_blank" rel="noopener">${ICONS.linkedin}LinkedIn</a>
-            ${profile.links.instagram ? `<a href="${esc(profile.links.instagram)}" target="_blank" rel="noopener">${ICONS.instagram || ''}Instagram</a>` : ''}
-            ${profile.links.facebook ? `<a href="${esc(profile.links.facebook)}" target="_blank" rel="noopener">${ICONS.facebook || ''}Facebook</a>` : ''}
-          </div>
-          ${allNews.length > 3 ? `<button class="news-all" data-news-all>See all ${allNews.length} updates</button>` : ''}
-        </div>
-      </div>`) : ''}
-
-    ${profile.highlights?.length ? sec('highlights', '★', 'Career highlights', 'The biggest things so far.', `
-      <div class="bento">${profile.highlights.map((h, i) => `<div class="bento-card"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><p>${esc(h)}</p></div>`).join('')}</div>`) : ''}
-
-    ${sec('about', '01', 'About', '', `
-      <div class="about-grid">
-        <div class="glass prose">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+    ${profile.whyHire?.length ? sec('hire', '★', 'Why hire me', 'The short version, with proof one click away.', `
+      <div class="why">${profile.whyHire.map((w, i) => `
+        <a class="why-card bento-card" href="#${esc(w.go)}" style="--d:${i * 80}ms"><span class="ic">${ICONS[HL_ICONS[i % HL_ICONS.length]]}</span><b>${esc(w.title)}</b><p>${esc(w.text)}</p><span class="why-go">See proof ${ICONS.arrow}</span></a>`).join('')}
+      </div>
+      <div class="hire-row">
+        ${profile.atAGlance?.length ? `<div class="glance glass"><h3>At a glance</h3><dl>${profile.atAGlance.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>
+          <div class="glance-cta">${profile.links.email ? `<a class="cbtn cbtn-primary" href="mailto:${esc(profile.links.email)}?subject=${encodeURIComponent('Opportunity for Mark')}">${ICONS.mail}Email me</a><button class="cbtn" data-copy="${esc(profile.links.email)}">Copy email<i class="ok">Copied ✓</i></button>` : ''}${link(profile.links.linkedin, `${ICONS.linkedin}LinkedIn`, 'cbtn')}</div></div>` : ''}
         ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
-      </div>`)}
+      </div>
+      ${profile.milestones?.length ? `<div class="growth glass"><h3>My growth so far</h3><ol>${profile.milestones.map((m) => `<li><a href="#${esc(m.go)}"><time>${esc(m.year)}</time><b>${esc(m.title)}</b><small>${esc(m.text)}</small></a></li>`).join('')}</ol></div>` : ''}`) : ''}
 
-    ${sec('experience', '02', 'Experience', 'Work and leadership roles.', `
-      <div class="xp">${work.map((e) => `
-        <article class="xp-item glass" style="--c:${TYPE_COLOR[e.type] || '#7cf5ff'}">
-          <div class="xp-when"><b>${esc(e.start)}</b><span>${esc(e.end)}</span><em>${esc(TYPE_LABEL[e.type] || '')}</em></div>
-          <div class="xp-body">
-            <h3>${esc(e.role)}${sampleTag(e)}</h3>
-            <div class="xp-org">${esc(e.org)}${e.location ? `<span>${esc(e.location)}</span>` : ''}</div>
-            ${e.summary ? `<p>${esc(e.summary)}</p>` : ''}
-            ${e.points?.length ? `<ul>${e.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-          </div>
-        </article>`).join('')}
-      </div>`)}
-
-    ${sec('projects', '03', 'Projects', `${projects.length} things I've led, designed or built.`, `
+    ${sec('projects', '01', 'Projects', `${projects.length} things I've led, designed or built.`, `
       <div class="tabs" role="tablist" data-tabs="spot-row"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
+      <div class="skill-filter" hidden role="status"><span>Projects using <b></b> · <em></em></span><button type="button" aria-label="Show all projects">Show all ✕</button></div>
       <div class="spot" data-spot>
         <ol class="spot-list">${projects.map((p, i) => `
           <li class="spot-row${i === 0 ? ' on' : ''}" data-cat="${esc(p.category || '')}" style="--c:${esc(p.color)}">
@@ -187,11 +179,11 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="spot-view glass" aria-live="polite"></div>
       </div>`)}
 
-    ${achievements?.length ? sec('hackathons', '04', 'Hackathons & achievements', 'Competitions, events and recognition.', `
+    ${achievements?.length ? sec('hackathons', '02', 'Hackathons & achievements', 'Competitions, events and recognition.', `
       <div class="tabs" role="tablist" data-tabs="ach-item"><span class="tab-ind" aria-hidden="true"></span>${ACH_TABS.filter((t) => t.id === 'all' || achievements.some((a) => achGroup(a) === t.id)).map((t, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${t.id}">${t.label}<em>${t.id === 'all' ? achievements.length : achievements.filter((a) => achGroup(a) === t.id).length}</em></button>`).join('')}</div>
       <div class="hbento">${achievements.map((a, i) => ({ a, i })).filter((x) => x.a.featured).map(({ a, i }) => `
         <button class="htile ach-item" data-cat="${achGroup(a)}" data-open="achievement:${i}" style="--c:${esc(a.color)}">
-          ${a.image ? `<img src="${esc(mediaUrl(a.image))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+          ${a.image ? `<img ${imgAttrs(a.image, '(max-width: 860px) 100vw, 640px')} alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
           <span class="htile-shade"></span>
           <span class="htile-body">
             <span class="htile-kind">${ICONS.trophy}${esc(ACH_LABEL[a.kind] || '')} · ${esc(a.date)}</span>
@@ -209,7 +201,20 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </button>`).join('')}
       </div>`) : ''}
 
-    ${sec('certifications', '05', 'Licenses & certifications', `${certificates.length} credentials.`, `
+    ${sec('experience', '03', 'Experience', 'Work and leadership roles.', `
+      <div class="xp"><span class="xp-line" aria-hidden="true"><i></i></span>${work.map((e) => `
+        <article class="xp-item glass" style="--c:${TYPE_COLOR[e.type] || '#7cf5ff'}">
+          <div class="xp-when"><b>${esc(e.start)}</b><span>${esc(e.end)}</span><em>${esc(TYPE_LABEL[e.type] || '')}</em></div>
+          <div class="xp-body">
+            <h3>${esc(e.role)}${sampleTag(e)}</h3>
+            <div class="xp-org">${esc(e.org)}${e.location ? `<span>${esc(e.location)}</span>` : ''}</div>
+            ${e.summary ? `<p>${esc(e.summary)}</p>` : ''}
+            ${e.points?.length ? `<ul>${e.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+          </div>
+        </article>`).join('')}
+      </div>`)}
+
+    ${sec('certifications', '04', 'Licenses & certifications', `${certificates.length} credentials.`, `
       <div class="cfeat">${featCerts.map((c) => `
         <article class="ccard glass" style="--c:${esc(c.color)}">
           <span class="cmono${monogram(c.issuerShort || c.issuer).length > 3 ? ' sm' : ''}">${esc(monogram(c.issuerShort || c.issuer))}</span>
@@ -222,7 +227,7 @@ export function renderClassic(root, { canExplore, onExplore }) {
         <div class="crow" style="--c:${esc(c.color)}"><span class="cdot"></span><div class="cname"><b>${esc(c.name)}</b><span>${esc(c.issuer)}</span></div><span class="cdate">${esc(c.date)}</span>${c.url ? link(c.url, `Verify ${ICONS.arrow}`, 'cverify') : '<span class="cverify off"></span>'}</div>`).join('')}
       </div></details>`)}
 
-    ${sec('education', '06', 'Education', '', `
+    ${sec('education', '05', 'Education', '', `
       <div class="edu">${edu.map((e) => `
         <div class="edu-row glass">
           <div class="edu-when">${esc(e.start)} – ${esc(e.end)}</div>
@@ -230,8 +235,28 @@ export function renderClassic(root, { canExplore, onExplore }) {
         </div>`).join('')}
       </div>`)}
 
-    ${sec('skills', '07', 'Skills', '', `
-      <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map((i) => `<span>${esc(i)}</span>`).join('')}</div></div>`).join('')}</div>`)}
+    ${sec('skills', '06', 'Skills', 'Tap a highlighted skill to see the projects where I used it.', `
+      <div class="sgrid">${profile.skills.map((g) => `<div class="glass sk"><h3>${esc(g.group)}</h3><div class="chips">${g.items.map(skillChip).join('')}</div></div>`).join('')}</div>`)}
+
+    ${sec('about', '07', 'About', '', `
+      <div class="about-grid">
+        <div class="glass prose">${profile.about.map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+      </div>`)}
+
+    ${allNews.length ? sec('news', '●', 'Latest news', 'What I have been posting about lately.', `
+      <div class="news-wrap">
+        <div class="news-list">${newsListHtml(allNews, 3)}</div>
+        <div class="news-follow glass">
+          <b>Follow along</b>
+          <p>I post about hackathons, ERP projects and what I'm building.</p>
+          <div class="news-links">
+            <a href="${esc(profile.links.linkedin)}" target="_blank" rel="noopener">${ICONS.linkedin}LinkedIn</a>
+            ${profile.links.instagram ? `<a href="${esc(profile.links.instagram)}" target="_blank" rel="noopener">${ICONS.instagram || ''}Instagram</a>` : ''}
+            ${profile.links.facebook ? `<a href="${esc(profile.links.facebook)}" target="_blank" rel="noopener">${ICONS.facebook || ''}Facebook</a>` : ''}
+          </div>
+          ${allNews.length > 3 ? `<button class="news-all" data-news-all>See all ${allNews.length} updates</button>` : ''}
+        </div>
+      </div>`) : ''}
 
     <section class="contact reveal" id="contact">
       <h2>Let's work together.</h2>
@@ -244,9 +269,9 @@ export function renderClassic(root, { canExplore, onExplore }) {
 
     <nav class="mtabs" aria-label="Sections">
       <a href="#top" class="on">${ICONS.star}<span>Top</span></a>
-      <a href="#experience">${ICONS.brief}<span>Work</span></a>
       <a href="#projects">${ICONS.cube}<span>Projects</span></a>
       <a href="#hackathons">${ICONS.trophy}<span>Hacks</span></a>
+      <a href="#experience">${ICONS.brief}<span>Work</span></a>
       <a href="#certifications">${ICONS.cap}<span>Certs</span></a>
       <a href="#contact">${ICONS.mail}<span>Contact</span></a>
     </nav>
@@ -265,6 +290,24 @@ export function renderClassic(root, { canExplore, onExplore }) {
     new IntersectionObserver(([e]) => fab.classList.toggle('on', !e.isIntersecting)).observe(heroCta);
   }
   root.querySelectorAll('[data-explore]').forEach((b) => b.addEventListener('click', onExplore));
+  // Warm up the game while the visitor is still deciding: on hover/focus/touch of any
+  // game button (and once the page is idle on fast connections) fetch the 3D code, so the
+  // loading screen mostly has nothing left to download.
+  if (canExplore) {
+    let warmed = false;
+    const warm = () => {
+      if (warmed) return;
+      warmed = true;
+      import('../world/World.js').catch(() => {});
+      import('./hud.js').catch(() => {});
+    };
+    root.querySelectorAll('[data-explore]').forEach((b) => ['pointerenter', 'focus', 'touchstart'].forEach((ev) => b.addEventListener(ev, warm, { once: true, passive: true })));
+    const c = navigator.connection;
+    if (!(c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')))) {
+      const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 6000 }) : setTimeout(warm, 4000));
+      addEventListener('load', () => setTimeout(idle, 2500), { once: true });
+    }
+  }
 
   // tabs with a sliding indicator (project categories, hackathon kinds)
   const placeInd = (bar) => {
@@ -358,6 +401,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
     else select(spot.querySelector('.spot-row'));
   }
 
+  enhance(root, { projects });
+
   // card -> full details in a modal (same cards as the 3D world)
   const modal = createModal();
   root.addEventListener('click', (e) => {
@@ -399,11 +444,40 @@ export function renderClassic(root, { canExplore, onExplore }) {
     moveNav();
   });
 
+  // theme switch
+  const themeBtn = root.querySelector('[data-theme-toggle]');
+  const syncTheme = () => {
+    const light = isLight();
+    themeBtn?.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f7f6f3' : '#080a18');
+  };
+  syncTheme();
+  themeBtn?.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    try { localStorage.setItem('theme', isLight() ? 'light' : 'dark'); } catch {}
+    syncTheme();
+  });
+
   // moving 3D background (lazy, only where it will run smoothly)
-  if (canExplore && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const go = () => import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
-    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 });
-    else setTimeout(go, 300);
+  // Waits for the visitor's first interaction so it never delays the content, and is
+  // skipped on data-saver or slow connections (the CSS gradient background stays).
+  const conn = navigator.connection;
+  const slowNet = conn && (conn.saveData || /(^|-)2g|3g/.test(conn.effectiveType || ''));
+  if (canExplore && !slowNet && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let mounted = false;
+    const go = () => {
+      if (mounted || isLight()) return;
+      mounted = true;
+      import('./classicBg.js').then((m) => m.mountClassicBg(root.querySelector('.cv-bg'))).catch(() => {});
+    };
+    root.querySelector('[data-theme-toggle]')?.addEventListener('click', () => setTimeout(go, 50));
+    // like the portrait: starts on the first move, scroll or tap
+    const BG_EVTS = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'];
+    const start = () => {
+      BG_EVTS.forEach((ev) => removeEventListener(ev, start));
+      'requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 800 }) : setTimeout(go, 200);
+    };
+    BG_EVTS.forEach((ev) => addEventListener(ev, start, { passive: true, once: true }));
   }
 
   // scroll reveal + active nav
