@@ -56,6 +56,16 @@ export const profile = {
     { title: 'Ships fast under pressure', text: '3 hackathon builds in 2026 for NASA Space Apps, the Google Cloud AI Builder Cup and Cursor, each with a live demo.', go: 'hackathons' },
     { title: 'Design + tech in one person', text: 'UI/UX and accessibility work (Figma, user research) alongside CCNA networking, AWS and AI tooling.', go: 'projects' },
   ],
+  // "Growth" timeline under Why hire me: one line per milestone, oldest first.
+  // Only real facts; `go` is the section the milestone links to.
+  milestones: [
+    { year: '2022', title: 'AIESEC in Myanmar', text: 'Joined; led HR and logistics teams for 2 years', go: 'experience' },
+    { year: '2022–23', title: 'Network & system admin', text: 'Two YIU certificates, both Grade A', go: 'education' },
+    { year: '2023', title: 'IT foundation degree', text: 'All high distinctions · student council VP', go: 'education' },
+    { year: '2023–26', title: 'Curtin Singapore', text: 'Diploma → Bachelor of IT, Class of 2026', go: 'education' },
+    { year: 'Mar 2026', title: 'Global Connect Asia', text: 'Junior ERP Support Specialist, leading the ExpoTrans helpdesk', go: 'experience' },
+    { year: '2026', title: '4 hackathons, 5 certificates', text: 'NASA Space Apps, Google Cloud, Cursor, IBM', go: 'hackathons' },
+  ],
   // Quick facts for recruiters. Only add what is true; leave a line out rather than guess.
   // TODO (optional): add { label: 'Available', value: '...' }, work authorisation or languages.
   atAGlance: [

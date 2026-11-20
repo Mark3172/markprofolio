@@ -621,3 +621,25 @@ body.classic-mode.light {
 html:has(body.classic-mode.light) { background: #f7f6f3; }
 .cv-nav .cbtn-game { white-space: nowrap; }
 @media (max-width: 1440px) { .cv-nav .cbtn-game span { display: none; } }
+
+/* ---- growth timeline: milestones as a plain ordered list (reads fine without CSS) ---- */
+.growth { margin-top: 14px; padding: 22px 22px 18px; }
+.growth h3 { margin: 0 0 16px; font-family: var(--font-display); font-size: 18px; }
+.growth ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); position: relative; }
+.growth ol::before { content: ''; position: absolute; left: 6px; right: 6px; top: 6px; height: 2px; background: var(--line); }
+.growth li { position: relative; min-width: 0; }
+.growth a { display: grid; gap: 3px; padding: 22px 12px 4px 0; color: var(--text); text-decoration: none; border-radius: 10px; }
+.growth a::before { content: ''; position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--panel-solid); border: 3px solid var(--accent); box-sizing: border-box; transition: transform 0.2s; }
+.growth li:last-child a::before { background: var(--accent); }
+.growth a:hover::before, .growth a:focus-visible::before { transform: scale(1.25); }
+.growth a:hover b, .growth a:focus-visible b { color: var(--accent); }
+.growth a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.growth time { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent); }
+.growth b { font-size: 14px; line-height: 1.3; transition: color 0.2s; }
+.growth small { font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+@media (max-width: 960px) {
+  .growth ol { grid-template-columns: 1fr; gap: 4px; }
+  .growth ol::before { left: 6px; right: auto; top: 8px; bottom: 8px; width: 2px; height: auto; }
+  .growth a { padding: 0 0 12px 28px; }
+  .growth a::before { top: 2px; }
+}

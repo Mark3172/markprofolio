@@ -120,6 +120,7 @@ a preview for every pull request). Any static host works.
 
 - **Natural portrait**: your real photo (`profile.photo`) in a simple rounded frame with an Open to work label. No cut-out, blobs or floating badges, so it looks like you.
 - **Light theme by default**: warm off-white page, white cards, near-black text and one blue accent, because light pages read better in bright offices and recruiters scan fast. The moon button in the menu switches to the dark theme, and the choice is remembered. The 3D island game keeps its night look.
+- **Growth timeline**: a compact row of milestones (2022 to 2026) under Why hire me, from `profile.milestones`. Each one links to its proof section. There are deliberately no skill-percentage bars or charts, because recruiters read them as made-up numbers.
 - **Skill chips** with a number filter the project list to the projects that used that skill.
 - **Copy email** button, plus a live **Yangon time** card that shows how far ahead of the visitor you are.
 - **Why hire me** cards (with "See proof" links), an **At a glance** card for recruiters, and the recommendation near the top. Edit them in `profile.whyHire` and `profile.atAGlance`.

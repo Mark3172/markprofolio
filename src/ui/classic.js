@@ -158,7 +158,8 @@ export function renderClassic(root, { canExplore, onExplore }) {
         ${profile.atAGlance?.length ? `<div class="glance glass"><h3>At a glance</h3><dl>${profile.atAGlance.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>
           <div class="glance-cta">${profile.links.email ? `<a class="cbtn cbtn-primary" href="mailto:${esc(profile.links.email)}?subject=${encodeURIComponent('Opportunity for Mark')}">${ICONS.mail}Email me</a><button class="cbtn" data-copy="${esc(profile.links.email)}">Copy email<i class="ok">Copied ✓</i></button>` : ''}${link(profile.links.linkedin, `${ICONS.linkedin}LinkedIn`, 'cbtn')}</div></div>` : ''}
         ${profile.testimonial?.quote ? `<figure class="glass quote-card"><span class="qmark">“</span><blockquote>${esc(profile.testimonial.quote)}</blockquote><figcaption><b>${esc(profile.testimonial.author)}</b><span>${esc(profile.testimonial.role)}${profile.testimonial.date ? ' · ' + esc(profile.testimonial.date) : ''}</span></figcaption></figure>` : ''}
-      </div>`) : ''}
+      </div>
+      ${profile.milestones?.length ? `<div class="growth glass"><h3>My growth so far</h3><ol>${profile.milestones.map((m) => `<li><a href="#${esc(m.go)}"><time>${esc(m.year)}</time><b>${esc(m.title)}</b><small>${esc(m.text)}</small></a></li>`).join('')}</ol></div>` : ''}`) : ''}
 
     ${sec('projects', '01', 'Projects', `${projects.length} things I've led, designed or built.`, `
       <div class="tabs" role="tablist" data-tabs="spot-row"><span class="tab-ind" aria-hidden="true"></span>${cats.map((c, i) => `<button role="tab" aria-selected="${i === 0}" class="${i === 0 ? 'on' : ''}" data-cat="${c}">${c === 'all' ? 'All' : CAT_LABEL[c] || c}<em>${c === 'all' ? projects.length : projects.filter((p) => p.category === c).length}</em></button>`).join('')}</div>
