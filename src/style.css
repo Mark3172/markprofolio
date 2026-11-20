@@ -322,3 +322,12 @@ ul.hl { margin: 0 0 12px; padding-left: 18px; line-height: 1.55; color: #d6d9f5;
   .ld-logo img, .ld-orbit, .ld-tip b.in, .intro-stars i { animation: none; }
   .loading.hide { transform: none; }
 }
+
+/* phones: the tour starts compact so it doesn't cover the island */
+@media (max-width: 640px) {
+  .tour { width: min(230px, calc(100vw - 120px)); padding: 9px 12px; }
+  .tour .tour-dots { display: none; }
+  .tour h4 { font-size: 14px; margin: 4px 0 8px; }
+  .tour-go { padding: 7px 8px; font-size: 12px; }
+  .tour p, .tour-top { color: #d7dbff; }
+}

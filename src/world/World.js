@@ -66,7 +66,7 @@ export function createWorld(container, hooks = {}) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = quality.shadows;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -701,7 +701,7 @@ export function createWorld(container, hooks = {}) {
         g2.fillText(`${e.start}`, 40, 175);
         g2.fillStyle = '#8f96c8';
         g2.font = `500 34px ${fonts.BODY}`;
-        g2.fillText(`→ ${e.end}`, 40, 222);
+        if (e.end !== e.start) g2.fillText(`→ ${e.end}`, 40, 222);
         g2.fillStyle = '#fff';
         g2.font = `700 46px ${fonts.DISPLAY}`;
         const y = wrap(g2, e.role, 40, 320, w - 80, 52, 3);

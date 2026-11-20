@@ -104,7 +104,7 @@ export const sections = {
     render: (e) => ({
       color: TYPE_COLOR[e.type] || '#7cf5ff',
       html: `
-        <div class="eyebrow">${esc(TYPE_LABEL[e.type] || 'Experience')} · ${esc(e.start)} – ${esc(e.end)}</div>
+        <div class="eyebrow">${esc(TYPE_LABEL[e.type] || 'Experience')} · ${esc(e.start === e.end ? e.start : `${e.start} – ${e.end}`)}</div>
         <h2>${esc(e.role)}${sampleTag(e)}</h2>
         <p class="sub">${esc(e.org)}${e.location ? ' · ' + esc(e.location) : ''}</p>
         ${e.summary ? `<p>${esc(e.summary)}</p>` : ''}
